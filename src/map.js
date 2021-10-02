@@ -9,6 +9,7 @@ const random = new Randomizer();
 class Tile {
   constructor() {
     this.canWalk = false;
+    this.explored = false;
   }
 }
 
@@ -18,18 +19,16 @@ export default class Map {
     this.height = height;
 
     this.constants = Object.freeze({
-      ROOM_MAX_SIZE: 12,
-      ROOM_MIN_SIZE: 6,
+      ROOM_MAX_SIZE: 10,
+      ROOM_MIN_SIZE: 4,
     });
 
     this.root = null;
   }
 
   isWall(x, y) {
-    //return !this.tiles[x + y * this.width].canWalk;
     const index = x + y * this.width;
     return !this.tiles[index].canWalk;
-    //return this.root.map[index];
   }
 
   setWall(x, y) {
@@ -127,12 +126,25 @@ export default class Map {
 
   render() {
     const darkWall = "#";
-    const darkGround = " ";
+    const darkGround = ".";
 
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        game.drawChar(this.isWall(x, y) ? darkWall : darkGround, x, y, "#AAA");
+        const fovValue = game.player.fov.getMapped(x, y);
+        if (fovValue === 2 || fovValue === 1) {
+          if (fovValue === 2)
+          {
+            game.drawChar(this.isWall(x, y) ? darkWall : darkGround, x, y, "#AAA");
+          } else {
+            game.drawChar(this.isWall(x, y) ? darkWall : darkGround, x, y, "#444");
+          }
+          
+        } else {
+          
+        }
       }
     }
   }
+
+  
 }

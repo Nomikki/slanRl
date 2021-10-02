@@ -2,6 +2,7 @@
 
 import Actor from "./actor";
 import Map from "./map";
+import Fov from "./fov";
 
 class Game {
   constructor() {
@@ -22,9 +23,13 @@ class Game {
     this.actors.push(new Actor(2, 2, "@", "#00FF00"));
     
     this.player = this.actors[0];
+    this.player.fov = new Fov(this.width, this.height);
+
     this.map = new Map(this.width, this.height);
 
     this.map.generate(1);
+    this.player.fov.fullClear();
+
   }
 
   clear(color = "#000") {
@@ -44,6 +49,7 @@ class Game {
 
   run() {
     this.init();
+    this.player.computeFov();
     this.render();
     this.update();
   }
@@ -106,6 +112,8 @@ class Game {
         this.player.x += dx;
         this.player.y += dy;
       }
+
+      this.player.update();
 
       //finally draw screen
       this.render();
