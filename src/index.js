@@ -5,23 +5,22 @@ import Map from "./map";
 
 class Game {
   constructor() {
-    this.init();
+   
   }
 
   init() {
     this.canvas = document.getElementById("screen");
     this.ctx = this.canvas.getContext("2d");
-    this.ctx.font = "16px Arial";
-    this.fontSize = 16;
+    this.ctx.font = "12px Arial";
+    this.fontSize = 12;
     this.lastKey = 0;
 
     this.width = 80;
     this.height = 40;
 
     this.actors = new Array();
-    this.actors.push(new Actor(1, 1, "@", "#00FF00"));
-    this.actors.push(new Actor(10, 8, "@", "#FFAA00"));
-
+    this.actors.push(new Actor(2, 2, "@", "#00FF00"));
+    
     this.player = this.actors[0];
     this.map = new Map(this.width, this.height);
   }
@@ -42,6 +41,7 @@ class Game {
   }
 
   run() {
+    this.init();
     this.render();
     this.update();
   }
@@ -108,6 +108,11 @@ class Game {
       //finally draw screen
       this.render();
     }
+  }
+
+  addMonster(x, y)
+  {
+    this.actors.push(new Actor(x, y, "@", "#FFAA00"));
   }
 }
 
