@@ -4,8 +4,8 @@ import { game } from ".";
 
 export default class Actor {
   constructor(x, y, ch, color) {
-    this.x = x;
-    this.y = y;
+    this.x = x | 0;
+    this.y = y | 0;
     this.ch = ch;
     this.color = color;
   }

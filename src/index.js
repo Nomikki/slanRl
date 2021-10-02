@@ -23,6 +23,8 @@ class Game {
     
     this.player = this.actors[0];
     this.map = new Map(this.width, this.height);
+
+    this.map.generate(1);
   }
 
   clear(color = "#000") {
@@ -37,7 +39,7 @@ class Game {
 
   drawChar(ch, x, y, color = "#000") {
     this.ctx.fillStyle = color;
-    this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize);
+    this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
 
   run() {
