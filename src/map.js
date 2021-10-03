@@ -74,7 +74,7 @@ export default class Map {
     this.root = new bspGenerator(0, 0, this.width, this.height, 5);
     this.tiles = new Array(this.width * this.height).fill(false);
 
-    const option = 1;
+    const option = 0;
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
