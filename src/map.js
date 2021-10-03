@@ -18,6 +18,9 @@ export default class Map {
     this.width = width;
     this.height = height;
 
+    this.startX = 0;
+    this.startY = 0;
+
     this.constants = Object.freeze({
       ROOM_MAX_SIZE: 10,
       ROOM_MIN_SIZE: 4,
@@ -71,10 +74,12 @@ export default class Map {
 
   generate(seed) {
     random.setSeed(seed);
+    console.log("seed: " + seed);
     this.root = new bspGenerator(0, 0, this.width, this.height, 5);
     this.tiles = new Array(this.width * this.height).fill(false);
 
-    const option = 0;
+    const option = random.getInt(0, 2);
+    console.log("option: " + option);
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
@@ -92,6 +97,11 @@ export default class Map {
     let h = 0;
     for (let i = 0; i < this.root.rooms.length; i++) {
       const room = this.root.rooms[i];
+
+      if (i === 0) {
+        this.startX = (room.x + room.w / 2) | 0;
+        this.startY = (room.y + room.h / 2) | 0;
+      }
 
       //option 1
       if (option === 1) {
@@ -132,19 +142,24 @@ export default class Map {
       for (let x = 0; x < this.width; x++) {
         const fovValue = game.player.fov.getMapped(x, y);
         if (fovValue === 2 || fovValue === 1) {
-          if (fovValue === 2)
-          {
-            game.drawChar(this.isWall(x, y) ? darkWall : darkGround, x, y, "#AAA");
+          if (fovValue === 2) {
+            game.drawChar(
+              this.isWall(x, y) ? darkWall : darkGround,
+              x,
+              y,
+              "#AAA"
+            );
           } else {
-            game.drawChar(this.isWall(x, y) ? darkWall : darkGround, x, y, "#444");
+            game.drawChar(
+              this.isWall(x, y) ? darkWall : darkGround,
+              x,
+              y,
+              "#444"
+            );
           }
-          
         } else {
-          
         }
       }
     }
   }
-
-  
 }
