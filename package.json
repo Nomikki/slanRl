@@ -7,6 +7,11 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "start": "webpack serve --open",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "deploy": "gh-pages -d dist"
+
+  },
+  "dependencies": {
+    "gh-pages": "^3.2.3"
   }
 }

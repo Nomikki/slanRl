@@ -25,7 +25,9 @@ class Game {
 
     this.map = new Map(this.width, this.height);
 
-    this.map.generate(1);
+    this.map.generate(Math.random() * 32000);
+    this.player.x = this.map.startX;
+    this.player.y = this.map.startY;
     this.player.fov.fullClear();
   }
 
