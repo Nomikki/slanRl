@@ -131,7 +131,7 @@ export default class Map {
 
     //const option = random.getInt(0, 2);
     //console.log("option: " + option);
-    const option = 1;
+    const option = 2;
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
