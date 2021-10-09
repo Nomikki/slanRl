@@ -12,6 +12,16 @@ export default class Actor {
 
     this.fov = null;
     this.fovOnly = true;
+    this.blocks = true; //can we walk on this actor?
+
+    // Destructible: Something that can take damage and potentially break or die
+    this.destructible = null;
+
+    // Attacker: Something that can deal damage to a Destructible
+    this.attacler = null;
+
+    // Ai: Something that is self-updating
+    this.ai = null;
   }
 
   render() {
@@ -21,9 +31,12 @@ export default class Actor {
     }
   }
 
-  update() {
-    
-    console.log("The " + this.name + " growls!");
+  async update() {
+    //console.log("The " + this.name + " growls!");
+    if (this.ai) {
+      
+      await this.ai.update(this);
+    }
   }
 
   computeFov() {
@@ -32,18 +45,5 @@ export default class Actor {
     }
   }
 
-  moveOrAttack(x, y) {
-    if (game.map.isWall(x, y)) return false;
-    for (let i = 0; i < game.actors.length; i++) {
-      const actor = game.actors[i];
-      if (actor.x === x && actor.y === y && actor !== this) {
-        console.log("The " + actor.name + " laughs at your puny efforts to attack him!");
-        return false;
-      }
-    }
-
-    this.x = x;
-    this.y = y;
-    return true;
-  }
+ 
 }

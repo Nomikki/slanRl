@@ -2,7 +2,10 @@
 
 import { game } from ".";
 import Actor from "./actor";
+import { MonsterAI } from "./ai";
+import Attacker from "./attacker";
 import bspGenerator from "./bsp_generator";
+import { MonsterDestructible } from "./destructible";
 import Randomizer from "./random";
 
 const random = new Randomizer();
@@ -46,7 +49,7 @@ export default class Map {
     for (let i = 0; i < game.actors.length; i++) {
       const actor = game.actors[i];
 
-      if (actor.x === x && actor.y === y && actor !== game.player) {
+      if (actor.x === x && actor.y === y && actor.blocks) {
         return false;
       }
     }
@@ -58,9 +61,19 @@ export default class Map {
     const rng = random.getInt(0, 100);
 
     if (rng < 80) {
-      game.actors.push(new Actor(x, y, 'o', "orc", "#00AA00"));
+      let orc = new Actor(x, y, "o", "orc", "#00AA00");
+
+      orc.destructible = new MonsterDestructible(10, 0, "dead orc");
+      orc.attacker = new Attacker(3);
+      orc.ai = new MonsterAI();
+      game.actors.push(orc);
     } else {
-      game.actors.push(new Actor(x, y, 't', "troll", "#008800"));
+      let troll = new Actor(x, y, "t", "troll", "#008800");
+
+      troll.destructible = new MonsterDestructible(10, 0, "dead troll");
+      troll.attacker = new Attacker(3);
+      troll.ai = new MonsterAI();
+      game.actors.push(troll);
     }
   }
 
@@ -93,25 +106,21 @@ export default class Map {
   createRoom(firstRoom, x1, y1, x2, y2) {
     this.dig(x1, y1, x2, y2);
 
-    //if first room, dont add any monsters 
-    if (firstRoom)
-      return;
+    //if first room, dont add any monsters
+    if (firstRoom) return;
 
     let numberOfMonsters = random.getInt(0, this.constants.MAX_ROOM_MONSTERS);
 
-    while(numberOfMonsters > 0)
-    {
+    while (numberOfMonsters > 0) {
       const x = random.getInt(x1, x2);
       const y = random.getInt(y1, y2);
-      if (this.canWalk(x, y))
-      {
+      if (this.canWalk(x, y)) {
         this.addMonster(x, y);
       }
       numberOfMonsters--;
     }
 
     this.addMonster((x1 + x2) / 2, (y1 + y2) / 2);
-    
   }
 
   generate(seed) {
@@ -123,7 +132,6 @@ export default class Map {
     //const option = random.getInt(0, 2);
     //console.log("option: " + option);
     const option = 1;
-    
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
@@ -141,7 +149,7 @@ export default class Map {
     let h = 0;
     for (let i = 0; i < this.root.rooms.length; i++) {
       const room = this.root.rooms[i];
-      const firstRoom = i > 0 ? false: true;
+      const firstRoom = i > 0 ? false : true;
 
       if (i === 0) {
         this.startX = (room.x + room.w / 2) | 0;
@@ -155,7 +163,6 @@ export default class Map {
         x = room.x + 1;
         y = room.y + 1;
 
-        
         this.createRoom(firstRoom, x, y, x + w - 2, y + h - 2);
       }
 
@@ -166,7 +173,6 @@ export default class Map {
         x = random.getInt(room.x, room.x + room.w - w - 0) + 1;
         y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
 
-        
         this.createRoom(firstRoom, x, y, x + w - 2, y + h - 2);
       }
 
