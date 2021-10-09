@@ -18,7 +18,7 @@ class Game {
     this.height = 40;
 
     this.actors = new Array();
-    this.actors.push(new Actor(2, 2, "@", "#00FF00"));
+    this.actors.push(new Actor(2, 2, "@", "hero", "#CCC"));
 
     this.player = this.actors[0];
     this.player.fov = new Fov(this.width, this.height);
@@ -42,6 +42,14 @@ class Game {
   }
 
   drawChar(ch, x, y, color = "#000") {
+    this.ctx.fillStyle = "#040404";
+    this.ctx.fillRect(
+      x * this.fontSize,
+      y * this.fontSize,
+      this.fontSize,
+      this.fontSize
+    );
+
     this.ctx.fillStyle = color;
     this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
@@ -107,7 +115,7 @@ class Game {
       if (ch === "ArrowUp") dy--;
       if (ch === "ArrowDown") dy++;
 
-      if (!this.map.isWall(this.player.x + dx, this.player.y + dy)) {
+      if (this.map.canWalk(this.player.x + dx, this.player.y + dy)) {
         this.player.x += dx;
         this.player.y += dy;
       }
@@ -117,10 +125,6 @@ class Game {
       //finally draw screen
       this.render();
     }
-  }
-
-  addMonster(x, y) {
-    this.actors.push(new Actor(x, y, "@", "#FFAA00"));
   }
 }
 

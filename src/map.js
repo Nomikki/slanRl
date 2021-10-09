@@ -1,6 +1,7 @@
 "use strict";
 
 import { game } from ".";
+import Actor from "./actor";
 import bspGenerator from "./bsp_generator";
 import Randomizer from "./random";
 
@@ -24,6 +25,7 @@ export default class Map {
     this.constants = Object.freeze({
       ROOM_MAX_SIZE: 10,
       ROOM_MIN_SIZE: 4,
+      MAX_ROOM_MONSTERS: 3,
     });
 
     this.root = null;
@@ -36,6 +38,30 @@ export default class Map {
 
   setWall(x, y) {
     this.tiles[x + y * this.width].canWalk = false;
+  }
+
+  canWalk(x, y) {
+    if (this.isWall(x, y)) return false;
+
+    for (let i = 0; i < game.actors.length; i++) {
+      const actor = game.actors[i];
+
+      if (actor.x === x && actor.y === y && actor !== game.player) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  addMonster(x, y) {
+    const rng = random.getInt(0, 100);
+
+    if (rng < 80) {
+      game.actors.push(new Actor(x, y, 'o', "orc", "#00AA00"));
+    } else {
+      game.actors.push(new Actor(x, y, 't', "troll", "#008800"));
+    }
   }
 
   dig(x1, y1, x2, y2) {
@@ -67,9 +93,21 @@ export default class Map {
   createRoom(x1, y1, x2, y2) {
     this.dig(x1, y1, x2, y2);
 
-    if (random.getInt(0, 3) === 0) {
-      game.addMonster((x1 + x2) / 2, (y1 + y2) / 2);
+    let numberOfMonsters = random.getInt(0, this.constants.MAX_ROOM_MONSTERS);
+
+    while(numberOfMonsters > 0)
+    {
+      const x = random.getInt(x1, x2);
+      const y = random.getInt(y1, y2);
+      if (this.canWalk(x, y))
+      {
+        this.addMonster(x, y);
+      }
+      numberOfMonsters--;
     }
+
+    this.addMonster((x1 + x2) / 2, (y1 + y2) / 2);
+    
   }
 
   generate(seed) {
@@ -78,8 +116,10 @@ export default class Map {
     this.root = new bspGenerator(0, 0, this.width, this.height, 5);
     this.tiles = new Array(this.width * this.height).fill(false);
 
-    const option = random.getInt(0, 2);
-    console.log("option: " + option);
+    //const option = random.getInt(0, 2);
+    //console.log("option: " + option);
+    const option = 1;
+    
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();

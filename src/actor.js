@@ -3,11 +3,12 @@
 import { game } from ".";
 
 export default class Actor {
-  constructor(x, y, ch, color) {
+  constructor(x, y, ch, name, color) {
     this.x = x | 0;
     this.y = y | 0;
     this.ch = ch;
     this.color = color;
+    this.name = name;
 
     this.fov = null;
     this.fovOnly = true;
@@ -22,6 +23,7 @@ export default class Actor {
 
   update() {
     this.computeFov();
+    console.log("The " + this.name + " growls!");
   }
 
   computeFov() {
