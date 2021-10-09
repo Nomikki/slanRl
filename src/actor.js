@@ -22,7 +22,7 @@ export default class Actor {
   }
 
   update() {
-    this.computeFov();
+    
     console.log("The " + this.name + " growls!");
   }
 
@@ -30,5 +30,20 @@ export default class Actor {
     if (this.fov) {
       this.fov.compute(this.x, this.y, 10);
     }
+  }
+
+  moveOrAttack(x, y) {
+    if (game.map.isWall(x, y)) return false;
+    for (let i = 0; i < game.actors.length; i++) {
+      const actor = game.actors[i];
+      if (actor.x === x && actor.y === y && actor !== this) {
+        console.log("The " + actor.name + " laughs at your puny efforts to attack him!");
+        return false;
+      }
+    }
+
+    this.x = x;
+    this.y = y;
+    return true;
   }
 }

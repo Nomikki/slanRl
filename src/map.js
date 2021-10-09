@@ -90,8 +90,12 @@ export default class Map {
     }
   }
 
-  createRoom(x1, y1, x2, y2) {
+  createRoom(firstRoom, x1, y1, x2, y2) {
     this.dig(x1, y1, x2, y2);
+
+    //if first room, dont add any monsters 
+    if (firstRoom)
+      return;
 
     let numberOfMonsters = random.getInt(0, this.constants.MAX_ROOM_MONSTERS);
 
@@ -137,6 +141,7 @@ export default class Map {
     let h = 0;
     for (let i = 0; i < this.root.rooms.length; i++) {
       const room = this.root.rooms[i];
+      const firstRoom = i > 0 ? false: true;
 
       if (i === 0) {
         this.startX = (room.x + room.w / 2) | 0;
@@ -150,7 +155,8 @@ export default class Map {
         x = room.x + 1;
         y = room.y + 1;
 
-        this.createRoom(x, y, x + w - 2, y + h - 2);
+        
+        this.createRoom(firstRoom, x, y, x + w - 2, y + h - 2);
       }
 
       //option 2
@@ -160,7 +166,8 @@ export default class Map {
         x = random.getInt(room.x, room.x + room.w - w - 0) + 1;
         y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
 
-        this.createRoom(x, y, x + w - 2, y + h - 2);
+        
+        this.createRoom(firstRoom, x, y, x + w - 2, y + h - 2);
       }
 
       if (option === 1 || option === 2) {

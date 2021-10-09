@@ -5,7 +5,17 @@ import Map from "./map";
 import Fov from "./fov";
 
 class Game {
-  constructor() {}
+  constructor() {
+    this.GameStatus = Object.freeze({
+      STARTUP: 0,
+      IDLE: 1,
+      NEW_TURN: 2,
+      VICTORY: 3,
+      DEFEAT: 4,
+    });
+
+    this.gameStatus = this.GameStatus.STARTUP;
+  }
 
   init() {
     this.canvas = document.getElementById("screen");
@@ -56,8 +66,6 @@ class Game {
 
   run() {
     this.init();
-    this.player.computeFov();
-    this.render();
     this.update();
   }
 
@@ -104,6 +112,12 @@ class Game {
 
   async update() {
     while (true) {
+      if (this.gameStatus === this.GameStatus.STARTUP) {
+        this.player.computeFov();
+        this.render();
+      }
+      this.gameStatus = this.GameStatus.IDLE;
+
       const ch = await this.getch();
       //console.log("ch " + ch);
 
@@ -115,12 +129,29 @@ class Game {
       if (ch === "ArrowUp") dy--;
       if (ch === "ArrowDown") dy++;
 
-      if (this.map.canWalk(this.player.x + dx, this.player.y + dy)) {
-        this.player.x += dx;
-        this.player.y += dy;
-      }
+      if (dx !== 0 || dy !== 0) {
+        this.gameStatus = this.GameStatus.NEW_TURN;
 
-      this.player.update();
+        if (this.player.moveOrAttack(this.player.x + dx, this.player.y + dy)) {
+          this.player.computeFov();
+        }
+
+        if (this.gameStatus === this.GameStatus.NEW_TURN) {
+          for (let i = 0; i < this.actors.length; i++) {
+            const actor = this.actors[i];
+            if (actor !== this.player) {
+              actor.update();
+            }
+          }
+        }
+
+        /*
+        if (this.map.canWalk(this.player.x + dx, this.player.y + dy)) {
+          this.player.x += dx;
+          this.player.y += dy;
+        }
+        */
+      }
 
       //finally draw screen
       this.render();
