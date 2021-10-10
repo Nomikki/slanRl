@@ -25,6 +25,8 @@ class Game {
     this.ctx = this.canvas.getContext("2d");
     this.ctx.font = "12px Arial";
     this.fontSize = 12;
+    this.ctx.textAlign = "center";
+
     this.lastKey = 0;
 
     this.width = 80;
@@ -49,6 +51,7 @@ class Game {
   }
 
   clear(color = "#000") {
+    //Game
     this.ctx.fillStyle = color;
     this.ctx.fillRect(
       0,
@@ -56,12 +59,20 @@ class Game {
       this.width * this.fontSize,
       this.height * this.fontSize
     );
+
+    //"UI"
+    this.ctx.fillRect(
+      0,
+      this.height * this.fontSize,
+      this.width * this.fontSize,
+      this.canvas.height - this.height * this.fontSize
+    );
   }
 
   drawChar(ch, x, y, color = "#000") {
-    this.ctx.fillStyle = "#040404";
+    this.ctx.fillStyle = "#040414";
     this.ctx.fillRect(
-      x * this.fontSize,
+      x * this.fontSize - this.fontSize / 2,
       y * this.fontSize,
       this.fontSize,
       this.fontSize
@@ -71,10 +82,8 @@ class Game {
     this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
 
-  drawText(text, x, y, color = "#AAA")
-  {
-    for (let i = 0; i < text.length; i++)
-    {
+  drawText(text, x, y, color = "#AAA") {
+    for (let i = 0; i < text.length; i++) {
       this.drawChar(text.charAt(i), x + i, y, color);
     }
   }
@@ -82,8 +91,6 @@ class Game {
   run() {
     this.init();
     this.update();
-
-    
   }
 
   waitingKeypress() {
@@ -115,7 +122,22 @@ class Game {
 
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
 
-    this.drawText("HP: " + this.player.destructible.hp + "/" + this.player.destructible.maxHP, 0, this.height-1);
+    this.renderUI();
+  }
+
+  renderUI() {
+    for (let x = 0; x < this.width; x++) {
+      this.drawChar("-", x, this.height, "#888");
+    }
+
+    this.drawText(
+      "HP: " +
+        this.player.destructible.hp +
+        "/" +
+        this.player.destructible.maxHP,
+      1,
+      this.height + 1
+    );
   }
 
   /*
@@ -130,9 +152,7 @@ class Game {
   */
 
   async update() {
-    
-    while (true)
-    {
+    while (true) {
       if (this.gameStatus === this.GameStatus.STARTUP) {
         this.player.computeFov();
         this.render();
@@ -149,18 +169,15 @@ class Game {
           }
         }
       }
-      
+
       //finally draw screen
       this.render();
 
-
-      if (this.gameStatus === this.GameStatus.DEFEAT)
-      {
+      if (this.gameStatus === this.GameStatus.DEFEAT) {
         this.drawText("DEFEAT!", this.width / 2 - 3, this.height / 2, "#A00");
         break;
       }
     }
-    
   }
 
   sendToBack(actor) {
