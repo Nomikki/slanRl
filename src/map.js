@@ -6,6 +6,7 @@ import { MonsterAI } from "./ai";
 import Attacker from "./attacker";
 import bspGenerator from "./bsp_generator";
 import { MonsterDestructible } from "./destructible";
+import { Healer } from "./pickable";
 import Randomizer from "./random";
 
 const random = new Randomizer();
@@ -29,6 +30,7 @@ export default class Map {
       ROOM_MAX_SIZE: 10,
       ROOM_MIN_SIZE: 4,
       MAX_ROOM_MONSTERS: 3,
+      MAX_ROOM_ITEMS: 2,
     });
 
     this.root = null;
@@ -77,6 +79,14 @@ export default class Map {
     }
   }
 
+  additem(x, y) {
+    const healthPotion = new Actor(x, y, '!', "health potion", "#FF00FF");
+    healthPotion.blocks = false;
+    healthPotion.pickable = new Healer(4);
+    game.actors.push(healthPotion);
+    game.sendToBack(healthPotion);
+  }
+
   dig(x1, y1, x2, y2) {
     x1 = x1 | 0;
     x2 = x2 | 0;
@@ -110,6 +120,7 @@ export default class Map {
     if (firstRoom) return;
 
     let numberOfMonsters = random.getInt(0, this.constants.MAX_ROOM_MONSTERS);
+    let numberOfItems = random.getInt(0, this.constants.MAX_ROOM_ITEMS);
 
     while (numberOfMonsters > 0) {
       const x = random.getInt(x1, x2);
@@ -120,7 +131,19 @@ export default class Map {
       numberOfMonsters--;
     }
 
-    this.addMonster((x1 + x2) / 2, (y1 + y2) / 2);
+    while(numberOfItems > 0)
+    {
+      const x = random.getInt(x1, x2);
+      const y = random.getInt(y1, y2);
+      if (this.canWalk(x, y)) {
+        this.additem(x, y);
+      }
+      numberOfItems--;
+    }
+
+    
+
+
   }
 
   generate(seed) {

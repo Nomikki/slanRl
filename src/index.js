@@ -7,6 +7,7 @@ import Destructible, { PlayerDestructible } from "./destructible";
 import Attacker from "./attacker";
 import { PlayerAI } from "./ai";
 import Log from "./log";
+import Container from "./container";
 
 class Game {
   constructor() {
@@ -43,6 +44,7 @@ class Game {
     this.player.destructible = new PlayerDestructible(30, 2, "your cadaver");
     this.player.attacker = new Attacker(5);
     this.player.ai = new PlayerAI();
+    this.player.container = new Container(26);
 
     this.player.fov = new Fov(this.width, this.height);
 
@@ -187,13 +189,18 @@ class Game {
     }
   }
 
-  sendToBack(actor) {
+  removeActor(actor)
+  {
     for (let i = 0; i < this.actors.length; i++) {
       if (this.actors[i] === actor) {
         this.actors.splice(i, 1);
-        break;
+        return;
       }
     }
+  }
+
+  sendToBack(actor) {
+    this.removeActor(actor);
     this.actors.unshift(actor);
   }
 }

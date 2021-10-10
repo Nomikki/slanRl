@@ -22,6 +22,12 @@ export default class Actor {
 
     // Ai: Something that is self-updating
     this.ai = null;
+
+    // Pickable: Something that can be picked and used
+    this.pickable = null;
+
+    // Container: Something that can contain actors
+    this.container = null;
   }
 
   render() {
