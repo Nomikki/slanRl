@@ -32,9 +32,7 @@ export default class Actor {
   }
 
   async update() {
-    //console.log("The " + this.name + " growls!");
     if (this.ai) {
-      
       await this.ai.update(this);
     }
   }
@@ -44,6 +42,4 @@ export default class Actor {
       this.fov.compute(this.x, this.y, 10);
     }
   }
-
- 
 }

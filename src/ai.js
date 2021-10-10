@@ -57,8 +57,7 @@ export class PlayerAI extends AI {
         actor.x === targetX &&
         actor.y === targetY
       ) {
-        console.log("There is a " + actor.name + " here");
-        //return false;
+        game.log.add("There is a " + actor.name + " here");
       }
     }
 
@@ -87,8 +86,7 @@ export class MonsterAI extends AI {
       this.moveCount--;
     }
 
-    if (this.moveCount > 0)
-    {
+    if (this.moveCount > 0) {
       this.moveOrAttack(owner, game.player.x, game.player.y);
     }
   }
@@ -96,8 +94,8 @@ export class MonsterAI extends AI {
   moveOrAttack(owner, targetX, targetY) {
     let dx = targetX - owner.x;
     let dy = targetY - owner.y;
-    const stepdx = (dx > 0 ? 1 : -1);
-    const stepdy = (dy > 0 ? 1 : -1);
+    const stepdx = dx > 0 ? 1 : -1;
+    const stepdy = dy > 0 ? 1 : -1;
 
     const distance = Math.sqrt(dx * dx + dy * dy);
 
@@ -108,11 +106,9 @@ export class MonsterAI extends AI {
       if (game.map.canWalk(owner.x + dx, owner.y + dy)) {
         owner.x += dx | 0;
         owner.y += dy | 0;
-      } else if (game.map.canWalk(owner.x + stepdx, owner.y))
-      {
+      } else if (game.map.canWalk(owner.x + stepdx, owner.y)) {
         owner.x += stepdx | 0;
-      } else if (game.map.canWalk(owner.x, owner.y + stepdy))
-      {
+      } else if (game.map.canWalk(owner.x, owner.y + stepdy)) {
         owner.y += stepdy | 0;
       }
     } else {

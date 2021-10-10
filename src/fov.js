@@ -68,13 +68,11 @@ export default class Fov {
     else return 2;
   }
 
-  isInFov(x, y)
-  {
-    if (x >= 0 && y >= 0 && x < this.width && y < this.height)
-    {
+  isInFov(x, y) {
+    if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
       return this.mapped[x + y * this.width] > 0;
     }
-      
+
     return false;
   }
 }

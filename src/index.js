@@ -6,6 +6,7 @@ import Fov from "./fov";
 import Destructible, { PlayerDestructible } from "./destructible";
 import Attacker from "./attacker";
 import { PlayerAI } from "./ai";
+import Log from "./log";
 
 class Game {
   constructor() {
@@ -26,6 +27,8 @@ class Game {
     this.ctx.font = "12px Arial";
     this.fontSize = 12;
     this.ctx.textAlign = "center";
+
+    this.log = new Log();
 
     this.lastKey = 0;
 
@@ -138,6 +141,8 @@ class Game {
       1,
       this.height + 1
     );
+
+    this.log.render();
   }
 
   /*
@@ -175,6 +180,7 @@ class Game {
 
       if (this.gameStatus === this.GameStatus.DEFEAT) {
         this.drawText("DEFEAT!", this.width / 2 - 3, this.height / 2, "#A00");
+        this.log.add("DEFEAT", "#A00");
         break;
       }
     }
@@ -192,4 +198,5 @@ class Game {
 }
 
 export const game = new Game();
+
 game.run();

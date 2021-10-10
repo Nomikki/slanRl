@@ -41,7 +41,7 @@ export class MonsterDestructible extends Destructible {
   }
 
   die(owner) {
-    console.log(owner.name + " is dead");
+    game.log.add(owner.name + " is dead");
     super.die(owner);
   }
 }
@@ -52,7 +52,7 @@ export class PlayerDestructible extends Destructible {
   }
 
   die(owner) {
-    console.log("You died");
+    game.log.add("You died", "#A00");
     super.die(owner);
     game.gameStatus = game.GameStatus.DEFEAT;
   }

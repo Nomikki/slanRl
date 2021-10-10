@@ -1,3 +1,5 @@
+import { game } from ".";
+
 export default class Attacker {
   constructor(power) {
     this.power = power;
@@ -6,7 +8,7 @@ export default class Attacker {
   attack(owner, target) {
     if (target.destructible && !target.destructible.isDead()) {
       if (this.power - target.destructible.defense > 0) {
-        console.log(
+        game.log.add(
           owner.name +
             " attacks " +
             target.name +
@@ -15,13 +17,13 @@ export default class Attacker {
             " hit points."
         );
       } else {
-        console.log(
+        game.log.add(
           owner.name + " attacks " + target.name + " but it has no effect!"
         );
       }
       target.destructible.takeDamage(target, this.power);
     } else {
-      console.log(owner.name + " attacks " + target.name + " in vain.");
+      game.log.add(owner.name + " attacks " + target.name + " in vain.");
     }
   }
 }
