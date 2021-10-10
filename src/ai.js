@@ -32,7 +32,7 @@ export class PlayerAI extends AI {
         dy++;
         break;
       default:
-        this.handleActionKey(owner, ch);
+        await this.handleActionKey(owner, ch);
         break;
     }
 
@@ -45,12 +45,12 @@ export class PlayerAI extends AI {
     }
   }
 
-  handleActionKey(owner, ascii) {
+  async handleActionKey(owner, ascii) {
     console.log(ascii);
 
     switch (ascii) {
       case "g": //pickup item
-      game.gameStatus = game.GameStatus.NEW_TURN;
+        game.gameStatus = game.GameStatus.NEW_TURN;
         let found = false;
         for (let i = 0; i < game.actors.length; i++) {
           const actor = game.actors[i];
@@ -65,9 +65,19 @@ export class PlayerAI extends AI {
             }
           }
         }
-        if (!found)
-        {
+        if (!found) {
           game.log.add("There's nothing here that you can pick up.");
+        }
+        break;
+      case "i":
+        game.log.add("Use item");
+        const actor = await this.choseFromInventory(owner);
+        if (actor)
+        {
+          actor.pickable.use(actor, owner);
+          game.gameStatus = game.GameStatus.NEW_TURN;
+        } else {
+          game.log.add("Nevermind...");
         }
         break;
       default:
@@ -94,12 +104,10 @@ export class PlayerAI extends AI {
     //look for corpses or items
     for (let i = 0; i < game.actors.length; i++) {
       const actor = game.actors[i];
-      const corpseOrItem = (actor.destructible && actor.destructible.isDead) || actor.pickable;
+      const corpseOrItem =
+        (actor.destructible && actor.destructible.isDead) || actor.pickable;
 
-      if (corpseOrItem && 
-        actor.x === targetX &&
-        actor.y === targetY
-      ) {
+      if (corpseOrItem && actor.x === targetX && actor.y === targetY) {
         game.log.add("There is a " + actor.name + " here");
       }
     }
@@ -109,11 +117,39 @@ export class PlayerAI extends AI {
     return true;
   }
 
-  choseFromInventory(owner)
-  {
-    
-  }
+  async choseFromInventory(owner) {
+    for (let y = 0; y < 28; y++) {
+      for (let x = 0; x < 40; x++) {
+        if ((y === 0 || y === 27) && x > 0 && x < 39)
+          game.drawChar("-", x + 20, y, "#AAA");
+        else if ((x === 0 || x === 39) && y > 0 && y < 27)
+          game.drawChar("|", x + 20, y, "#AAA");
+        else if (y === 0 || x === 0 || y === 27 || x === 39)
+          game.drawChar("+", x + 20, y, "#AAA");
+        else game.drawChar(" ", x + 20, y);
+      }
+    }
+    game.drawText(" INVENTORY ", 34, 0);
+    game.renderUI();
 
+    let shortcut = "a";
+
+    for (let i = 0; i < owner.container.inventory.length; i++) {
+      const it = owner.container.inventory[i];
+
+      game.drawText(shortcut + ") " + it.name, 22, 2 + i);
+      shortcut = String.fromCharCode(shortcut.charCodeAt(0) + 1);
+    }
+
+    let ch = await game.getch();
+    const actorIndex = ch.charCodeAt(0) - 97; //97 = a
+    //console.log();
+    if (actorIndex >= 0 && actorIndex < owner.container.inventory.length)
+    {
+      return owner.container.inventory[actorIndex];
+    }
+    return null;
+  }
 }
 
 export class MonsterAI extends AI {

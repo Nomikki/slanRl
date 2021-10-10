@@ -15,7 +15,7 @@ export default class Destructible {
   heal(amount) {
     this.hp += amount;
     if (this.hp > this.maxHP) {
-      amount -= hp - this.maxHP;
+      amount -= this.hp - this.maxHP;
       this.hp = this.maxHP;
     }
     return amount;

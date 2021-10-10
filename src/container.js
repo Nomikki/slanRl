@@ -11,6 +11,7 @@ export default class Container {
       return false;
     } else {
       this.inventory.push(actor);
+      return true;
     }
   }
 

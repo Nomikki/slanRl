@@ -13,6 +13,7 @@ export default class Pickable {
   }
 
   use(owner, wearer) {
+    game.log.add("You use a " + owner.name);
     if (wearer.container)
     {
       wearer.container.remove(owner);
@@ -30,6 +31,7 @@ export class Healer extends Pickable {
   }
 
   use(owner, wearer) {
+
     if (wearer.destructible) {
       const amountHealed = wearer.destructible.heal(this.amount);
       if (amountHealed > 0) {

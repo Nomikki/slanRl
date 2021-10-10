@@ -189,8 +189,7 @@ class Game {
     }
   }
 
-  removeActor(actor)
-  {
+  removeActor(actor) {
     for (let i = 0; i < this.actors.length; i++) {
       if (this.actors[i] === actor) {
         this.actors.splice(i, 1);
@@ -208,4 +207,3 @@ class Game {
 export const game = new Game();
 
 game.run();
-
