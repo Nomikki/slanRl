@@ -14,7 +14,7 @@ export default class Attacker {
             target.name +
             " for " +
             (this.power - target.destructible.defense) +
-            " hit points."
+            " hit points.", owner === game.player ? "#DDD" : "#AAA"
         );
       } else {
         game.log.add(

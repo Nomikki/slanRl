@@ -29,6 +29,7 @@ class Game {
     this.ctx.textAlign = "center";
 
     this.log = new Log();
+    this.log.add("Welcome stranger!", "#FFF");
 
     this.lastKey = 0;
 
