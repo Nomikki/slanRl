@@ -71,12 +71,24 @@ export class PlayerAI extends AI {
 export class MonsterAI extends AI {
   constructor() {
     super();
+    this.moveCount = 0;
+
+    this.Constants = Object.freeze({
+      TRACKING_TURNS: 3,
+    });
   }
 
   update(owner) {
     if (owner.destructible && owner.destructible.isDead()) return;
 
     if (game.player.fov.isInFov(owner.x, owner.y)) {
+      this.moveCount = this.Constants.TRACKING_TURNS;
+    } else {
+      this.moveCount--;
+    }
+
+    if (this.moveCount > 0)
+    {
       this.moveOrAttack(owner, game.player.x, game.player.y);
     }
   }
@@ -84,6 +96,9 @@ export class MonsterAI extends AI {
   moveOrAttack(owner, targetX, targetY) {
     let dx = targetX - owner.x;
     let dy = targetY - owner.y;
+    const stepdx = (dx > 0 ? 1 : -1);
+    const stepdy = (dy > 0 ? 1 : -1);
+
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance >= 2) {
@@ -93,6 +108,12 @@ export class MonsterAI extends AI {
       if (game.map.canWalk(owner.x + dx, owner.y + dy)) {
         owner.x += dx | 0;
         owner.y += dy | 0;
+      } else if (game.map.canWalk(owner.x + stepdx, owner.y))
+      {
+        owner.x += stepdx | 0;
+      } else if (game.map.canWalk(owner.x, owner.y + stepdy))
+      {
+        owner.y += stepdy | 0;
       }
     } else {
       owner.attacker.attack(owner, game.player);
