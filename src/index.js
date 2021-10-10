@@ -208,3 +208,4 @@ class Game {
 export const game = new Game();
 
 game.run();
+

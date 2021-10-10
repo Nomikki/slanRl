@@ -18,10 +18,23 @@ export class PlayerAI extends AI {
     let dy = 0;
     const ch = await game.getch();
 
-    if (ch === "ArrowLeft") dx--;
-    if (ch === "ArrowRight") dx++;
-    if (ch === "ArrowUp") dy--;
-    if (ch === "ArrowDown") dy++;
+    switch (ch) {
+      case "ArrowLeft":
+        dx--;
+        break;
+      case "ArrowRight":
+        dx++;
+        break;
+      case "ArrowUp":
+        dy--;
+        break;
+      case "ArrowDown":
+        dy++;
+        break;
+      default:
+        this.handleActionKey(owner, ch);
+        break;
+    }
 
     if (dx !== 0 || dy !== 0) {
       game.gameStatus = game.GameStatus.NEW_TURN;
@@ -29,6 +42,36 @@ export class PlayerAI extends AI {
       if (this.moveOrAttack(owner, owner.x + dx, owner.y + dy)) {
         game.player.computeFov();
       }
+    }
+  }
+
+  handleActionKey(owner, ascii) {
+    console.log(ascii);
+
+    switch (ascii) {
+      case "g": //pickup item
+      game.gameStatus = game.GameStatus.NEW_TURN;
+        let found = false;
+        for (let i = 0; i < game.actors.length; i++) {
+          const actor = game.actors[i];
+          if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
+            if (actor.pickable.pick(actor, owner)) {
+              found = true;
+              game.log.add("You pick up the " + actor.name, "#AAA");
+              break;
+            } else if (!found) {
+              found = true;
+              game.log.add("Your inventory is full.", "#F00");
+            }
+          }
+        }
+        if (!found)
+        {
+          game.log.add("There's nothing here that you can pick up.");
+        }
+        break;
+      default:
+        break;
     }
   }
 
@@ -48,12 +91,12 @@ export class PlayerAI extends AI {
       }
     }
 
-    //look for corpses
+    //look for corpses or items
     for (let i = 0; i < game.actors.length; i++) {
       const actor = game.actors[i];
-      if (
-        actor.destructible &&
-        actor.destructible.isDead() &&
+      const corpseOrItem = (actor.destructible && actor.destructible.isDead) || actor.pickable;
+
+      if (corpseOrItem && 
         actor.x === targetX &&
         actor.y === targetY
       ) {
@@ -65,6 +108,12 @@ export class PlayerAI extends AI {
     owner.y = targetY;
     return true;
   }
+
+  choseFromInventory(owner)
+  {
+    
+  }
+
 }
 
 export class MonsterAI extends AI {
