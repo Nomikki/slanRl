@@ -212,6 +212,40 @@ class Game {
     }
     return closest;
   }
+
+  async pickATile(x, y, range = 0.0) {
+    let px = x;
+    let py = y;
+    let inRange = false;
+
+    while (true) {
+      this.render();
+      if (
+        this.player.fov.isInFov(px, py) &&
+        (range == 0 || this.player.getDistance(px, py) <= range)
+      ) {
+        this.drawChar("+", px, py, "#FFF");
+        inRange = true;
+      } else {
+        this.drawChar("+", px, py, "#F88");
+        inRange = false;
+      }
+
+      const ch = await this.getch();
+      if (ch === "ArrowLeft") px--;
+      if (ch === "ArrowRight") px++;
+      if (ch === "ArrowUp") py--;
+      if (ch === "ArrowDown") py++;
+      if (ch === "Escape") break;
+      if (ch === "Enter") {
+        if (inRange) {
+          return [true, px, py];
+        }
+      }
+    }
+
+    return [false, px, py];
+  }
 }
 
 export const game = new Game();

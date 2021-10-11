@@ -6,7 +6,7 @@ import { MonsterAI } from "./ai";
 import Attacker from "./attacker";
 import bspGenerator from "./bsp_generator";
 import { MonsterDestructible } from "./destructible";
-import { Healer, LightningBolt } from "./pickable";
+import { Fireball, Healer, LightningBolt } from "./pickable";
 import Randomizer from "./random";
 
 const random = new Randomizer();
@@ -81,7 +81,6 @@ export default class Map {
 
   additem(x, y) {
     const rng = random.getInt(0, 100);
-
     if (rng < 70) {
       const healthPotion = new Actor(x, y, "!", "health potion", "#FF00FF");
       healthPotion.blocks = false;
@@ -89,11 +88,29 @@ export default class Map {
       game.actors.push(healthPotion);
       game.sendToBack(healthPotion);
     } else if (rng < 70 + 10) {
-      const scrollOfLightingBolt = new Actor(x, y, "#", "scroll of lighting bolt", "#0FF");
+      const scrollOfLightingBolt = new Actor(
+        x,
+        y,
+        "#",
+        "scroll of lighting bolt",
+        "#0FF"
+      );
       scrollOfLightingBolt.blocks = false;
       scrollOfLightingBolt.pickable = new LightningBolt(5, 20);
       game.actors.push(scrollOfLightingBolt);
       game.sendToBack(scrollOfLightingBolt);
+    } else if (rng < 70 + 20) {
+      const scrollOfFireball = new Actor(
+        x,
+        y,
+        "#",
+        "scroll of Fireball",
+        "#FA0"
+      );
+      scrollOfFireball.blocks = false;
+      scrollOfFireball.pickable = new Fireball(2, 5);
+      game.actors.push(scrollOfFireball);
+      game.sendToBack(scrollOfFireball);
     }
   }
 

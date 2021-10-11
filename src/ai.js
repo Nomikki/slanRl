@@ -74,7 +74,7 @@ export class PlayerAI extends AI {
         const actor = await this.choseFromInventory(owner);
         if (actor)
         {
-          actor.pickable.use(actor, owner);
+          await actor.pickable.use(actor, owner);
           game.gameStatus = game.GameStatus.NEW_TURN;
         } else {
           game.log.add("Nevermind...");
