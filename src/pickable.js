@@ -41,3 +41,27 @@ export class Healer extends Pickable {
     return false;
   }
 }
+
+
+export class LightningBolt extends Pickable {
+  constructor(range, damage) {
+    super();
+    this.range = range;
+    this.damage = damage;
+  }
+
+  use(owner, wearer) {
+    const closestMonster = game.getClosestMonster(wearer.x, wearer.y, this.range);
+    if (!closestMonster)
+    {
+      game.log.add("No enemy is close enough to strike.");
+      return false;
+    }
+
+    game.log.add("A lighting bolt strikes the " + closestMonster.name + " with a loud thunder!", "#0FF");
+    game.log.add("The damage is " + this.damage + " hit points.", "#0FF");
+
+    closestMonster.destructible.takeDamage(closestMonster, this.damage);
+    return super.use(owner, wearer);
+  }
+}

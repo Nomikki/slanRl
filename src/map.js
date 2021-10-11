@@ -6,7 +6,7 @@ import { MonsterAI } from "./ai";
 import Attacker from "./attacker";
 import bspGenerator from "./bsp_generator";
 import { MonsterDestructible } from "./destructible";
-import { Healer } from "./pickable";
+import { Healer, LightningBolt } from "./pickable";
 import Randomizer from "./random";
 
 const random = new Randomizer();
@@ -80,11 +80,21 @@ export default class Map {
   }
 
   additem(x, y) {
-    const healthPotion = new Actor(x, y, '!', "health potion", "#FF00FF");
-    healthPotion.blocks = false;
-    healthPotion.pickable = new Healer(4);
-    game.actors.push(healthPotion);
-    game.sendToBack(healthPotion);
+    const rng = random.getInt(0, 100);
+
+    if (rng < 70) {
+      const healthPotion = new Actor(x, y, "!", "health potion", "#FF00FF");
+      healthPotion.blocks = false;
+      healthPotion.pickable = new Healer(4);
+      game.actors.push(healthPotion);
+      game.sendToBack(healthPotion);
+    } else if (rng < 70 + 10) {
+      const scrollOfLightingBolt = new Actor(x, y, "#", "scroll of lighting bolt", "#0FF");
+      scrollOfLightingBolt.blocks = false;
+      scrollOfLightingBolt.pickable = new LightningBolt(5, 20);
+      game.actors.push(scrollOfLightingBolt);
+      game.sendToBack(scrollOfLightingBolt);
+    }
   }
 
   dig(x1, y1, x2, y2) {
@@ -131,8 +141,7 @@ export default class Map {
       numberOfMonsters--;
     }
 
-    while(numberOfItems > 0)
-    {
+    while (numberOfItems > 0) {
       const x = random.getInt(x1, x2);
       const y = random.getInt(y1, y2);
       if (this.canWalk(x, y)) {
@@ -140,10 +149,6 @@ export default class Map {
       }
       numberOfItems--;
     }
-
-    
-
-
   }
 
   generate(seed) {
