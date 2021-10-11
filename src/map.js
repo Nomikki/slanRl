@@ -63,16 +63,16 @@ export default class Map {
     const rng = random.getInt(0, 100);
 
     if (rng < 80) {
-      let orc = new Actor(x, y, "o", "orc", "#00AA00");
+      let orc = new Actor(x, y, "o", "lan orc", "#00AA00");
 
-      orc.destructible = new MonsterDestructible(10, 0, "dead orc");
+      orc.destructible = new MonsterDestructible(10, 0, "wasted lan orc");
       orc.attacker = new Attacker(3);
       orc.ai = new MonsterAI();
       game.actors.push(orc);
     } else {
-      let troll = new Actor(x, y, "t", "troll", "#008800");
+      let troll = new Actor(x, y, "t", "lan troll", "#008800");
 
-      troll.destructible = new MonsterDestructible(10, 0, "dead troll");
+      troll.destructible = new MonsterDestructible(10, 0, "wasted lan troll");
       troll.attacker = new Attacker(3);
       troll.ai = new MonsterAI();
       game.actors.push(troll);
@@ -82,11 +82,20 @@ export default class Map {
   additem(x, y) {
     const rng = random.getInt(0, 100);
     if (rng < 70) {
-      const healthPotion = new Actor(x, y, "!", "health potion", "#FF00FF");
-      healthPotion.blocks = false;
-      healthPotion.pickable = new Healer(4);
-      game.actors.push(healthPotion);
-      game.sendToBack(healthPotion);
+      if (random.getInt(0, 100) < 95) {
+        const healthPotion = new Actor(x, y, "!", "health potion", "#FF00FF");
+        healthPotion.blocks = false;
+        healthPotion.pickable = new Healer(4);
+        game.actors.push(healthPotion);
+        game.sendToBack(healthPotion);
+      } else {
+        const healthPotion = new Actor(x, y, "@", "Nutella bun", "#A80");
+        healthPotion.blocks = false;
+        healthPotion.pickable = new Healer(30);
+        game.actors.push(healthPotion);
+        game.sendToBack(healthPotion);
+        console.log("Jossain haisoo nutella!");
+      }
     } else if (rng < 70 + 10) {
       const scrollOfLightingBolt = new Actor(
         x,
