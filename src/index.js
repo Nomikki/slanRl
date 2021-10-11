@@ -148,17 +148,6 @@ class Game {
     this.log.render();
   }
 
-  /*
-  //just testing
-  async hurdur() {
-    while (true) {
-      let ch = await this.getch();
-      console.log("hurdur: " + ch);
-      if (ch === "h") break;
-    }
-  }
-  */
-
   async update() {
     while (true) {
       if (this.gameStatus === this.GameStatus.STARTUP) {
@@ -201,6 +190,27 @@ class Game {
   sendToBack(actor) {
     this.removeActor(actor);
     this.actors.unshift(actor);
+  }
+
+  getClosestMonster(x, y, range) {
+    let closest = null;
+    let bestDistance = 100000;
+
+    for (let i = 0; i < this.actors.length; i++) {
+      const actor = this.actors[i];
+      if (
+        actor != this.player &&
+        actor.destructible &&
+        !actor.destructible.isDead()
+      ) {
+        const distance = actor.getDistance(x, y);
+        if (distance < bestDistance && (distance <= range || range == 0.0)) {
+          bestDistance = distance;
+          closest = actor;
+        }
+      }
+    }
+    return closest;
   }
 }
 

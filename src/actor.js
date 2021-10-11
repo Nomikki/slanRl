@@ -48,4 +48,11 @@ export default class Actor {
       this.fov.compute(this.x, this.y, 10);
     }
   }
+
+  getDistance(x, y)
+  {
+    const dx = this.x - x;
+    const dy = this.y - y;
+    return Math.sqrt(dx*dx+dy*dy);
+  }
 }
