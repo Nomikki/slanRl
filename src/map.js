@@ -47,10 +47,7 @@ export default class Map {
 
   canWalk(x, y) {
     if (this.isWall(x, y)) return false;
-
-    for (let i = 0; i < game.actors.length; i++) {
-      const actor = game.actors[i];
-
+    for (const actor of game.actors) {
       if (actor.x === x && actor.y === y && actor.blocks) {
         return false;
       }

@@ -52,8 +52,7 @@ export class PlayerAI extends AI {
       case "g": //pickup item
         game.gameStatus = game.GameStatus.NEW_TURN;
         let found = false;
-        for (let i = 0; i < game.actors.length; i++) {
-          const actor = game.actors[i];
+        for (const actor of game.actors) {
           if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
             if (actor.pickable.pick(actor, owner)) {
               found = true;
@@ -72,8 +71,7 @@ export class PlayerAI extends AI {
       case "i":
         game.log.add("Use item");
         const actor = await this.choseFromInventory(owner);
-        if (actor)
-        {
+        if (actor) {
           await actor.pickable.use(actor, owner);
           game.gameStatus = game.GameStatus.NEW_TURN;
         } else {
@@ -88,8 +86,7 @@ export class PlayerAI extends AI {
   moveOrAttack(owner, targetX, targetY) {
     if (game.map.isWall(targetX, targetY)) return false;
 
-    for (let i = 0; i < game.actors.length; i++) {
-      const actor = game.actors[i];
+    for (const actor of game.actors) {
       if (
         actor.destructible &&
         !actor.destructible.isDead() &&
@@ -102,8 +99,7 @@ export class PlayerAI extends AI {
     }
 
     //look for corpses or items
-    for (let i = 0; i < game.actors.length; i++) {
-      const actor = game.actors[i];
+    for (const actor of  game.actors) {
       const corpseOrItem =
         (actor.destructible && actor.destructible.isDead) || actor.pickable;
 
@@ -133,19 +129,16 @@ export class PlayerAI extends AI {
     game.renderUI();
 
     let shortcut = "a";
-
-    for (let i = 0; i < owner.container.inventory.length; i++) {
-      const it = owner.container.inventory[i];
-
+    let i = 0;
+    for (const it of owner.container.inventory) {
       game.drawText(shortcut + ") " + it.name, 22, 2 + i);
       shortcut = String.fromCharCode(shortcut.charCodeAt(0) + 1);
+      i++;
     }
 
     let ch = await game.getch();
     const actorIndex = ch.charCodeAt(0) - 97; //97 = a
-    //console.log();
-    if (actorIndex >= 0 && actorIndex < owner.container.inventory.length)
-    {
+    if (actorIndex >= 0 && actorIndex < owner.container.inventory.length) {
       return owner.container.inventory[actorIndex];
     }
     return null;

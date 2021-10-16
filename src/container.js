@@ -5,8 +5,7 @@ export default class Container {
   }
 
   add(actor) {
-    if (this.size > 0 && this.inventory.length >= this.size)
-    {
+    if (this.size > 0 && this.inventory.length >= this.size) {
       //inventory is full
       return false;
     } else {
@@ -16,10 +15,8 @@ export default class Container {
   }
 
   remove(actor) {
-    for (let i = 0; i < this.inventory.length; i++)
-    {
-      if (this.inventory[i] === actor)
-      {
+    for (let i = 0; i < this.inventory.length; i++) {
+      if (this.inventory[i] === actor) {
         this.inventory.splice(i, 1);
         return;
       }

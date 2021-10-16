@@ -79,17 +79,12 @@ class bspGenerator {
   }
 
   CreateRooms() {
-    for (let i = 0; i < this.rooms.length; i++) {
-      const w = random.getInt(this.rooms[i].w * 0.5, this.rooms[i].w * 0.9);
-      const h = random.getInt(this.rooms[i].h * 0.5, this.rooms[i].h * 0.9);
-      const x = random.getInt(
-        this.rooms[i].x,
-        this.rooms[i].x + this.rooms[i].w - w
-      );
-      const y = random.getInt(
-        this.rooms[i].y,
-        this.rooms[i].y + this.rooms[i].h - h
-      );
+    //for (let i = 0; i < this.rooms.length; i++) {
+    for (const room of this.rooms) {
+      const w = random.getInt(room.w * 0.5, room.w * 0.9);
+      const h = random.getInt(room.h * 0.5, room.h * 0.9);
+      const x = random.getInt(room.x, room.x + room.w - w);
+      const y = random.getInt(room.y, room.y + room.h - h);
 
       let rect = new Rectangle(x, y, x + w, y + h);
       this.tempRooms.push(rect);
@@ -104,13 +99,8 @@ class bspGenerator {
   }
 
   IsThereRoom(x, y) {
-    for (let i = 0; i < this.tempRooms.length; i++) {
-      if (
-        x >= this.tempRooms[i].x &&
-        y >= this.tempRooms[i].y &&
-        x <= this.tempRooms[i].w &&
-        y <= this.tempRooms[i].h
-      ) {
+    for (const room of this.tempRooms) {
+      if (x >= room.x && y >= room.y && x <= room.w && y <= room.h) {
         return true;
       }
     }

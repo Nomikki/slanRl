@@ -159,8 +159,7 @@ class Game {
       await this.player.update();
 
       if (this.gameStatus === this.GameStatus.NEW_TURN) {
-        for (let i = 0; i < this.actors.length; i++) {
-          const actor = this.actors[i];
+        for (const actor of this.actors) {
           if (actor !== this.player) {
             actor.update();
           }
@@ -196,8 +195,7 @@ class Game {
     let closest = null;
     let bestDistance = 100000;
 
-    for (let i = 0; i < this.actors.length; i++) {
-      const actor = this.actors[i];
+    for (const actor of this.actors) {
       if (
         actor != this.player &&
         actor.destructible &&
@@ -211,6 +209,20 @@ class Game {
       }
     }
     return closest;
+  }
+
+  getActor(x, y) {
+    for (const actor of this.actors) {
+      if (
+        actor.x === x &&
+        actor.y === y &&
+        actor.destructible &&
+        !actor.destructible.isDead()
+      ) {
+        return actor;
+      }
+    }
+    return null;
   }
 
   async pickATile(x, y, range = 0.0) {

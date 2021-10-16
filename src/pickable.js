@@ -90,8 +90,8 @@ export class Fireball extends Pickable {
         "#FA0"
       );
 
-      for (let i = 0; i < game.actors.length; i++) {
-        const actor = game.actors[i];
+      //for (let i = 0; i < game.actors.length; i++) {
+      for (const actor of game.actors) {
         if (
           actor.destructible &&
           !actor.destructible.isDead() &&
