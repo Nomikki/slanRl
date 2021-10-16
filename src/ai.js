@@ -72,16 +72,25 @@ export class PlayerAI extends AI {
           game.log.add("There's nothing here that you can pick up.");
         }
         break;
-      case "i":
+      case "i": //use item
         game.log.add("Use item");
-        const actor = await this.choseFromInventory(owner);
-        if (actor) {
-          await actor.pickable.use(actor, owner);
+        const useItem = await this.choseFromInventory(owner);
+        if (useItem) {
+          await useItem.pickable.use(useItem, owner);
           game.gameStatus = game.GameStatus.NEW_TURN;
         } else {
           game.log.add("Nevermind...");
         }
         break;
+        case "d": //drop item
+          const dropItem = await this.choseFromInventory(owner);
+          if (dropItem) {
+            await dropItem.pickable.drop(dropItem, owner);
+            game.gameStatus = game.GameStatus.NEW_TURN;
+          } else {
+            game.log.add("Nevermind...");
+          }
+          break;
       default:
         break;
     }

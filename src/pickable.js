@@ -22,6 +22,17 @@ export default class Pickable {
     }
     return false;
   }
+
+  drop(owner, wearer) {
+    if (wearer.container) {
+      wearer.container.remove(owner);
+      game.actors.push(owner);
+      game.sendToBack(owner);
+      owner.x = wearer.x;
+      owner.y = wearer.y;
+      game.log.add(wearer.name + " drops a " + owner.name);
+    }
+  }
 }
 
 export class Healer extends Pickable {
