@@ -76,6 +76,7 @@ class Game {
   }
 
   drawChar(ch, x, y, color = "#000") {
+    this.ctx.textAlign = "center";
     this.ctx.fillStyle = "#040414";
     this.ctx.fillRect(
       x * this.fontSize - this.fontSize / 2,
@@ -89,9 +90,15 @@ class Game {
   }
 
   drawText(text, x, y, color = "#AAA") {
+    this.ctx.textAlign = "left";
+    /*
     for (let i = 0; i < text.length; i++) {
       this.drawChar(text.charAt(i), x + i, y, color);
     }
+    */
+    this.ctx.fillStyle = "#040414";
+    this.ctx.fillStyle = color;
+    this.ctx.fillText(text, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
 
   run() {

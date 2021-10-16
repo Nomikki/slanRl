@@ -127,6 +127,8 @@ export class PlayerAI extends AI {
   }
 
   async choseFromInventory(owner) {
+    game.clear();
+    game.render();
     for (let y = 0; y < 28; y++) {
       for (let x = 0; x < 40; x++) {
         if ((y === 0 || y === 27) && x > 0 && x < 39)
@@ -139,7 +141,7 @@ export class PlayerAI extends AI {
       }
     }
     game.drawText(" INVENTORY ", 34, 0);
-    game.renderUI();
+    //game.renderUI();
 
     let shortcut = "a";
     let i = 0;
