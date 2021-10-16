@@ -1,3 +1,5 @@
+"use strict";
+
 export default class Container {
   constructor(size) {
     this.size = size; //maximum number of actors

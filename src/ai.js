@@ -1,8 +1,12 @@
+"use strict";
+
 import { game } from ".";
+import Randomizer from "./random";
+export const random = new Randomizer();
 
 export default class AI {
   constructor() {}
-
+  
   update(owner) {}
 }
 
@@ -99,7 +103,7 @@ export class PlayerAI extends AI {
     }
 
     //look for corpses or items
-    for (const actor of  game.actors) {
+    for (const actor of game.actors) {
       const corpseOrItem =
         (actor.destructible && actor.destructible.isDead) || actor.pickable;
 
@@ -155,7 +159,7 @@ export class MonsterAI extends AI {
     });
   }
 
-  update(owner) {
+  async update(owner) {
     if (owner.destructible && owner.destructible.isDead()) return;
 
     if (game.player.fov.isInFov(owner.x, owner.y)) {
@@ -191,6 +195,39 @@ export class MonsterAI extends AI {
       }
     } else {
       owner.attacker.attack(owner, game.player);
+    }
+  }
+}
+
+export class ConfusedAI extends AI {
+  constructor(nbTurns, oldAi) {
+    super();
+    this.nbTurns = nbTurns;
+    this.oldAi = oldAi;
+  }
+
+  async update(owner) {
+    const dx = random.getInt(-1, 1);
+    const dy = random.getInt(-1, 1);
+
+    if (dx !== 0 || dy !== 0) {
+      const destx = owner.x + dx;
+      const desty = owner.y + dy;
+
+      if (game.map.canWalk(destx, desty)) {
+        owner.x = destx;
+        owner.y = desty;
+      } else {
+        const actor = game.getActor(destx, desty);
+        if (actor) {
+          owner.attacker.attack(owner, actor);
+        }
+      }
+    }
+    this.nbTurns--;
+    if (this.nbTurns <= 0) {
+      owner.ai = this.oldAi;
+
     }
   }
 }

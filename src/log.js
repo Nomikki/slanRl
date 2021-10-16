@@ -1,3 +1,5 @@
+"use strict";
+
 import { game } from ".";
 
 class LogText {

@@ -6,10 +6,10 @@ import { MonsterAI } from "./ai";
 import Attacker from "./attacker";
 import bspGenerator from "./bsp_generator";
 import { MonsterDestructible } from "./destructible";
-import { Fireball, Healer, LightningBolt } from "./pickable";
+import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import Randomizer from "./random";
 
-const random = new Randomizer();
+export const random = new Randomizer();
 
 class Tile {
   constructor() {
@@ -117,6 +117,19 @@ export default class Map {
       scrollOfFireball.pickable = new Fireball(2, 5);
       game.actors.push(scrollOfFireball);
       game.sendToBack(scrollOfFireball);
+    } else {
+      const scrollOfConfusion = new Actor(
+        x,
+        y,
+        "#",
+        "scroll of Confusion",
+        "#FFA"
+      );
+      scrollOfConfusion.blocks = false;
+      scrollOfConfusion.pickable = new Confuser(10, 8);
+      game.actors.push(scrollOfConfusion);
+      game.sendToBack(scrollOfConfusion);
+      console.log("conf!");
     }
   }
 

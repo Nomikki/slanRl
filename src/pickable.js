@@ -1,4 +1,7 @@
+"use strict";
+
 import { game } from ".";
+import { ConfusedAI } from "./ai";
 
 export default class Pickable {
   constructor() {}
@@ -113,5 +116,38 @@ export class Fireball extends Pickable {
     }
 
     return false;
+  }
+}
+
+export class Confuser extends Pickable {
+  constructor(nbTurns, range) {
+    super();
+    this.nbTurns = nbTurns;
+    this.range = range;
+  }
+
+  async use(owner, wearer) {
+    game.log.add(
+      "Arrow keys to select a creature. Enter to select target. Esc to cancel."
+    );
+    const tilePick = await game.pickATile(wearer.x, wearer.y);
+    console.log(tilePick);
+    
+    if (tilePick == null || tilePick[0] === false) {
+      return false;
+    }
+
+    const actor = game.getActor(tilePick[1], tilePick[2]);
+    if (!actor) {
+      return false;
+    }
+
+    const ai = new ConfusedAI(this.nbTurns, actor.ai);
+    actor.ai = ai;
+    
+    game.log.add("The eyes of the " + actor.name + " look vacant",  "#AFD");
+    game.log.add("as he starts to stumble around!",  "#AFD");
+
+    return super.use(owner, wearer);
   }
 }

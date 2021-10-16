@@ -1,3 +1,5 @@
+"use strict";
+
 let _seed = 0;
 
 class Randomizer {
