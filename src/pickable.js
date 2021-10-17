@@ -145,7 +145,7 @@ export class Confuser extends Pickable {
     );
     const tilePick = await game.pickATile(wearer.x, wearer.y);
     console.log(tilePick);
-    
+
     if (tilePick == null || tilePick[0] === false) {
       return false;
     }
@@ -157,9 +157,9 @@ export class Confuser extends Pickable {
 
     const ai = new ConfusedAI(this.nbTurns, actor.ai);
     actor.ai = ai;
-    
-    game.log.add("The eyes of the " + actor.name + " look vacant",  "#AFD");
-    game.log.add("as he starts to stumble around!",  "#AFD");
+
+    game.log.add("The eyes of the " + actor.name + " look vacant", "#AFD");
+    game.log.add("as he starts to stumble around!", "#AFD");
 
     return super.use(owner, wearer);
   }

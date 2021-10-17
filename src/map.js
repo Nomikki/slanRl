@@ -46,7 +46,7 @@ export default class Map {
   }
 
   load() {
-    console.log("map load, wip");
+    //console.log("map load, wip");
   }
 
   isWall(x, y) {
@@ -142,7 +142,7 @@ export default class Map {
       scrollOfConfusion.pickable = new Confuser(10, 8);
       game.actors.push(scrollOfConfusion);
       game.sendToBack(scrollOfConfusion);
-      console.log("conf!");
+      //console.log("conf!");
     }
   }
 
@@ -175,7 +175,7 @@ export default class Map {
   addActors(room) {
     let numberOfMonsters = random.getInt(0, this.constants.MAX_ROOM_MONSTERS);
     let numberOfItems = random.getInt(0, this.constants.MAX_ROOM_ITEMS);
-    console.log(room);
+    //console.log(room);
     const x1 = room.x;
     const x2 = room.x + room.w;
     const y1 = room.y;

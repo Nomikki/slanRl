@@ -12,6 +12,7 @@ import { MonsterAI, PlayerAI } from "./ai";
 import Log from "./log";
 import Container from "./container";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
+import { Menu } from "./menu";
 
 class Game {
   constructor() {
@@ -38,16 +39,15 @@ class Game {
 
     this.width = 80;
     this.height = 40;
-    this.masterSeed = (Math.random() * 0x7ffffff) | 0;
 
     this.actors = new Array();
     this.map = new Map(this.width, this.height);
   }
 
-  term() {
-    this.log.texts.clear();
-    this.actors.clear();
-    this.map = null;
+  async term() {
+    this.log = new Log();
+    this.actors = new Array();
+    this.map = new Map(this.width, this.height);
     this.player = null;
   }
 
@@ -74,29 +74,23 @@ class Game {
     this.gameStatus = this.GameStatus.STARTUP;
   }
 
-  async load() {
-    console.log("load game");
+  async newGame() {
+    console.log("New game!");
+    this.masterSeed = (Math.random() * 0x7ffffff) | 0;
+    await this.term();
+    await this.init(true);
+    await this.save();
+  }
 
-    if (localStorage.getItem("version") !== VERSION) localStorage.clear();
+  async continueGame() {
+    console.log("Continue");
 
     if (localStorage.getItem("seed") !== null) {
-      //console.log("load game");
       const savedVersion = localStorage.getItem("version");
       if (savedVersion === null) localStorage.setItem("version", VERSION);
 
       this.masterSeed = localStorage.getItem("seed");
       await this.init(false);
-      /*
-      this.player.load();
-      //console.log("load " + localStorage.getItem("actors") + " amount of actors");
-      const actorAmount = localStorage.getItem("actors");
-      for (let i = 0; i < actorAmount; i++)
-      {
-        let actor = new Actor(0, 0, null, null, "#FF00FF");
-        actor.load();
-        this.actors.push(actor);
-      }
-      */
 
       const tempUsers = JSON.parse(localStorage.getItem("actors") || "[]");
       const playerID = localStorage.getItem("playerID");
@@ -173,10 +167,48 @@ class Game {
       }
 
       //console.log(this.actors);
-    } else {
-      //console.log("new game");
-      await this.init(true);
-      await this.save();
+    }
+  }
+
+  async load() {
+    console.log("load game");
+    if (localStorage.getItem("version") !== VERSION) localStorage.clear();
+    this.menu = new Menu();
+    this.menu.clear();
+    this.menu.addItem(this.menu.constants.NEW_GAME, "New Game");
+    if (localStorage.getItem("depth"))
+      this.menu.addItem(this.menu.constants.CONTINUE, "Continue");
+    //this.menu.addItem(this.menu.constants.EXIT, "Exit");
+
+    let cursor = 0;
+    let selectedItem = -1;
+    while (true) {
+      this.clear();
+      this.drawChar(">", this.width / 2 - 12, 10 + cursor, "#FFF");
+      for (let i = 0; i < this.menu.items.length; i++) {
+        this.drawText(this.menu.items[i].label, this.width / 2 - 10, 10 + i);
+      }
+
+      const ch = await this.getch();
+      if (ch === "ArrowDown") cursor++;
+      if (ch === "ArrowUp") cursor--;
+      if (ch === "Enter") {
+        selectedItem = this.menu.items[cursor].code;
+        break;
+      }
+
+      cursor = cursor % this.menu.items.length;
+      if (cursor < 0) cursor = this.menu.items.length - 1;
+    }
+
+    if (selectedItem != -1) {
+      if (selectedItem === this.menu.constants.NEW_GAME) {
+        await this.newGame();
+      }
+
+      if (selectedItem === this.menu.constants.CONTINUE) {
+        await this.continueGame();
+      }
     }
   }
 
@@ -244,9 +276,17 @@ class Game {
   }
 
   async run() {
-    await this.load();
-    await this.gameloop();
-    await this.save();
+    while (true) {
+      await this.load();
+      await this.gameloop();
+      await this.save();
+      this.log.add("Press Esc to restart", "#FFF");
+      this.render();
+      while (true) {
+        const ch = await this.getch();
+        if (ch === "Escape") break;
+      }
+    }
   }
 
   waitingKeypress() {
