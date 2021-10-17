@@ -9,9 +9,23 @@
     "start": "webpack serve --open",
     "watch": "webpack --watch",
     "deploy": "gh-pages -d dist"
-
   },
   "dependencies": {
     "gh-pages": "^3.2.3"
-  }
+  },
+  "name": "slanrl",
+  "version": "1.0.0",
+  "main": "webpack.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nomikki/slanRl.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nomikki/slanRl/issues"
+  },
+  "homepage": "https://github.com/Nomikki/slanRl#readme",
+  "description": ""
 }

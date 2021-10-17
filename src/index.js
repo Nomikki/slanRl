@@ -71,8 +71,15 @@ class Game {
 
   async load() {
     console.log("load game");
+
+    if (localStorage.getItem("version") !== VERSION)
+      localStorage.clear();
+
     if (localStorage.getItem("seed") !== null) {
-      console.log("load game");
+      //console.log("load game");
+      const savedVersion = localStorage.getItem("version");
+      if (savedVersion === null) localStorage.setItem("version", VERSION);
+
       this.masterSeed = localStorage.getItem("seed");
       await this.init(false);
       /*
@@ -109,9 +116,11 @@ class Game {
           console.log(actor);
           this.actors[i].container = await new Container(26);
 
-          for (const it of actor.container.inventory)
-          {
-            const k = this.actors[i].container.inventory.push(new Actor(it.x, it.y, it.ch, it.name, it.color)) - 1;
+          for (const it of actor.container.inventory) {
+            const k =
+              this.actors[i].container.inventory.push(
+                new Actor(it.x, it.y, it.ch, it.name, it.color)
+              ) - 1;
             this.actors[i].container.inventory[k].create(it);
           }
         }
@@ -120,8 +129,7 @@ class Game {
           this.actors[i].attacker = new Attacker(actor.attacker.power);
         }
 
-        if (actor.pickable)
-        {
+        if (actor.pickable) {
           this.actors[i].create(actor);
         }
 
@@ -157,11 +165,9 @@ class Game {
 
             this.actors[i].ai = new MonsterAI();
           }
-
         }
       }
 
-     
       //console.log(this.actors);
     } else {
       //console.log("new game");
@@ -179,7 +185,8 @@ class Game {
       this.map.save();
       localStorage.setItem("playerID", this.actors.indexOf(this.player));
       localStorage.setItem("actors", JSON.stringify(this.actors));
-      console.log(this.actors);
+      localStorage.setItem("version", VERSION);
+      //console.log(this.actors);
     }
   }
 
