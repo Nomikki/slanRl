@@ -11,7 +11,6 @@ import Attacker from "./attacker";
 import { MonsterAI, PlayerAI } from "./ai";
 import Log from "./log";
 import Container from "./container";
-import { Persistent } from "./persistent";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 
 class Game {
@@ -24,7 +23,6 @@ class Game {
       DEFEAT: 4,
     });
 
-    this.gameStatus = this.GameStatus.STARTUP;
     this.player = null;
     this.map = null;
 
@@ -40,12 +38,17 @@ class Game {
 
     this.width = 80;
     this.height = 40;
-    this.masterSeed = 1;
+    this.masterSeed = (Math.random() * 0x7ffffff) | 0;
 
     this.actors = new Array();
     this.map = new Map(this.width, this.height);
+  }
 
-    this.persistent = new Persistent();
+  term() {
+    this.log.texts.clear();
+    this.actors.clear();
+    this.map = null;
+    this.player = null;
   }
 
   async init(withActors) {
@@ -67,13 +70,14 @@ class Game {
     } else {
       this.log.add("Welcome back stranger!", "#FFF");
     }
+
+    this.gameStatus = this.GameStatus.STARTUP;
   }
 
   async load() {
     console.log("load game");
 
-    if (localStorage.getItem("version") !== VERSION)
-      localStorage.clear();
+    if (localStorage.getItem("version") !== VERSION) localStorage.clear();
 
     if (localStorage.getItem("seed") !== null) {
       //console.log("load game");
