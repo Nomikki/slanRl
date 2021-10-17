@@ -31,16 +31,7 @@ export default class Actor {
     this.container = null;
   }
 
-  save() {
-    console.log("actor save, wip");
-  }
-
-  load() {
-    console.log("actor load, wip");
-  }
-
   create(actorTemplate) {
-    
     //console.log(actorTemplate);
     if (actorTemplate.pickable.type === "lightingBolt")
       this.pickable = new LightningBolt(

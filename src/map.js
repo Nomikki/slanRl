@@ -27,6 +27,10 @@ export default class Map {
     this.startX = 0;
     this.startY = 0;
 
+    this.stairsX = 0;
+    this.stairsY = 0;
+
+
     this.constants = Object.freeze({
       ROOM_MAX_SIZE: 10,
       ROOM_MIN_SIZE: 4,
@@ -202,13 +206,21 @@ export default class Map {
 
   createRoom(x1, y1, x2, y2) {
     this.dig(x1, y1, x2, y2);
+
+    this.stairsX = ((x1 + x2) / 2) | 0;
+    this.stairsY = ((y1 + y2) / 2) | 0;
+    
+    /*
+    this.startX = this.stairsX;
+    this.startY = this.stairsY;
+    */
   }
 
   generate(withActors, seed, depth) {
-    this.levelSeed = seed;
-    this.depth = depth;
+    this.levelSeed = parseInt(seed);
+    this.depth = parseInt(depth);
 
-    random.setSeed(this.levelSeed);
+    random.setSeed(this.levelSeed + (depth*25));
     console.log("seed: " + this.levelSeed);
     console.log("depth: " + this.depth);
 
@@ -242,7 +254,9 @@ export default class Map {
       if (i === 0) {
         this.startX = (room.x + room.w / 2) | 0;
         this.startY = (room.y + room.h / 2) | 0;
-      }
+
+        
+      } 
 
       //option 1
       if (option === 1) {

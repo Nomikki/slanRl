@@ -6,7 +6,7 @@ export const random = new Randomizer();
 
 export default class AI {
   constructor() {}
-  
+
   update(owner) {}
 }
 
@@ -55,7 +55,16 @@ export class PlayerAI extends AI {
     switch (ascii) {
       case "S": //save
         game.save();
-        game.log.add("Game saved...",  "#0FA");
+        game.log.add("Game saved...", "#0FA");
+        break;
+
+      case ">": //go down
+        if (game.stairs.x === owner.x && game.stairs.y === owner.y)
+        {
+          game.nextLevel();
+        } else {
+          game.log.add("There are no stairs here.");
+        }
         break;
       case "g": //pickup item
         game.gameStatus = game.GameStatus.NEW_TURN;
@@ -76,6 +85,7 @@ export class PlayerAI extends AI {
           game.log.add("There's nothing here that you can pick up.");
         }
         break;
+
       case "i": //use item
         game.log.add("Use item");
         const useItem = await this.choseFromInventory(owner);
@@ -86,15 +96,16 @@ export class PlayerAI extends AI {
           game.log.add("Nevermind...");
         }
         break;
-        case "d": //drop item
-          const dropItem = await this.choseFromInventory(owner);
-          if (dropItem) {
-            await dropItem.pickable.drop(dropItem, owner);
-            game.gameStatus = game.GameStatus.NEW_TURN;
-          } else {
-            game.log.add("Nevermind...");
-          }
-          break;
+
+      case "d": //drop item
+        const dropItem = await this.choseFromInventory(owner);
+        if (dropItem) {
+          await dropItem.pickable.drop(dropItem, owner);
+          game.gameStatus = game.GameStatus.NEW_TURN;
+        } else {
+          game.log.add("Nevermind...");
+        }
+        break;
       default:
         break;
     }
@@ -242,7 +253,6 @@ export class ConfusedAI extends AI {
     this.nbTurns--;
     if (this.nbTurns <= 0) {
       owner.ai = this.oldAi;
-
     }
   }
 }

@@ -26,6 +26,7 @@ class Game {
 
     this.player = null;
     this.map = null;
+    this.stairs = null;
 
     this.canvas = document.getElementById("screen");
     this.ctx = this.canvas.getContext("2d");
@@ -36,6 +37,7 @@ class Game {
     this.log = new Log();
 
     this.lastKey = 0;
+    this.depth = 0;
 
     this.width = 80;
     this.height = 40;
@@ -51,21 +53,37 @@ class Game {
     this.player = null;
   }
 
-  async init(withActors) {
-    this.map.generate(withActors, this.masterSeed, 1);
+  async init(withActors, createPlayer = true) {
+    console.log("seed: " + this.masterSeed + ", depth: " + this.depth);
+    this.map.generate(withActors, this.masterSeed, this.depth);
 
     if (withActors) {
-      const i = this.actors.push(new Actor(2, 2, "@", "hero", "#CCC")) - 1;
-      this.player = this.actors[i];
-      this.player.destructible = new PlayerDestructible(30, 2, "your cadaver");
-      this.player.attacker = new Attacker(5);
-      this.player.ai = new PlayerAI();
-      this.player.container = new Container(26);
-      this.player.fov = new Fov(this.width, this.height);
+      let i = 0;
+      if (createPlayer) {
+        i = this.actors.push(new Actor(2, 2, "@", "hero", "#CCC")) - 1;
+        this.player = this.actors[i];
+        this.player.destructible = new PlayerDestructible(
+          30,
+          2,
+          "your cadaver"
+        );
+        this.player.attacker = new Attacker(5);
+        this.player.ai = new PlayerAI();
+        this.player.container = new Container(26);
+        this.player.fov = new Fov(this.width, this.height);
+      }
 
       this.player.x = this.map.startX;
       this.player.y = this.map.startY;
       this.player.fov.fullClear();
+
+      i = this.actors.push(new Actor(0, 0, ">", "stairs", "#FFF")) - 1;
+      this.stairs = this.actors[i];
+      this.stairs.blocks = false;
+      this.stairs.fovOnly = false;
+      this.stairs.x = this.map.stairsX;
+      this.stairs.y = this.map.stairsY;
+
       this.log.add("Welcome stranger!", "#FFF");
     } else {
       this.log.add("Welcome back stranger!", "#FFF");
@@ -74,9 +92,26 @@ class Game {
     this.gameStatus = this.GameStatus.STARTUP;
   }
 
+  async nextLevel() {
+    this.depth++;
+    this.log.add("You take steps down.");
+
+    this.map = null;
+    this.stairs = null;
+
+    const tempPlayer = this.player;
+    this.actors = new Array();
+    this.map = new Map(this.width, this.height);
+    this.init(true, false);
+    this.actors.push(tempPlayer);
+    
+    this.save();
+  }
+
   async newGame() {
     console.log("New game!");
     this.masterSeed = (Math.random() * 0x7ffffff) | 0;
+    this.depth = 1;
     await this.term();
     await this.init(true);
     await this.save();
@@ -90,6 +125,8 @@ class Game {
       if (savedVersion === null) localStorage.setItem("version", VERSION);
 
       this.masterSeed = localStorage.getItem("seed");
+      this.depth = localStorage.getItem("depth") | 0;
+
       await this.init(false);
 
       const tempUsers = JSON.parse(localStorage.getItem("actors") || "[]");
@@ -111,7 +148,6 @@ class Game {
         }
 
         if (actor.container) {
-          console.log(actor);
           this.actors[i].container = await new Container(26);
 
           for (const it of actor.container.inventory) {
@@ -129,6 +165,10 @@ class Game {
 
         if (actor.pickable) {
           this.actors[i].create(actor);
+        }
+
+        if (actor.name === "stairs") {
+          this.stairs = this.actors[i];
         }
 
         if (actor.destructible) {
@@ -171,7 +211,6 @@ class Game {
   }
 
   async load() {
-    console.log("load game");
     if (localStorage.getItem("version") !== VERSION) localStorage.clear();
     this.menu = new Menu();
     this.menu.clear();
@@ -213,9 +252,7 @@ class Game {
   }
 
   async save() {
-    console.log("save game");
     if (this.player.destructible.isDead()) {
-      console.log("storage cleared");
       localStorage.clear();
     } else {
       this.map.save();
