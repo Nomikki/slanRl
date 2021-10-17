@@ -207,10 +207,11 @@ export default class Map {
   createRoom(x1, y1, x2, y2) {
     this.dig(x1, y1, x2, y2);
 
+    /*
     this.stairsX = ((x1 + x2) / 2) | 0;
     this.stairsY = ((y1 + y2) / 2) | 0;
     
-    /*
+    
     this.startX = this.stairsX;
     this.startY = this.stairsY;
     */
@@ -247,16 +248,26 @@ export default class Map {
     let y = 0;
     let w = 0;
     let h = 0;
+
+    //take one room and make it spawn room
+    const spawnRoomIndex = random.getInt(0, this.root.rooms.length-1);
+    const stairsRoomIndex = random.getInt(0, this.root.rooms.length-1);
+
+    console.log("spwanroom index: " + spawnRoomIndex);
     for (let i = 0; i < this.root.rooms.length; i++) {
       const room = this.root.rooms[i];
-      const firstRoom = i > 0 ? false : true;
+      const spawnRoom = i === spawnRoomIndex ? true : false;
 
-      if (i === 0) {
-        this.startX = (room.x + room.w / 2) | 0;
-        this.startY = (room.y + room.h / 2) | 0;
-
-        
+      if (i === spawnRoomIndex) {
+        console.log(room);
+        this.startX = (room.x + (room.w/2)) | 0;
+        this.startY = (room.y + (room.h/2)) | 0;        
       } 
+      if (i === stairsRoomIndex)
+      {
+        this.stairsX = (room.x + (room.w/2)) | 0;
+        this.stairsY = (room.y + (room.h/2)) | 0;        
+      }
 
       //option 1
       if (option === 1) {
@@ -266,7 +277,7 @@ export default class Map {
         y = room.y + 1;
 
         this.createRoom(x, y, x + w - 2, y + h - 2);
-        if (!firstRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
+        if (!spawnRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
       }
 
       //option 2
@@ -277,7 +288,7 @@ export default class Map {
         y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
 
         this.createRoom(x, y, x + w - 2, y + h - 2);
-        if (!firstRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
+        if (!spawnRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
       }
 
       if (option === 1 || option === 2) {
@@ -294,6 +305,9 @@ export default class Map {
         this.addActors(room);
       }
     }
+
+    
+
   }
 
   render() {
