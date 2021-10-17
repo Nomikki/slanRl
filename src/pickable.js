@@ -4,7 +4,9 @@ import { game } from ".";
 import { ConfusedAI } from "./ai";
 
 export default class Pickable {
-  constructor() {}
+  constructor(type = "unknow") {
+    this.type = type;
+  }
 
   pick(owner, wearer) {
     if (wearer.container && wearer.container.add(owner)) {
@@ -37,7 +39,7 @@ export default class Pickable {
 
 export class Healer extends Pickable {
   constructor(amount) {
-    super();
+    super("healer");
     this.amount = amount;
   }
 
@@ -54,7 +56,7 @@ export class Healer extends Pickable {
 
 export class LightningBolt extends Pickable {
   constructor(range, damage) {
-    super();
+    super("lightingBolt");
     this.range = range;
     this.damage = damage;
   }
@@ -85,7 +87,7 @@ export class LightningBolt extends Pickable {
 
 export class Fireball extends Pickable {
   constructor(range, damage) {
-    super();
+    super("fireBall");
     this.range = range;
     this.damage = damage;
   }
@@ -132,7 +134,7 @@ export class Fireball extends Pickable {
 
 export class Confuser extends Pickable {
   constructor(nbTurns, range) {
-    super();
+    super("confuser");
     this.nbTurns = nbTurns;
     this.range = range;
   }

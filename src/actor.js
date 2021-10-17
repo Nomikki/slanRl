@@ -1,6 +1,7 @@
 "use strict";
 
 import { game } from ".";
+import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 
 export default class Actor {
   constructor(x, y, ch, name, color) {
@@ -18,7 +19,7 @@ export default class Actor {
     this.destructible = null;
 
     // Attacker: Something that can deal damage to a Destructible
-    this.attacler = null;
+    this.attacker = null;
 
     // Ai: Something that is self-updating
     this.ai = null;
@@ -28,6 +29,39 @@ export default class Actor {
 
     // Container: Something that can contain actors
     this.container = null;
+  }
+
+  save() {
+    console.log("actor save, wip");
+  }
+
+  load() {
+    console.log("actor load, wip");
+  }
+
+  create(actorTemplate) {
+    
+    //console.log(actorTemplate);
+    if (actorTemplate.pickable.type === "lightingBolt")
+      this.pickable = new LightningBolt(
+        actorTemplate.pickable.range,
+        actorTemplate.pickable.damage
+      );
+
+    if (actorTemplate.pickable.type === "fireBall")
+      this.pickable = new Fireball(
+        actorTemplate.pickable.range,
+        actorTemplate.pickable.damage
+      );
+
+    if (actorTemplate.pickable.type === "healer")
+      this.pickable = new Healer(actorTemplate.pickable.amount);
+
+    if (actorTemplate.pickable.type === "confuser")
+      this.pickable = new Confuser(
+        actorTemplate.pickable.nbTurns,
+        actorTemplate.pickable.range
+      );
   }
 
   render() {

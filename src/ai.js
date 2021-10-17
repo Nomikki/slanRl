@@ -53,6 +53,10 @@ export class PlayerAI extends AI {
     console.log(ascii);
 
     switch (ascii) {
+      case "S": //save
+        game.save();
+        game.log.add("Game saved...",  "#0FA");
+        break;
       case "g": //pickup item
         game.gameStatus = game.GameStatus.NEW_TURN;
         let found = false;

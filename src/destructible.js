@@ -3,11 +3,12 @@
 import { game } from ".";
 
 export default class Destructible {
-  constructor(maxHP, defense, corpseName) {
+  constructor(maxHP, defense, corpseName, type) {
     this.maxHP = maxHP;
     this.hp = this.maxHP;
     this.defense = defense;
     this.corpseName = corpseName;
+    this.type = type;
   }
 
   isDead() {
@@ -48,7 +49,7 @@ export default class Destructible {
 
 export class MonsterDestructible extends Destructible {
   constructor(maxHP, defense, corpseName) {
-    super(maxHP, defense, corpseName);
+    super(maxHP, defense, corpseName, "monster");
   }
 
   die(owner) {
@@ -59,7 +60,7 @@ export class MonsterDestructible extends Destructible {
 
 export class PlayerDestructible extends Destructible {
   constructor(maxHP, defense, corpseName) {
-    super(maxHP, defense, corpseName);
+    super(maxHP, defense, corpseName, "player");
   }
 
   die(owner) {

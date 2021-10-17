@@ -3,12 +3,16 @@
 import Actor from "./actor";
 import Map from "./map";
 import Fov from "./fov";
-import Destructible, { PlayerDestructible } from "./destructible";
+import Destructible, {
+  MonsterDestructible,
+  PlayerDestructible,
+} from "./destructible";
 import Attacker from "./attacker";
-import { PlayerAI } from "./ai";
+import { MonsterAI, PlayerAI } from "./ai";
 import Log from "./log";
 import Container from "./container";
 import { Persistent } from "./persistent";
+import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 
 class Game {
   constructor() {
@@ -31,7 +35,7 @@ class Game {
     this.ctx.textAlign = "center";
 
     this.log = new Log();
-  
+
     this.lastKey = 0;
 
     this.width = 80;
@@ -39,39 +43,143 @@ class Game {
     this.masterSeed = 1;
 
     this.actors = new Array();
+    this.map = new Map(this.width, this.height);
 
     this.persistent = new Persistent();
   }
 
-  init(withActors) {
-    this.actors.push(new Actor(2, 2, "@", "hero", "#CCC"));
-    this.player = this.actors[0];
-    this.player.destructible = new PlayerDestructible(30, 2, "your cadaver");
-    this.player.attacker = new Attacker(5);
-    this.player.ai = new PlayerAI();
-    this.player.container = new Container(26);
-    this.player.fov = new Fov(this.width, this.height);
-
-    this.map = new Map(this.width, this.height);
-    
-    //this.masterSeed = (Math.random() * 0x7FFFFFFF) | 0;
-    
+  async init(withActors) {
     this.map.generate(withActors, this.masterSeed, 1);
-    this.player.x = this.map.startX;
-    this.player.y = this.map.startY;
-    this.player.fov.fullClear();
 
-    this.log.add("Welcome stranger!", "#FFF");
+    if (withActors) {
+      const i = this.actors.push(new Actor(2, 2, "@", "hero", "#CCC")) - 1;
+      this.player = this.actors[i];
+      this.player.destructible = new PlayerDestructible(30, 2, "your cadaver");
+      this.player.attacker = new Attacker(5);
+      this.player.ai = new PlayerAI();
+      this.player.container = new Container(26);
+      this.player.fov = new Fov(this.width, this.height);
+
+      this.player.x = this.map.startX;
+      this.player.y = this.map.startY;
+      this.player.fov.fullClear();
+      this.log.add("Welcome stranger!", "#FFF");
+    } else {
+      this.log.add("Welcome back stranger!", "#FFF");
+    }
   }
 
-  load() {}
+  async load() {
+    console.log("load game");
+    if (localStorage.getItem("seed") !== null) {
+      console.log("load game");
+      this.masterSeed = localStorage.getItem("seed");
+      await this.init(false);
+      /*
+      this.player.load();
+      //console.log("load " + localStorage.getItem("actors") + " amount of actors");
+      const actorAmount = localStorage.getItem("actors");
+      for (let i = 0; i < actorAmount; i++)
+      {
+        let actor = new Actor(0, 0, null, null, "#FF00FF");
+        actor.load();
+        this.actors.push(actor);
+      }
+      */
 
-  save() {
-    if (this.player.destructible.isDead())
-    {
-      this.persistent.deleteFile();
+      const tempUsers = JSON.parse(localStorage.getItem("actors") || "[]");
+      const playerID = localStorage.getItem("playerID");
+
+      //console.log("temps: " + tempUsers.length);
+
+      for (const actor of tempUsers) {
+        const i =
+          this.actors.push(
+            new Actor(actor.x, actor.y, actor.ch, actor.name, actor.color)
+          ) - 1;
+
+        this.actors[i].ai = null;
+
+        if (actor.fov) {
+          this.actors[i].fov = new Fov(this.width, this.height);
+          this.actors[i].fov.mapped = actor.fov.mapped;
+        }
+
+        if (actor.container) {
+          console.log(actor);
+          this.actors[i].container = await new Container(26);
+
+          for (const it of actor.container.inventory)
+          {
+            const k = this.actors[i].container.inventory.push(new Actor(it.x, it.y, it.ch, it.name, it.color)) - 1;
+            this.actors[i].container.inventory[k].create(it);
+          }
+        }
+
+        if (actor.attacker) {
+          this.actors[i].attacker = new Attacker(actor.attacker.power);
+        }
+
+        if (actor.pickable)
+        {
+          this.actors[i].create(actor);
+        }
+
+        if (actor.destructible) {
+          if (actor.destructible.type === "player") {
+            this.player = this.actors[i];
+            this.actors[i].destructible = new PlayerDestructible(
+              30,
+              2,
+              "player corpse"
+            );
+
+            this.actors[i].ai = new PlayerAI();
+
+            this.actors[i].destructible.hp = actor.destructible.hp;
+            this.actors[i].destructible.maxHP = actor.destructible.maxHP;
+            this.actors[i].destructible.defense = actor.destructible.defense;
+            this.actors[i].destructible.corpseName =
+              actor.destructible.corpseName;
+          }
+          if (actor.destructible.type === "monster") {
+            this.actors[i].destructible = new MonsterDestructible(
+              1,
+              1,
+              "monster corpse"
+            );
+
+            this.actors[i].destructible.hp = actor.destructible.hp;
+            this.actors[i].destructible.maxHP = actor.destructible.maxHP;
+            this.actors[i].destructible.defense = actor.destructible.defense;
+            this.actors[i].destructible.corpseName =
+              actor.destructible.corpseName;
+
+            this.actors[i].ai = new MonsterAI();
+          }
+
+        }
+      }
+
+     
+      //console.log(this.actors);
+    } else {
+      //console.log("new game");
+      this.init(true);
+      await this.save();
+    }
+  }
+
+  async save() {
+    console.log("save game");
+    if (this.player.destructible.isDead()) {
+      console.log("storage cleared");
+      localStorage.clear();
     } else {
       this.map.save();
+      localStorage.setItem("playerID", this.actors.indexOf(this.player));
+      localStorage.setItem("actors", JSON.stringify(this.actors));
+      console.log(this.actors);
     }
   }
 
@@ -124,11 +232,10 @@ class Game {
     );
   }
 
-  run() {
-    this.load();
-    this.init(true);
-    this.update();
-    this.save();
+  async run() {
+    await this.load();
+    await this.gameloop();
+    await this.save();
   }
 
   waitingKeypress() {
@@ -168,19 +275,16 @@ class Game {
       this.drawChar("-", x, this.height, "#888");
     }
 
-    this.drawText(
-      "HP: " +
-        this.player.destructible.hp +
-        "/" +
-        this.player.destructible.maxHP,
-      1,
-      this.height + 1
-    );
+    const hp = this.player.destructible.hp;
+    const maxHP = this.player.destructible.maxHP;
+    const depth = this.map.depth;
+    this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1);
+    this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
 
     this.log.render();
   }
 
-  async update() {
+  async gameloop() {
     while (true) {
       if (this.gameStatus === this.GameStatus.STARTUP) {
         this.player.computeFov();
@@ -193,7 +297,7 @@ class Game {
       if (this.gameStatus === this.GameStatus.NEW_TURN) {
         for (const actor of this.actors) {
           if (actor !== this.player) {
-            actor.update();
+            await actor.update();
           }
         }
       }
