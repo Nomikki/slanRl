@@ -165,7 +165,7 @@ class Game {
       //console.log(this.actors);
     } else {
       //console.log("new game");
-      this.init(true);
+      await this.init(true);
       await this.save();
     }
   }

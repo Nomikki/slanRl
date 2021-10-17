@@ -8,6 +8,7 @@ import bspGenerator from "./bsp_generator";
 import { MonsterDestructible } from "./destructible";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import Randomizer from "./random";
+import Rectangle from "./rectangle";
 
 export const random = new Randomizer();
 
@@ -42,7 +43,6 @@ export default class Map {
     //console.log("map save, wip");
     localStorage.setItem("seed", this.levelSeed);
     localStorage.setItem("depth", this.depth);
-    
   }
 
   load() {
@@ -172,17 +172,14 @@ export default class Map {
     }
   }
 
-  createRoom(firstRoom, x1, y1, x2, y2, withActors) {
-    this.dig(x1, y1, x2, y2);
-
-    if (!withActors)
-      return;
-
-    //if first room, dont add any monsters
-    if (firstRoom) return;
-
+  addActors(room) {
     let numberOfMonsters = random.getInt(0, this.constants.MAX_ROOM_MONSTERS);
     let numberOfItems = random.getInt(0, this.constants.MAX_ROOM_ITEMS);
+    console.log(room);
+    const x1 = room.x;
+    const x2 = room.x + room.w;
+    const y1 = room.y;
+    const y2 = room.y + room.h;
 
     while (numberOfMonsters > 0) {
       const x = random.getInt(x1, x2);
@@ -203,16 +200,22 @@ export default class Map {
     }
   }
 
+  createRoom(x1, y1, x2, y2) {
+    this.dig(x1, y1, x2, y2);
+  }
+
   generate(withActors, seed, depth) {
     this.levelSeed = seed;
     this.depth = depth;
-    
+
     random.setSeed(this.levelSeed);
     console.log("seed: " + this.levelSeed);
     console.log("depth: " + this.depth);
 
     this.root = new bspGenerator(0, 0, this.width, this.height, 5);
     this.tiles = new Array(this.width * this.height).fill(false);
+
+    let monsterRooms = new Array();
 
     //const option = random.getInt(0, 2);
     //console.log("option: " + option);
@@ -248,7 +251,8 @@ export default class Map {
         x = room.x + 1;
         y = room.y + 1;
 
-        this.createRoom(firstRoom, x, y, x + w - 2, y + h - 2, withActors);
+        this.createRoom(x, y, x + w - 2, y + h - 2);
+        if (!firstRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
       }
 
       //option 2
@@ -258,7 +262,8 @@ export default class Map {
         x = random.getInt(room.x, room.x + room.w - w - 0) + 1;
         y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
 
-        this.createRoom(firstRoom, x, y, x + w - 2, y + h - 2, withActors);
+        this.createRoom(x, y, x + w - 2, y + h - 2);
+        if (!firstRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
       }
 
       if (option === 1 || option === 2) {
@@ -268,6 +273,11 @@ export default class Map {
         }
         lastx = x + w / 2;
         lasty = y + h / 2;
+      }
+    }
+    if (withActors) {
+      for (const room of monsterRooms) {
+        this.addActors(room);
       }
     }
   }
