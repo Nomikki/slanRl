@@ -8,6 +8,7 @@ import Attacker from "./attacker";
 import { PlayerAI } from "./ai";
 import Log from "./log";
 import Container from "./container";
+import { Persistent } from "./persistent";
 
 class Game {
   constructor() {
@@ -20,9 +21,9 @@ class Game {
     });
 
     this.gameStatus = this.GameStatus.STARTUP;
-  }
+    this.player = null;
+    this.map = null;
 
-  init() {
     this.canvas = document.getElementById("screen");
     this.ctx = this.canvas.getContext("2d");
     this.ctx.font = "12px Arial";
@@ -30,30 +31,48 @@ class Game {
     this.ctx.textAlign = "center";
 
     this.log = new Log();
-    this.log.add("Welcome stranger!", "#FFF");
-
+  
     this.lastKey = 0;
 
     this.width = 80;
     this.height = 40;
+    this.masterSeed = 1;
 
     this.actors = new Array();
-    this.actors.push(new Actor(2, 2, "@", "hero", "#CCC"));
 
+    this.persistent = new Persistent();
+  }
+
+  init(withActors) {
+    this.actors.push(new Actor(2, 2, "@", "hero", "#CCC"));
     this.player = this.actors[0];
     this.player.destructible = new PlayerDestructible(30, 2, "your cadaver");
     this.player.attacker = new Attacker(5);
     this.player.ai = new PlayerAI();
     this.player.container = new Container(26);
-
     this.player.fov = new Fov(this.width, this.height);
 
     this.map = new Map(this.width, this.height);
-
-    this.map.generate(Math.random() * 32000);
+    
+    //this.masterSeed = (Math.random() * 0x7FFFFFFF) | 0;
+    
+    this.map.generate(withActors, this.masterSeed, 1);
     this.player.x = this.map.startX;
     this.player.y = this.map.startY;
     this.player.fov.fullClear();
+
+    this.log.add("Welcome stranger!", "#FFF");
+  }
+
+  load() {}
+
+  save() {
+    if (this.player.destructible.isDead())
+    {
+      this.persistent.deleteFile();
+    } else {
+      this.map.save();
+    }
   }
 
   clear(color = "#000") {
@@ -98,12 +117,18 @@ class Game {
     */
     this.ctx.fillStyle = "#040414";
     this.ctx.fillStyle = color;
-    this.ctx.fillText(text, x * this.fontSize, y * this.fontSize + this.fontSize);
+    this.ctx.fillText(
+      text,
+      x * this.fontSize,
+      y * this.fontSize + this.fontSize
+    );
   }
 
   run() {
-    this.init();
+    this.load();
+    this.init(true);
     this.update();
+    this.save();
   }
 
   waitingKeypress() {

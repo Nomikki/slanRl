@@ -34,6 +34,19 @@ export default class Map {
     });
 
     this.root = null;
+    this.levelSeed = 0;
+    this.depth = 0;
+  }
+
+  save() {
+    //console.log("map save, wip");
+    localStorage.setItem("seed", this.levelSeed);
+    localStorage.setItem("depth", this.depth);
+    
+  }
+
+  load() {
+    console.log("map load, wip");
   }
 
   isWall(x, y) {
@@ -159,8 +172,11 @@ export default class Map {
     }
   }
 
-  createRoom(firstRoom, x1, y1, x2, y2) {
+  createRoom(firstRoom, x1, y1, x2, y2, withActors) {
     this.dig(x1, y1, x2, y2);
+
+    if (!withActors)
+      return;
 
     //if first room, dont add any monsters
     if (firstRoom) return;
@@ -187,9 +203,14 @@ export default class Map {
     }
   }
 
-  generate(seed) {
-    random.setSeed(seed);
-    console.log("seed: " + seed);
+  generate(withActors, seed, depth) {
+    this.levelSeed = seed;
+    this.depth = depth;
+    
+    random.setSeed(this.levelSeed);
+    console.log("seed: " + this.levelSeed);
+    console.log("depth: " + this.depth);
+
     this.root = new bspGenerator(0, 0, this.width, this.height, 5);
     this.tiles = new Array(this.width * this.height).fill(false);
 
@@ -227,7 +248,7 @@ export default class Map {
         x = room.x + 1;
         y = room.y + 1;
 
-        this.createRoom(firstRoom, x, y, x + w - 2, y + h - 2);
+        this.createRoom(firstRoom, x, y, x + w - 2, y + h - 2, withActors);
       }
 
       //option 2
@@ -237,7 +258,7 @@ export default class Map {
         x = random.getInt(room.x, room.x + room.w - w - 0) + 1;
         y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
 
-        this.createRoom(firstRoom, x, y, x + w - 2, y + h - 2);
+        this.createRoom(firstRoom, x, y, x + w - 2, y + h - 2, withActors);
       }
 
       if (option === 1 || option === 2) {
