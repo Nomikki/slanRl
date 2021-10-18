@@ -104,7 +104,7 @@ class Game {
     this.map = new Map(this.width, this.height);
     this.init(true, false);
     this.actors.push(tempPlayer);
-    
+
     this.save();
   }
 
@@ -313,6 +313,9 @@ class Game {
   }
 
   async run() {
+    document.querySelector(
+      "#version"
+    ).innerHTML = `Commit ID: <span>${COMMIT_HASH}</span> | Version: <span>${VERSION}</span>`;
     while (true) {
       await this.load();
       await this.gameloop();
