@@ -26,7 +26,7 @@ jobs:
       -
         name: Build
         run: |
-          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1)) COMMIT_HASH=$(git rev-parse --short HEAD) yarn build
+          VERSION=v$(node -p "require('./package').version") COMMIT_HASH=$(git rev-parse --short HEAD) yarn build
       -
         name: Check GitHub Pages status
         uses: crazy-max/ghaction-github-status@v2
