@@ -43,6 +43,7 @@ export default class Fov {
 
       px = x + 0.5;
       py = y + 0.5;
+      
 
       for (let l = 0; l < len; l++) {
         px += dx;

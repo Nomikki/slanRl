@@ -214,9 +214,10 @@ class Game {
     if (localStorage.getItem("version") !== VERSION) localStorage.clear();
     this.menu = new Menu();
     this.menu.clear();
-    this.menu.addItem(this.menu.constants.NEW_GAME, "New Game");
     if (localStorage.getItem("depth"))
       this.menu.addItem(this.menu.constants.CONTINUE, "Continue");
+    this.menu.addItem(this.menu.constants.NEW_GAME, "New Game");
+    
     //this.menu.addItem(this.menu.constants.EXIT, "Exit");
 
     let cursor = 0;
@@ -333,6 +334,7 @@ class Game {
     return new Promise((resolve) => {
       document.addEventListener("keydown", onKeyHandler);
       function onKeyHandler(e) {
+        e.preventDefault();
         if (e.keyCode !== 0) {
           document.removeEventListener("keydown", onKeyHandler);
           game.lastKey = e.key;

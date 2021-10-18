@@ -20,8 +20,7 @@ export class Menu {
   }
 
   clear() {
-    if (this.items && this.items.length > 0)
-      this.items = null;
+    if (this.items && this.items.length > 0) this.items = null;
   }
 
   addItem(code, label) {
