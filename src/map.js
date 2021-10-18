@@ -45,8 +45,8 @@ export default class Map {
 
   save() {
     //console.log("map save, wip");
-    localStorage.setItem("seed", this.levelSeed);
-    localStorage.setItem("depth", this.depth);
+    window.localStorage.setItem("seed", this.levelSeed);
+    window.localStorage.setItem("depth", this.depth);
   }
 
   load() {
@@ -253,13 +253,13 @@ export default class Map {
     const spawnRoomIndex = random.getInt(0, this.root.rooms.length-1);
     const stairsRoomIndex = random.getInt(0, this.root.rooms.length-1);
 
-    console.log("spwanroom index: " + spawnRoomIndex);
+    //console.log("spwanroom index: " + spawnRoomIndex);
     for (let i = 0; i < this.root.rooms.length; i++) {
       const room = this.root.rooms[i];
       const spawnRoom = i === spawnRoomIndex ? true : false;
 
       if (i === spawnRoomIndex) {
-        console.log(room);
+        //console.log(room);
         this.startX = (room.x + (room.w/2)) | 0;
         this.startY = (room.y + (room.h/2)) | 0;        
       } 

@@ -54,7 +54,6 @@ class Game {
   }
 
   async init(withActors, createPlayer = true) {
-    console.log("seed: " + this.masterSeed + ", depth: " + this.depth);
     this.map.generate(withActors, this.masterSeed, this.depth);
 
     if (withActors) {
@@ -120,17 +119,20 @@ class Game {
   async continueGame() {
     console.log("Continue");
 
-    if (localStorage.getItem("seed") !== null) {
-      const savedVersion = localStorage.getItem("version");
-      if (savedVersion === null) localStorage.setItem("version", VERSION);
+    if (window.localStorage.getItem("seed") !== null) {
+      const savedVersion = window.localStorage.getItem("version");
+      if (savedVersion === null)
+        window.localStorage.setItem("version", VERSION);
 
-      this.masterSeed = localStorage.getItem("seed");
-      this.depth = localStorage.getItem("depth") | 0;
+      this.masterSeed = window.localStorage.getItem("seed");
+      this.depth = window.localStorage.getItem("depth") | 0;
 
       await this.init(false);
 
-      const tempUsers = JSON.parse(localStorage.getItem("actors") || "[]");
-      const playerID = localStorage.getItem("playerID");
+      const tempUsers = JSON.parse(
+        window.localStorage.getItem("actors") || "[]"
+      );
+      const playerID = window.localStorage.getItem("playerID");
 
       //console.log("temps: " + tempUsers.length);
 
@@ -211,13 +213,14 @@ class Game {
   }
 
   async load() {
-    if (localStorage.getItem("version") !== VERSION) localStorage.clear();
+    if (window.localStorage.getItem("version") !== VERSION)
+      window.localStorage.clear();
     this.menu = new Menu();
     this.menu.clear();
-    if (localStorage.getItem("depth"))
+    if (window.localStorage.getItem("depth"))
       this.menu.addItem(this.menu.constants.CONTINUE, "Continue");
     this.menu.addItem(this.menu.constants.NEW_GAME, "New Game");
-    
+
     //this.menu.addItem(this.menu.constants.EXIT, "Exit");
 
     let cursor = 0;
@@ -254,12 +257,12 @@ class Game {
 
   async save() {
     if (this.player.destructible.isDead()) {
-      localStorage.clear();
+      window.localStorage.clear();
     } else {
       this.map.save();
-      localStorage.setItem("playerID", this.actors.indexOf(this.player));
-      localStorage.setItem("actors", JSON.stringify(this.actors));
-      localStorage.setItem("version", VERSION);
+      window.localStorage.setItem("playerID", this.actors.indexOf(this.player));
+      window.localStorage.setItem("actors", JSON.stringify(this.actors));
+      window.localStorage.setItem("version", VERSION);
       //console.log(this.actors);
     }
   }
