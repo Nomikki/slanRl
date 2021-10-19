@@ -1,11 +1,3 @@
-export const initMessages = {
-  "Build date": BUILD_DATE,
-  "Build time": BUILD_TIME,
-  "Build datetime": BUILD_DATETIME,
-  "Commit hash": COMMIT_HASH,
-  Version: VERSION,
-};
-
 export const paddedLogObject = (object) => {
   const maxKeyLength = Object.keys(object).reduce(
     (previousValue, currentValue) =>
@@ -28,6 +20,15 @@ export const printVersion = () => {
 };
 
 export const debugInit = () => {
+  // Populates the content for "version" div in the bottom right corner
   printVersion();
-  paddedLogObject(initMessages);
+
+  // Console logs a padded object
+  paddedLogObject({
+    BUILD_DATE: BUILD_DATE,
+    BUILD_TIME: BUILD_TIME,
+    BUILD_DATETIME: BUILD_DATETIME,
+    COMMIT_HASH: COMMIT_HASH,
+    VERSION: VERSION,
+  });
 };
