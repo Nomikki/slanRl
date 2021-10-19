@@ -4,7 +4,6 @@ let _seed = 0;
 
 class Randomizer {
   constructor() {
-    this.seed = 0;
     this.rnd = 0;
   }
 
