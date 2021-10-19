@@ -13,6 +13,7 @@ import Log from "./log";
 import Container from "./container";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import { Menu } from "./menu";
+import { debugInit } from "./utils";
 
 class Game {
   constructor() {
@@ -317,9 +318,8 @@ class Game {
   }
 
   async run() {
-    document.querySelector(
-      "#version"
-    ).innerHTML = `Commit ID: <span>${COMMIT_HASH}</span> | Version: <span>${VERSION}</span>`;
+    debugInit();
+
     while (true) {
       await this.load();
       await this.gameloop();
