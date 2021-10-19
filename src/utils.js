@@ -14,14 +14,16 @@ export const paddedLogObject = (object) => {
   );
 };
 
-export const printVersion = () => {
-  const versionContent = `Commit ID: <span>${COMMIT_HASH}</span> | Version: <span>${VERSION}</span>`;
-  document.querySelector("#version").innerHTML = versionContent;
+export const populateVersion = () =>
+  `Commit ID: <span>${COMMIT_HASH}</span> | Version: <span>${VERSION}</span>`;
+
+export const printVersionContainer = () => {
+  document.querySelector("#version").innerHTML = populateVersion();
 };
 
 export const debugInit = () => {
   // Populates the content for "version" div in the bottom right corner
-  printVersion();
+  printVersionContainer();
 
   // Console logs a padded object
   paddedLogObject({
