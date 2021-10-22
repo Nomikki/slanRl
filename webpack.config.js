@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const buildTime = new Date().toISOString();
 
 module.exports = {
-  entry: "./src/index.js",
+  entry: "./src/index.ts",
   mode: "development",
 
   output: {
@@ -26,4 +26,7 @@ module.exports = {
       template: "./src/index.html",
     }),
   ],
+  resolve: {
+    extensions: [".js", ".ts"],
+  },
 };

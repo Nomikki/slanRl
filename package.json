@@ -16,7 +16,7 @@
   "description": "",
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "start": "webpack --config webpack.config.js --progress",
+    "start": "webpack serve --config webpack.config.js --progress --open",
     "watch": "webpack --watch"
   },
   "devDependencies": {

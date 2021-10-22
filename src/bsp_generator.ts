@@ -1,8 +1,8 @@
 "use strict";
 
-import Rectangle from "./rectangle.js";
-import bspNode from "./bsp_node.js";
-import Randomizer from "./random.js";
+import Rectangle from "./rectangle";
+import bspNode from "./bsp_node";
+import Randomizer from "./random";
 
 const random = new Randomizer();
 
