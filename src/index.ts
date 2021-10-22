@@ -15,6 +15,13 @@ import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import { Menu } from "./menu";
 import { debugInit } from "./utils";
 
+enum Directions {
+  Up,
+  Right,
+  Down,
+  Left,
+}
+
 class Game {
   constructor() {
     this.GameStatus = Object.freeze({
@@ -45,6 +52,8 @@ class Game {
 
     this.actors = new Array();
     this.map = new Map(this.width, this.height);
+
+    console.log(`Direction up: ${Directions.Up}`);
   }
 
   async term() {
@@ -255,9 +264,7 @@ class Game {
         await this.continueGame();
       }
     }
-
   }
-
 
   async save() {
     if (this.player.destructible.isDead()) {
@@ -380,7 +387,14 @@ class Game {
     this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1);
     this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
 
-    this.drawText("EXP: " + this.player.destructible.xp + " / " + this.player.ai.getNextLevelXP(), 10, this.height+1);
+    this.drawText(
+      "EXP: " +
+        this.player.destructible.xp +
+        " / " +
+        this.player.ai.getNextLevelXP(),
+      10,
+      this.height + 1
+    );
 
     this.log.render();
   }
