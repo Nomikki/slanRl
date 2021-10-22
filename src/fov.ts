@@ -1,9 +1,18 @@
 "use strict";
 
 import { game } from ".";
+import { X, Y } from "./actor";
+
+export type Width = number;
+export type Height = number;
+export type Length = number;
 
 export default class Fov {
-  constructor(w, h) {
+  width: Width;
+  height: Height;
+  mapped: any[];
+
+  constructor(w: Width, h: Height) {
     this.width = w;
     this.height = h;
 
@@ -22,12 +31,12 @@ export default class Fov {
     this.mapped = new Array(this.width * this.height).fill(0);
   }
 
-  float2int(value) {
+  float2int(value: number) {
     return value | 0;
   }
 
   /* Just a placeholder */
-  compute(x, y, len) {
+  compute(x: X, y: Y, len: Length) {
     this.clear();
 
     let dx = 0;
@@ -43,7 +52,6 @@ export default class Fov {
 
       px = x + 0.5;
       py = y + 0.5;
-      
 
       for (let l = 0; l < len; l++) {
         px += dx;
@@ -63,13 +71,13 @@ export default class Fov {
     }
   }
 
-  getMapped(x, y) {
+  getMapped(x: X, y: Y) {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height)
       return this.mapped[x + y * this.width];
     else return 2;
   }
 
-  isInFov(x, y) {
+  isInFov(x: X, y: Y) {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
       return this.mapped[x + y * this.width] > 0;
     }

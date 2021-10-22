@@ -1,6 +1,9 @@
 "use strict";
 
 export class MenuItem {
+  code: number;
+  label: string;
+
   constructor() {
     this.code = 0;
     this.label = "";
@@ -8,6 +11,8 @@ export class MenuItem {
 }
 
 export class Menu {
+  constants: any;
+  items: any;
   constructor() {
     this.constants = Object.freeze({
       NONE: 0,
@@ -26,7 +31,7 @@ export class Menu {
     if (this.items && this.items.length > 0) this.items = null;
   }
 
-  addItem(code, label) {
+  addItem(code: number, label: string) {
     let item = new MenuItem();
     item.code = code;
     item.label = label;

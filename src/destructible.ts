@@ -1,9 +1,39 @@
 "use strict";
 
 import { game } from ".";
+import Actor, { X, Y } from "./actor";
+
+export type Name = string;
+
+export type CorpseName = string;
+export type Defense = number;
+export type MaxHP = number;
+export type HP = number;
+export type DestructibleType = "player" | "monster";
+export type XP = number;
+
+export type HealAmount = number;
+
+export type Character = string;
+export type Color = string;
+
+export type Damage = number;
 
 export default class Destructible {
-  constructor(maxHP, defense, corpseName, type, xp) {
+  maxHP: MaxHP;
+  hp: HP;
+  defense: Defense;
+  corpseName: CorpseName;
+  type: DestructibleType;
+  xp: XP;
+
+  constructor(
+    maxHP: MaxHP,
+    defense: Defense,
+    corpseName: CorpseName,
+    type: DestructibleType,
+    xp: XP
+  ) {
     this.maxHP = maxHP;
     this.hp = this.maxHP;
     this.defense = defense;
@@ -16,7 +46,7 @@ export default class Destructible {
     return this.hp <= 0;
   }
 
-  heal(amount) {
+  heal(amount: HealAmount) {
     this.hp += amount;
     if (this.hp > this.maxHP) {
       amount -= this.hp - this.maxHP;
@@ -25,7 +55,7 @@ export default class Destructible {
     return amount;
   }
 
-  takeDamage(owner, damage) {
+  takeDamage(owner: Actor, damage: Damage) {
     damage -= this.defense;
 
     if (damage > 0) {
@@ -39,7 +69,7 @@ export default class Destructible {
     return damage;
   }
 
-  die(owner) {
+  die(owner: Actor) {
     owner.ch = "%";
     owner.color = "#AA0000";
     owner.name = this.corpseName;
@@ -49,12 +79,18 @@ export default class Destructible {
 }
 
 export class MonsterDestructible extends Destructible {
-  constructor(maxHP, defense, corpseName, xp) {
+  xp: number;
+  constructor(
+    maxHP: MaxHP,
+    defense: Defense,
+    corpseName: CorpseName,
+    xp: XP = 0
+  ) {
     super(maxHP, defense, corpseName, "monster", xp);
     this.xp = xp;
   }
 
-  die(owner) {
+  die(owner: Actor) {
     game.log.add(owner.name + " is dead. You gain " + this.xp + " xp");
     game.player.destructible.xp += this.xp;
     super.die(owner);
@@ -62,11 +98,11 @@ export class MonsterDestructible extends Destructible {
 }
 
 export class PlayerDestructible extends Destructible {
-  constructor(maxHP, defense, corpseName) {
+  constructor(maxHP: MaxHP, defense: Defense, corpseName: CorpseName) {
     super(maxHP, defense, corpseName, "player", 0);
   }
 
-  die(owner) {
+  die(owner: Actor) {
     game.log.add("You died", "#A00");
     super.die(owner);
     game.gameStatus = game.GameStatus.DEFEAT;

@@ -1,7 +1,13 @@
-"use strict";
+import { X, Y } from "./actor";
+import { Height, Width } from "./fov";
 
 class Rectangle {
-  constructor(x, y, w, h) {
+  x: X;
+  y: Y;
+  w: Width;
+  h: Height;
+
+  constructor(x: X, y: Y, w: Width, h: Height) {
     this.x = x;
     this.y = y;
     this.w = w;

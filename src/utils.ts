@@ -1,4 +1,4 @@
-export const paddedLogObject = (object) => {
+export const paddedLogObject = (object: { [k in string]: string }) => {
   const maxKeyLength = Object.keys(object).reduce(
     (previousValue, currentValue) =>
       currentValue.length + 3 > previousValue

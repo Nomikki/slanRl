@@ -1,15 +1,20 @@
 "use strict";
 
 import { game } from ".";
+import { Color } from "./destructible";
 
 class LogText {
-  constructor(text, color) {
+  text: string;
+  color: Color;
+  constructor(text: string, color: Color) {
     this.text = text;
     this.color = color;
   }
 }
 
 export default class Log {
+  constants: Readonly<{ SIZE_OF_LOG: number }>;
+  texts: any[];
   constructor() {
     this.constants = Object.freeze({
       SIZE_OF_LOG: 100,
@@ -33,7 +38,7 @@ export default class Log {
     }
   }
 
-  add(text, color = "#AAA") {
+  add(text: string, color: Color = "#AAA") {
     //console.log(text);
     this.texts.push(new LogText(text, color));
     if (this.texts.length > this.constants.SIZE_OF_LOG) {

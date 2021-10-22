@@ -3,11 +3,29 @@
 import Rectangle from "./rectangle";
 import bspNode from "./bsp_node";
 import Randomizer from "./random";
+import { Height, Width } from "./fov";
+import { X, Y } from "./actor";
+import Container from "./container";
 
 const random = new Randomizer();
 
+export interface NodeType {
+  A: any;
+  B: any;
+}
+
 class bspGenerator {
-  constructor(x, y, w, h, maxLevel = 5) {
+  maxLevel: number;
+  rootContainer: Rectangle;
+  rows: any;
+  cols: any;
+  map: any[];
+  doorPlaces: any[];
+  tempRooms: any[];
+  tree: bspNode;
+  rooms: any;
+
+  constructor(x: X, y: Y, w: Width, h: Height, maxLevel = 5) {
     this.maxLevel = maxLevel;
 
     this.rootContainer = new Rectangle(x + 1, y + 1, w - 2, h - 2);
@@ -33,9 +51,10 @@ class bspGenerator {
   }
 
   RandomSplit(container) {
-    let r1, r2;
+    let r1: Rectangle;
+    let r2: Rectangle;
 
-    let splitVertical = random.getInt(0, 1);
+    let splitVertical = !!random.getInt(0, 1);
 
     if (container.w > container.h && container.w / container.h >= 0.05) {
       splitVertical = true;
@@ -67,7 +86,7 @@ class bspGenerator {
     return [r1, r2];
   }
 
-  Devide(container, level) {
+  Devide(container: Rectangle, level) {
     const root = new bspNode(container);
 
     if (level < this.maxLevel) {
@@ -98,7 +117,7 @@ class bspGenerator {
     }
   }
 
-  IsThereRoom(x, y) {
+  IsThereRoom(x: X, y: Y) {
     for (const room of this.tempRooms) {
       if (x >= room.x && y >= room.y && x <= room.w && y <= room.h) {
         return true;
@@ -107,7 +126,7 @@ class bspGenerator {
     return false;
   }
 
-  ConnectRooms(node) {
+  ConnectRooms(node: NodeType) {
     if (node.A === null || node.B === null) return false;
 
     const x1 = node.A.leaf.GetCenterX() >> 0;

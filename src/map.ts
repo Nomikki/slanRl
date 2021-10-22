@@ -1,7 +1,7 @@
 "use strict";
 
 import { game } from ".";
-import Actor from "./actor";
+import Actor, { X, Y } from "./actor";
 import { MonsterAI } from "./ai";
 import Attacker from "./attacker";
 import bspGenerator from "./bsp_generator";
@@ -13,6 +13,8 @@ import Rectangle from "./rectangle";
 export const random = new Randomizer();
 
 class Tile {
+  canWalk: boolean;
+  explored: boolean;
   constructor() {
     this.canWalk = false;
     this.explored = false;
@@ -20,6 +22,22 @@ class Tile {
 }
 
 export default class Map {
+  width: any;
+  height: any;
+  startX: number;
+  startY: number;
+  stairsX: number;
+  stairsY: number;
+  constants: Readonly<{
+    ROOM_MAX_SIZE: number;
+    ROOM_MIN_SIZE: number;
+    MAX_ROOM_MONSTERS: number;
+    MAX_ROOM_ITEMS: number;
+  }>;
+  root: any;
+  levelSeed: number;
+  depth: number;
+  tiles: any;
   constructor(width, height) {
     this.width = width;
     this.height = height;
@@ -46,24 +64,24 @@ export default class Map {
 
   save() {
     //console.log("map save, wip");
-    window.localStorage.setItem("seed", this.levelSeed);
-    window.localStorage.setItem("depth", this.depth);
+    window.localStorage.setItem("seed", `${this.levelSeed}`);
+    window.localStorage.setItem("depth", `${this.depth}`);
   }
 
   load() {
     //console.log("map load, wip");
   }
 
-  isWall(x, y) {
+  isWall(x: X, y: Y) {
     const index = x + y * this.width;
     return !this.tiles[index].canWalk;
   }
 
-  setWall(x, y) {
+  setWall(x: X, y: Y) {
     this.tiles[x + y * this.width].canWalk = false;
   }
 
-  canWalk(x, y) {
+  canWalk(x: X, y: Y) {
     if (this.isWall(x, y)) return false;
     for (const actor of game.actors) {
       if (actor.x === x && actor.y === y && actor.blocks) {
@@ -74,7 +92,7 @@ export default class Map {
     return true;
   }
 
-  addMonster(x, y) {
+  addMonster(x: X, y: Y) {
     const rng = random.getInt(0, 100);
 
     if (rng < 80) {
@@ -87,14 +105,19 @@ export default class Map {
     } else {
       let troll = new Actor(x, y, "t", "lan troll", "#008800");
 
-      troll.destructible = new MonsterDestructible(10, 0, "wasted lan troll", 15);
+      troll.destructible = new MonsterDestructible(
+        10,
+        0,
+        "wasted lan troll",
+        15
+      );
       troll.attacker = new Attacker(3);
       troll.ai = new MonsterAI();
       game.actors.push(troll);
     }
   }
 
-  additem(x, y) {
+  additem(x: X, y: Y) {
     const rng = random.getInt(0, 100);
     if (rng < 70) {
       if (random.getInt(0, 100) < 95) {
@@ -218,9 +241,9 @@ export default class Map {
     */
   }
 
-  generate(withActors, seed, depth) {
-    this.levelSeed = parseInt(seed);
-    this.depth = parseInt(depth);
+  generate(withActors: boolean, seed: number, depth: number) {
+    this.levelSeed = seed;
+    this.depth = depth;
 
     random.setSeed(this.levelSeed + depth * 25);
     console.log("seed: " + this.levelSeed);
@@ -231,9 +254,9 @@ export default class Map {
 
     let monsterRooms = new Array();
 
-    //const option = random.getInt(0, 2);
+    const option = random.getInt(0, 2);
     //console.log("option: " + option);
-    const option = 2;
+    // const option = 2;
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
