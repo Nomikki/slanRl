@@ -8,6 +8,9 @@
     "outDir": "dist",
     "lib": ["es2020", "dom"],
     "moduleResolution": "node",
+    "paths": {
+      "*": ["types/*.d.ts"]
+    },
     "suppressExcessPropertyErrors": true,
     // "sourceMap": false,
     // "noEmitOnError": true,

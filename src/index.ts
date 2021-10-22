@@ -1,17 +1,13 @@
 "use strict";
 
-import Actor from "./actor";
+import Actor, { X, Y } from "./actor";
 import Map from "./map";
 import Fov from "./fov";
-import Destructible, {
-  MonsterDestructible,
-  PlayerDestructible,
-} from "./destructible";
+import { Color, MonsterDestructible, PlayerDestructible } from "./destructible";
 import Attacker from "./attacker";
 import { MonsterAI, PlayerAI } from "./ai";
 import Log from "./log";
 import Container from "./container";
-import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import { Menu } from "./menu";
 import { debugInit } from "./utils";
 
@@ -22,7 +18,32 @@ enum Directions {
   Left,
 }
 
+export type Tile = [boolean, number, number];
+
 class Game {
+  GameStatus: Readonly<{
+    STARTUP: number;
+    IDLE: number;
+    NEW_TURN: number;
+    VICTORY: number;
+    DEFEAT: number;
+  }>;
+  player: any;
+  map: any;
+  stairs: any;
+  canvas: HTMLElement;
+  ctx: any;
+  fontSize: number;
+  log: Log;
+  lastKey: string;
+  depth: number;
+  width: number;
+  height: number;
+  actors: Actor[];
+  gameStatus: any;
+  menu: Menu;
+  masterSeed: number;
+
   constructor() {
     this.GameStatus = Object.freeze({
       STARTUP: 0,
@@ -37,14 +58,14 @@ class Game {
     this.stairs = null;
 
     this.canvas = document.getElementById("screen");
-    this.ctx = this.canvas.getContext("2d");
+    this.ctx = (this.canvas as HTMLCanvasElement).getContext("2d");
     this.ctx.font = "12px Arial";
     this.fontSize = 12;
     this.ctx.textAlign = "center";
 
     this.log = new Log();
 
-    this.lastKey = 0;
+    this.lastKey = "";
     this.depth = 0;
 
     this.width = 80;
@@ -63,7 +84,7 @@ class Game {
     this.player = null;
   }
 
-  async init(withActors, createPlayer = true) {
+  async init(withActors: boolean, createPlayer = true) {
     this.map.generate(withActors, this.masterSeed, this.depth);
 
     if (withActors) {
@@ -135,8 +156,8 @@ class Game {
       if (savedVersion === null)
         window.localStorage.setItem("version", VERSION);
 
-      this.masterSeed = window.localStorage.getItem("seed");
-      this.depth = window.localStorage.getItem("depth") | 0;
+      this.masterSeed = parseInt(window.localStorage.getItem("seed"), 10);
+      this.depth = parseInt(window.localStorage.getItem("depth"), 10) || 0;
 
       await this.init(false);
 
@@ -271,7 +292,10 @@ class Game {
       window.localStorage.clear();
     } else {
       this.map.save();
-      window.localStorage.setItem("playerID", this.actors.indexOf(this.player));
+      window.localStorage.setItem(
+        "playerID",
+        `${this.actors.indexOf(this.player)}`
+      );
       window.localStorage.setItem("actors", JSON.stringify(this.actors));
       window.localStorage.setItem("version", VERSION);
       //console.log(this.actors);
@@ -293,7 +317,7 @@ class Game {
       0,
       this.height * this.fontSize,
       this.width * this.fontSize,
-      this.canvas.height - this.height * this.fontSize
+      (this.canvas as HTMLCanvasElement).height - this.height * this.fontSize
     );
   }
 
@@ -311,7 +335,7 @@ class Game {
     this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
 
-  drawText(text, x, y, color = "#AAA") {
+  drawText(text: string, x: X, y: Y, color: Color = "#AAA") {
     this.ctx.textAlign = "left";
     /*
     for (let i = 0; i < text.length; i++) {
@@ -346,12 +370,12 @@ class Game {
   waitingKeypress() {
     return new Promise((resolve) => {
       document.addEventListener("keydown", onKeyHandler);
-      function onKeyHandler(e) {
+      function onKeyHandler(e: KeyboardEvent) {
         e.preventDefault();
         if (e.keyCode !== 0) {
           document.removeEventListener("keydown", onKeyHandler);
           game.lastKey = e.key;
-          resolve();
+          resolve("");
         }
       }
     });
@@ -361,7 +385,7 @@ class Game {
   async getch() {
     await this.waitingKeypress();
     const tempKey = this.lastKey;
-    this.lastKey = 0;
+    this.lastKey = "";
     return tempKey;
   }
 
@@ -374,6 +398,12 @@ class Game {
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
 
     this.renderUI();
+  }
+  playerX(arg0: string, playerX: any, playerY: any, arg3: string) {
+    throw new Error("Method not implemented.");
+  }
+  playerY(arg0: string, playerX: any, playerY: any, arg3: string) {
+    throw new Error("Method not implemented.");
   }
 
   renderUI() {
@@ -428,7 +458,7 @@ class Game {
     }
   }
 
-  removeActor(actor) {
+  removeActor(actor: Actor) {
     for (let i = 0; i < this.actors.length; i++) {
       if (this.actors[i] === actor) {
         this.actors.splice(i, 1);
@@ -437,12 +467,12 @@ class Game {
     }
   }
 
-  sendToBack(actor) {
+  sendToBack(actor: Actor) {
     this.removeActor(actor);
     this.actors.unshift(actor);
   }
 
-  getClosestMonster(x, y, range) {
+  getClosestMonster(x: X, y: Y, range: number) {
     let closest = null;
     let bestDistance = 100000;
 
@@ -462,7 +492,7 @@ class Game {
     return closest;
   }
 
-  getActor(x, y) {
+  getActor(x: X, y: Y) {
     for (const actor of this.actors) {
       if (
         actor.x === x &&
@@ -476,7 +506,7 @@ class Game {
     return null;
   }
 
-  async pickATile(x, y, range = 0.0) {
+  async pickATile(x: X, y: Y, range = 0.0): Promise<Tile> {
     let px = x;
     let py = y;
     let inRange = false;
