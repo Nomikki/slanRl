@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "checkJs": false,
-    "skipLibCheck": true,
     "baseUrl": "./",
     "target": "ES6",
     "module": "commonjs",
@@ -12,20 +10,20 @@
       "*": ["types/*.d.ts"]
     },
     "suppressExcessPropertyErrors": true,
-    // "sourceMap": false,
-    // "noEmitOnError": true,
+    "sourceMap": false,
+    "noEmitOnError": true,
     "strict": false,
-    // "noImplicitAny": true,
-    // "strictNullChecks": true,
-    // "alwaysStrict": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noImplicitReturns": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "strictFunctionTypes": true,
-    // "esModuleInterop": true,
-    // "preserveWatchOutput": true,
-    // "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "strictFunctionTypes": true,
+    "esModuleInterop": true,
+    "preserveWatchOutput": true,
+    "resolveJsonModule": true
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }

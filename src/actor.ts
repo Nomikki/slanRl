@@ -1,9 +1,7 @@
-"use strict";
-
 import { game } from ".";
 import { PlayerAI } from "./ai";
 import Container from "./container";
-import { Character, Color, CorpseName, Name } from "./destructible";
+import { Character, Color, Name } from "./destructible";
 import Fov from "./fov";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 

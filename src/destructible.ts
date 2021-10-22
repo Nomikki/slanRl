@@ -1,7 +1,5 @@
-"use strict";
-
 import { game } from ".";
-import Actor, { X, Y } from "./actor";
+import Actor from "./actor";
 
 export type Name = string;
 

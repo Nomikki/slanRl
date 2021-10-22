@@ -1,14 +1,12 @@
-"use strict";
-
 import { game } from ".";
 import Actor from "./actor";
 
 export type Target = Actor;
 
 export default class Attacker {
-  power: any;
+  power: number;
 
-  constructor(power) {
+  constructor(power: number) {
     this.power = power;
   }
 

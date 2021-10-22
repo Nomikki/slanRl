@@ -1,11 +1,10 @@
-"use strict";
-
 import { game } from ".";
 import Actor, { X, Y } from "./actor";
 import { MonsterAI } from "./ai";
 import Attacker from "./attacker";
 import bspGenerator from "./bsp_generator";
 import { MonsterDestructible } from "./destructible";
+import { Height, Width } from "./fov";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import Randomizer from "./random";
 import Rectangle from "./rectangle";
@@ -38,7 +37,7 @@ export default class Map {
   levelSeed: number;
   depth: number;
   tiles: any;
-  constructor(width, height) {
+  constructor(width: Width, height: Height) {
     this.width = width;
     this.height = height;
 
@@ -174,7 +173,7 @@ export default class Map {
     }
   }
 
-  dig(x1, y1, x2, y2) {
+  dig(x1: X, y1: X, x2: X, y2: Y) {
     x1 = x1 | 0;
     x2 = x2 | 0;
     y1 = y1 | 0;
@@ -200,7 +199,7 @@ export default class Map {
     }
   }
 
-  addActors(room) {
+  addActors(room: Rectangle) {
     let numberOfMonsters = random.getInt(0, this.constants.MAX_ROOM_MONSTERS);
     let numberOfItems = random.getInt(0, this.constants.MAX_ROOM_ITEMS);
     //console.log(room);
@@ -228,7 +227,7 @@ export default class Map {
     }
   }
 
-  createRoom(x1, y1, x2, y2) {
+  createRoom(x1: X, y1: Y, x2: X, y2: Y) {
     this.dig(x1, y1, x2, y2);
 
     /*
@@ -254,14 +253,16 @@ export default class Map {
 
     let monsterRooms = new Array();
 
-    const option = random.getInt(0, 2);
+    // const option = random.getInt(0, 2);
     //console.log("option: " + option);
-    // const option = 2;
+    const option = 2;
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
 
       //we can use path/room data directly from bsp if we want.
+      // TODO: Remove the "ts-ignore" when this piece of code is done.
+      // @ts-ignore: Unreachable code error
       if (option === 0) this.tiles[i].canWalk = !this.root.map[i];
     }
 
@@ -288,6 +289,8 @@ export default class Map {
       const spawnRoom = i === spawnRoomIndex ? true : false;
 
       //option 1
+      // TODO: Remove the "ts-ignore" when this piece of code is done.
+      // @ts-ignore: Unreachable code error
       if (option === 1) {
         w = room.w;
         h = room.h;
@@ -318,6 +321,8 @@ export default class Map {
         this.stairsY = (y + h / 2) | 0;
       }
 
+      // TODO: Remove the "ts-ignore" when this piece of code is done.
+      // @ts-ignore: Unreachable code error
       if (option === 1 || option === 2) {
         if (i > 0) {
           this.dig(lastx, lasty, x + w / 2, lasty);

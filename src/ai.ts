@@ -1,5 +1,5 @@
 import { game } from ".";
-import Actor from "./actor";
+import Actor, { X, Y } from "./actor";
 import { XP } from "./destructible";
 import { Menu } from "./menu";
 import Randomizer from "./random";
@@ -8,7 +8,7 @@ export const random = new Randomizer();
 export default class AI {
   constructor() {}
 
-  update(owner: Actor) {}
+  async update(_owner: Actor) {}
 }
 
 export class PlayerAI extends AI {
@@ -118,7 +118,7 @@ export class PlayerAI extends AI {
     }
   }
 
-  async handleActionKey(owner, ascii) {
+  async handleActionKey(owner: Actor, ascii: string) {
     console.log(ascii);
 
     switch (ascii) {
@@ -179,7 +179,7 @@ export class PlayerAI extends AI {
     }
   }
 
-  moveOrAttack(owner, targetX, targetY) {
+  moveOrAttack(owner: Actor, targetX: X, targetY: Y) {
     if (game.map.isWall(targetX, targetY)) return false;
 
     for (const actor of game.actors) {
@@ -209,7 +209,7 @@ export class PlayerAI extends AI {
     return true;
   }
 
-  async choseFromInventory(owner) {
+  async choseFromInventory(owner: Actor) {
     game.clear();
     game.render();
     for (let y = 0; y < 28; y++) {
@@ -255,7 +255,7 @@ export class MonsterAI extends AI {
     });
   }
 
-  async update(owner) {
+  async update(owner: Actor) {
     if (owner.destructible && owner.destructible.isDead()) return;
 
     if (game.player.fov.isInFov(owner.x, owner.y)) {
@@ -269,7 +269,7 @@ export class MonsterAI extends AI {
     }
   }
 
-  moveOrAttack(owner, targetX, targetY) {
+  moveOrAttack(owner: Actor, targetX: X, targetY: Y) {
     let dx = targetX - owner.x;
     let dy = targetY - owner.y;
     const stepdx = dx > 0 ? 1 : -1;
@@ -296,15 +296,16 @@ export class MonsterAI extends AI {
 }
 
 export class ConfusedAI extends AI {
-  nbTurns: any;
-  oldAi: any;
-  constructor(nbTurns, oldAi) {
+  nbTurns: number;
+  oldAi: number;
+
+  constructor(nbTurns: number, oldAi: number) {
     super();
     this.nbTurns = nbTurns;
     this.oldAi = oldAi;
   }
 
-  async update(owner) {
+  async update(owner: Actor) {
     const dx = random.getInt(-1, 1);
     const dy = random.getInt(-1, 1);
 

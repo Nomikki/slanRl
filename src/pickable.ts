@@ -1,5 +1,3 @@
-"use strict";
-
 import { game } from ".";
 import Actor from "./actor";
 import { ConfusedAI } from "./ai";
@@ -140,9 +138,9 @@ export class Fireball extends Pickable {
 }
 
 export class Confuser extends Pickable {
-  nbTurns: any;
-  range: any;
-  constructor(nbTurns, range) {
+  nbTurns: number;
+  range: number;
+  constructor(nbTurns: number, range: number) {
     super("confuser");
     this.nbTurns = nbTurns;
     this.range = range;

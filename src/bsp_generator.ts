@@ -1,11 +1,8 @@
-"use strict";
-
 import Rectangle from "./rectangle";
 import bspNode from "./bsp_node";
 import Randomizer from "./random";
 import { Height, Width } from "./fov";
 import { X, Y } from "./actor";
-import Container from "./container";
 
 const random = new Randomizer();
 
@@ -50,7 +47,7 @@ class bspGenerator {
     this.ConnectRooms(this.tree);
   }
 
-  RandomSplit(container) {
+  RandomSplit(container: Rectangle) {
     let r1: Rectangle;
     let r2: Rectangle;
 
@@ -86,7 +83,7 @@ class bspGenerator {
     return [r1, r2];
   }
 
-  Devide(container: Rectangle, level) {
+  Devide(container: Rectangle, level: number) {
     const root = new bspNode(container);
 
     if (level < this.maxLevel) {
@@ -126,8 +123,10 @@ class bspGenerator {
     return false;
   }
 
-  ConnectRooms(node: NodeType) {
-    if (node.A === null || node.B === null) return false;
+  ConnectRooms(node: NodeType): false | void {
+    if (node.A === null || node.B === null) {
+      return false;
+    }
 
     const x1 = node.A.leaf.GetCenterX() >> 0;
     const y1 = node.A.leaf.GetCenterY() >> 0;
