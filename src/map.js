@@ -80,14 +80,14 @@ export default class Map {
     if (rng < 80) {
       let orc = new Actor(x, y, "o", "lan orc", "#00AA00");
 
-      orc.destructible = new MonsterDestructible(10, 0, "wasted lan orc");
+      orc.destructible = new MonsterDestructible(10, 0, "wasted lan orc", 10);
       orc.attacker = new Attacker(3);
       orc.ai = new MonsterAI();
       game.actors.push(orc);
     } else {
       let troll = new Actor(x, y, "t", "lan troll", "#008800");
 
-      troll.destructible = new MonsterDestructible(10, 0, "wasted lan troll");
+      troll.destructible = new MonsterDestructible(10, 0, "wasted lan troll", 15);
       troll.attacker = new Attacker(3);
       troll.ai = new MonsterAI();
       game.actors.push(troll);

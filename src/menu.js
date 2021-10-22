@@ -14,6 +14,9 @@ export class Menu {
       NEW_GAME: 1,
       CONTINUE: 2,
       EXIT: 3,
+      CONSTITUTION: 4,
+      STRENGTH: 5,
+      AGILITY: 6,
     });
 
     this.items = new Array();

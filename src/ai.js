@@ -1,6 +1,7 @@
 "use strict";
 
 import { game } from ".";
+import { Menu } from "./menu";
 import Randomizer from "./random";
 export const random = new Randomizer();
 
@@ -13,9 +14,75 @@ export default class AI {
 export class PlayerAI extends AI {
   constructor() {
     super();
+    this.xpLevel = 1;
+  }
+
+  getNextLevelXP() {
+    const LEVEL_UP_BASE = 200;
+    const LEVEL_UP_FACTOR = 150;
+
+    return LEVEL_UP_BASE + (this.xpLevel * LEVEL_UP_FACTOR);
   }
 
   async update(owner) {
+
+    const levelUpXp = this.getNextLevelXP();
+    if (owner.destructible.xp >= levelUpXp)
+    {
+      this.xpLevel++;
+      owner.destructible.xp -= levelUpXp;
+      game.log.add("Your battle skills grow stronger! You reached level " + this.xpLevel, "#FFFF00");
+
+      game.menu = new Menu();
+      game.menu.clear();
+      game.menu.addItem(game.menu.constants.CONSTITUTION, "Constitution (+20 hp)");
+      game.menu.addItem(game.menu.constants.STRENGTH, "Strenght (+1 attack)");
+      game.menu.addItem(game.menu.constants.AGILITY, "Agility (+1 defense)");
+
+      let cursor = 0;
+      let selectedItem = -1;
+      while (true) {
+        game.clear();
+        game.renderUI();
+        game.drawChar(">", game.width / 2 - 12, 10 + cursor, "#FFF");
+        for (let i = 0; i < game.menu.items.length; i++) {
+          game.drawText(game.menu.items[i].label, game.width / 2 - 10, 10 + i);
+        }
+  
+        const ch = await game.getch();
+        if (ch === "ArrowDown") cursor++;
+        if (ch === "ArrowUp") cursor--;
+        if (ch === "Enter") {
+          selectedItem = game.menu.items[cursor].code;
+          break;
+        }
+  
+        cursor = cursor % game.menu.items.length;
+        if (cursor < 0) cursor = game.menu.items.length - 1;
+      }
+  
+      if (selectedItem != -1) {
+        if (selectedItem === game.menu.constants.CONSTITUTION) {
+          owner.destructible.hp += 20;
+          owner.destructible.maxHP += 20;
+        }
+  
+        if (selectedItem === game.menu.constants.STRENGTH) {
+          owner.attacker.power += 1;
+        }
+
+        if (selectedItem === game.menu.constants.AGILITY) {
+          owner.destructible.defense += 1;
+        }
+
+      }
+
+      game.render();
+      
+
+
+    }
+
     if (owner.destructible && owner.destructible.isDead()) return;
 
     let dx = 0;
