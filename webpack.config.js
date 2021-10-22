@@ -24,18 +24,8 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: "./src/index.html",
-      favicon: "src/images/favicon.png",
     }),
   ],
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        loader: "ts-loader",
-        exclude: /node_modules/,
-      },
-    ],
-  },
   resolve: {
     extensions: [".js", ".ts"],
   },

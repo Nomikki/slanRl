@@ -1,31 +1,31 @@
 "use strict";
 
 import { game } from ".";
-import Actor from "./actor";
 
 export default class Attacker {
-  power: number;
-
-  constructor(power: number) {
+  constructor(power) {
     this.power = power;
   }
 
-  attack(owner: Actor, target: Actor) {
+  attack(owner, target) {
     if (target.destructible && !target.destructible.isDead()) {
       if (this.power - target.destructible.defense > 0) {
-        const dmg = this.power - target.destructible.defense;
-
         game.log.add(
-          `${owner.name} attacks ${target.name} for ${dmg} hit points.`,
-          owner === game.player ? "#DDD" : "#AAA"
+          owner.name +
+            " attacks " +
+            target.name +
+            " for " +
+            (this.power - target.destructible.defense) +
+            " hit points.", owner === game.player ? "#DDD" : "#AAA"
         );
       } else {
-        game.log.add(`
-          ${owner.name} attacks ${target.name} but it has no effect!`);
+        game.log.add(
+          owner.name + " attacks " + target.name + " but it has no effect!"
+        );
       }
       target.destructible.takeDamage(target, this.power);
     } else {
-      game.log.add(`${owner.name} attacks ${target.name} in vain.`);
+      game.log.add(owner.name + " attacks " + target.name + " in vain.");
     }
   }
 }
