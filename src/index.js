@@ -111,6 +111,7 @@ class Game {
   async newGame() {
     console.log("New game!");
     this.masterSeed = (Math.random() * 0x7ffffff) | 0;
+
     this.depth = 1;
     await this.term();
     await this.init(true);

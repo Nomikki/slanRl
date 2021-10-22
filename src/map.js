@@ -30,6 +30,7 @@ export default class Map {
     this.stairsX = 0;
     this.stairsY = 0;
 
+    //console.log("size of map: " + this.width + ", " + this.height);
 
     this.constants = Object.freeze({
       ROOM_MAX_SIZE: 10,
@@ -221,7 +222,7 @@ export default class Map {
     this.levelSeed = parseInt(seed);
     this.depth = parseInt(depth);
 
-    random.setSeed(this.levelSeed + (depth*25));
+    random.setSeed(this.levelSeed + depth * 25);
     console.log("seed: " + this.levelSeed);
     console.log("depth: " + this.depth);
 
@@ -250,24 +251,18 @@ export default class Map {
     let h = 0;
 
     //take one room and make it spawn room
-    const spawnRoomIndex = random.getInt(0, this.root.rooms.length-1);
-    const stairsRoomIndex = random.getInt(0, this.root.rooms.length-1);
+    const spawnRoomIndex = random.getInt(0, this.root.rooms.length - 1);
+    const stairsRoomIndex = random.getInt(0, this.root.rooms.length - 1);
 
-    //console.log("spwanroom index: " + spawnRoomIndex);
+    console.log(
+      "spwanroom index: " +
+        spawnRoomIndex +
+        " / " +
+        (this.root.rooms.length - 1)
+    );
     for (let i = 0; i < this.root.rooms.length; i++) {
       const room = this.root.rooms[i];
       const spawnRoom = i === spawnRoomIndex ? true : false;
-
-      if (i === spawnRoomIndex) {
-        //console.log(room);
-        this.startX = (room.x + (room.w/2)) | 0;
-        this.startY = (room.y + (room.h/2)) | 0;        
-      } 
-      if (i === stairsRoomIndex)
-      {
-        this.stairsX = (room.x + (room.w/2)) | 0;
-        this.stairsY = (room.y + (room.h/2)) | 0;        
-      }
 
       //option 1
       if (option === 1) {
@@ -291,6 +286,15 @@ export default class Map {
         if (!spawnRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
       }
 
+      if (i === spawnRoomIndex) {
+        this.startX = (x + ((w / 2) | 0)) | 0;
+        this.startY = (y + ((h / 2) | 0)) | 0;
+      }
+      if (i === stairsRoomIndex) {
+        this.stairsX = (x + w / 2) | 0;
+        this.stairsY = (y + h / 2) | 0;
+      }
+
       if (option === 1 || option === 2) {
         if (i > 0) {
           this.dig(lastx, lasty, x + w / 2, lasty);
@@ -305,9 +309,6 @@ export default class Map {
         this.addActors(room);
       }
     }
-
-    
-
   }
 
   render() {
