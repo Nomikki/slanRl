@@ -16,7 +16,7 @@
   "description": "",
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "start": "nodemon -w package.json -w webpack.config.js --exec 'webpack serve --open'",
+    "start": "webpack --config webpack.config.js --progress",
     "watch": "webpack --watch"
   },
   "devDependencies": {
