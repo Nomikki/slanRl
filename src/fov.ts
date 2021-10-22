@@ -1,5 +1,3 @@
-"use strict";
-
 import { game } from ".";
 
 export default class Fov {

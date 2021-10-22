@@ -1,15 +1,18 @@
-"use strict";
-
 import Actor, { X, Y } from "./actor";
 import Map from "./map";
 import Fov from "./fov";
-import { Color, MonsterDestructible, PlayerDestructible } from "./destructible";
+import {
+  Character,
+  Color,
+  MonsterDestructible,
+  PlayerDestructible,
+} from "./destructible";
 import Attacker from "./attacker";
 import { MonsterAI, PlayerAI } from "./ai";
 import Log from "./log";
 import Container from "./container";
 import { Menu } from "./menu";
-import { debugInit } from "./utils";
+import { debugInit, ensure } from "./utils";
 
 enum Directions {
   Up,
@@ -43,6 +46,8 @@ class Game {
   gameStatus: any;
   menu: Menu;
   masterSeed: number;
+  playerX: number;
+  playerY: number;
 
   constructor() {
     this.GameStatus = Object.freeze({
@@ -57,7 +62,7 @@ class Game {
     this.map = null;
     this.stairs = null;
 
-    this.canvas = document.getElementById("screen");
+    this.canvas = ensure(document.getElementById("screen"));
     this.ctx = (this.canvas as HTMLCanvasElement).getContext("2d");
     this.ctx.font = "12px Arial";
     this.fontSize = 12;
@@ -151,20 +156,23 @@ class Game {
   async continueGame() {
     console.log("Continue");
 
-    if (window.localStorage.getItem("seed") !== null) {
+    const seed = window.localStorage.getItem("seed");
+    if (seed !== null) {
       const savedVersion = window.localStorage.getItem("version");
       if (savedVersion === null)
         window.localStorage.setItem("version", VERSION);
 
-      this.masterSeed = parseInt(window.localStorage.getItem("seed"), 10);
-      this.depth = parseInt(window.localStorage.getItem("depth"), 10) || 0;
+      const depth = window.localStorage.getItem("depth");
+
+      this.masterSeed = parseInt(seed, 10);
+      this.depth = depth ? parseInt(depth, 10) : 0;
 
       await this.init(false);
 
       const tempUsers = JSON.parse(
         window.localStorage.getItem("actors") || "[]"
       );
-      const playerID = window.localStorage.getItem("playerID");
+      // const playerID = window.localStorage.getItem("playerID");
 
       //console.log("temps: " + tempUsers.length);
 
@@ -321,7 +329,7 @@ class Game {
     );
   }
 
-  drawChar(ch, x, y, color = "#000") {
+  drawChar(ch: Character, x: X, y: Y, color: Color = "#000") {
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = "#040414";
     this.ctx.fillRect(
@@ -398,12 +406,6 @@ class Game {
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
 
     this.renderUI();
-  }
-  playerX(arg0: string, playerX: any, playerY: any, arg3: string) {
-    throw new Error("Method not implemented.");
-  }
-  playerY(arg0: string, playerX: any, playerY: any, arg3: string) {
-    throw new Error("Method not implemented.");
   }
 
   renderUI() {

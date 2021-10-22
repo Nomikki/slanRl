@@ -1,5 +1,3 @@
-"use strict";
-
 export class MenuItem {
   code: number;
   label: string;

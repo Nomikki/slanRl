@@ -1,11 +1,10 @@
-"use strict";
-
 import { game } from ".";
-import Actor from "./actor";
+import Actor, { X, Y } from "./actor";
 import { MonsterAI } from "./ai";
 import Attacker from "./attacker";
 import bspGenerator from "./bsp_generator";
 import { MonsterDestructible } from "./destructible";
+import { Height, Width } from "./fov";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import Randomizer from "./random";
 import Rectangle from "./rectangle";
@@ -13,64 +12,86 @@ import Rectangle from "./rectangle";
 export const random = new Randomizer();
 
 class Tile {
-  canWalk: boolean = false;
-  explored: boolean = false;
-
-  constructor() {}
+  canWalk: boolean;
+  explored: boolean;
+  constructor() {
+    this.canWalk = false;
+    this.explored = false;
+  }
 }
 
 export default class Map {
-  width: number;
-  height: number;
-
-  startX: number = 0;
-  startY: number = 0;
-  stairsX: number = 0;
-  stairsY: number = 0;
-
+  width: any;
+  height: any;
+  startX: number;
+  startY: number;
+  stairsX: number;
+  stairsY: number;
+  constants: Readonly<{
+    ROOM_MAX_SIZE: number;
+    ROOM_MIN_SIZE: number;
+    MAX_ROOM_MONSTERS: number;
+    MAX_ROOM_ITEMS: number;
+  }>;
   root: any;
-  levelSeed: number = 0;
-  depth: number = 0;
-
-  readonly ROOM_MAX_SIZE: number = 10;
-  readonly ROOM_MIN_SIZE: number = 4;
-  readonly MAX_ROOM_MONSTERS: number = 3;
-  readonly MAX_ROOM_ITEMS: number = 2;
-
+  levelSeed: number;
+  depth: number;
   tiles: any;
-
-  constructor(width: number, height: number) {
+  constructor(width: Width, height: Height) {
     this.width = width;
     this.height = height;
+
+    this.startX = 0;
+    this.startY = 0;
+
+    this.stairsX = 0;
+    this.stairsY = 0;
+
+    //console.log("size of map: " + this.width + ", " + this.height);
+
+    this.constants = Object.freeze({
+      ROOM_MAX_SIZE: 10,
+      ROOM_MIN_SIZE: 4,
+      MAX_ROOM_MONSTERS: 3,
+      MAX_ROOM_ITEMS: 2,
+    });
+
+    this.root = null;
+    this.levelSeed = 0;
+    this.depth = 0;
   }
 
   save() {
-    window.localStorage.setItem("seed", this.levelSeed.toString());
-    window.localStorage.setItem("depth", this.depth.toString());
+    //console.log("map save, wip");
+    window.localStorage.setItem("seed", `${this.levelSeed}`);
+    window.localStorage.setItem("depth", `${this.depth}`);
   }
 
-  load() {}
+  load() {
+    //console.log("map load, wip");
+  }
 
-  isWall(x: number, y: number): boolean {
+  isWall(x: X, y: Y) {
     const index = x + y * this.width;
     return !this.tiles[index].canWalk;
   }
 
-  setWall(x: number, y: number) {
+  setWall(x: X, y: Y) {
     this.tiles[x + y * this.width].canWalk = false;
   }
 
-  canWalk(x: number, y: number): boolean {
+  canWalk(x: X, y: Y) {
     if (this.isWall(x, y)) return false;
     for (const actor of game.actors) {
       if (actor.x === x && actor.y === y && actor.blocks) {
         return false;
       }
     }
+
     return true;
   }
 
-  addMonster(x: number, y: number) {
+  addMonster(x: X, y: Y) {
     const rng = random.getInt(0, 100);
 
     if (rng < 80) {
@@ -95,7 +116,7 @@ export default class Map {
     }
   }
 
-  additem(x: number, y: number) {
+  additem(x: X, y: Y) {
     const rng = random.getInt(0, 100);
     if (rng < 70) {
       if (random.getInt(0, 100) < 95) {
@@ -152,7 +173,7 @@ export default class Map {
     }
   }
 
-  dig(x1: number, y1: number, x2: number, y2: number) {
+  dig(x1: X, y1: X, x2: X, y2: Y) {
     x1 = x1 | 0;
     x2 = x2 | 0;
     y1 = y1 | 0;
@@ -179,8 +200,8 @@ export default class Map {
   }
 
   addActors(room: Rectangle) {
-    let numberOfMonsters = random.getInt(0, this.MAX_ROOM_MONSTERS);
-    let numberOfItems = random.getInt(0, this.MAX_ROOM_ITEMS);
+    let numberOfMonsters = random.getInt(0, this.constants.MAX_ROOM_MONSTERS);
+    let numberOfItems = random.getInt(0, this.constants.MAX_ROOM_ITEMS);
     //console.log(room);
     const x1 = room.x;
     const x2 = room.x + room.w;
@@ -206,7 +227,7 @@ export default class Map {
     }
   }
 
-  createRoom(x1: number, y1: number, x2: number, y2: number) {
+  createRoom(x1: X, y1: Y, x2: X, y2: Y) {
     this.dig(x1, y1, x2, y2);
 
     /*
@@ -232,14 +253,16 @@ export default class Map {
 
     let monsterRooms = new Array();
 
-    //const option = random.getInt(0, 2);
+    // const option = random.getInt(0, 2);
     //console.log("option: " + option);
-    const option: number = 2;
+    const option = 2;
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
 
       //we can use path/room data directly from bsp if we want.
+      // TODO: Remove the "ts-ignore" when this piece of code is done.
+      // @ts-ignore: Unreachable code error
       if (option === 0) this.tiles[i].canWalk = !this.root.map[i];
     }
 
@@ -266,6 +289,8 @@ export default class Map {
       const spawnRoom = i === spawnRoomIndex ? true : false;
 
       //option 1
+      // TODO: Remove the "ts-ignore" when this piece of code is done.
+      // @ts-ignore: Unreachable code error
       if (option === 1) {
         w = room.w;
         h = room.h;
@@ -278,8 +303,8 @@ export default class Map {
 
       //option 2
       if (option === 2) {
-        w = random.getInt(this.ROOM_MIN_SIZE, room.w - 2);
-        h = random.getInt(this.ROOM_MIN_SIZE, room.h - 2);
+        w = random.getInt(this.constants.ROOM_MIN_SIZE, room.w - 2);
+        h = random.getInt(this.constants.ROOM_MIN_SIZE, room.h - 2);
         x = random.getInt(room.x, room.x + room.w - w - 0) + 1;
         y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
 
@@ -296,6 +321,8 @@ export default class Map {
         this.stairsY = (y + h / 2) | 0;
       }
 
+      // TODO: Remove the "ts-ignore" when this piece of code is done.
+      // @ts-ignore: Unreachable code error
       if (option === 1 || option === 2) {
         if (i > 0) {
           this.dig(lastx, lasty, x + w / 2, lasty);

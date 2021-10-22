@@ -1,20 +1,18 @@
-"use strict";
-
-import { game, GameStatus } from ".";
-import { Menu, MenuItemCode } from "./menu";
+import { game } from ".";
+import Actor, { X, Y } from "./actor";
+import { XP } from "./destructible";
+import { Menu } from "./menu";
 import Randomizer from "./random";
-import Actor from "./actor";
-
 export const random = new Randomizer();
 
 export default class AI {
   constructor() {}
 
-  update(_owner: Actor) {}
+  async update(_owner: Actor) {}
 }
 
 export class PlayerAI extends AI {
-  xpLevel: number;
+  xpLevel: XP;
 
   constructor() {
     super();
@@ -34,18 +32,18 @@ export class PlayerAI extends AI {
       this.xpLevel++;
       owner.destructible.xp -= levelUpXp;
       game.log.add(
-        `Your battle skills grow stronger! You reached level ${this.xpLevel}`,
+        "Your battle skills grow stronger! You reached level " + this.xpLevel,
         "#FFFF00"
       );
 
       game.menu = new Menu();
       game.menu.clear();
       game.menu.addItem(
-        MenuItemCode.CONSTITUTION,
+        game.menu.constants.CONSTITUTION,
         "Constitution (+20 hp)"
       );
-      game.menu.addItem(MenuItemCode.STRENGTH, "Strenght (+1 attack)");
-      game.menu.addItem(MenuItemCode.AGILITY, "Agility (+1 defense)");
+      game.menu.addItem(game.menu.constants.STRENGTH, "Strenght (+1 attack)");
+      game.menu.addItem(game.menu.constants.AGILITY, "Agility (+1 defense)");
 
       let cursor = 0;
       let selectedItem = -1;
@@ -70,16 +68,16 @@ export class PlayerAI extends AI {
       }
 
       if (selectedItem != -1) {
-        if (selectedItem === MenuItemCode.CONSTITUTION) {
+        if (selectedItem === game.menu.constants.CONSTITUTION) {
           owner.destructible.hp += 20;
           owner.destructible.maxHP += 20;
         }
 
-        if (selectedItem === MenuItemCode.STRENGTH) {
+        if (selectedItem === game.menu.constants.STRENGTH) {
           owner.attacker.power += 1;
         }
 
-        if (selectedItem === MenuItemCode.AGILITY) {
+        if (selectedItem === game.menu.constants.AGILITY) {
           owner.destructible.defense += 1;
         }
       }
@@ -92,6 +90,7 @@ export class PlayerAI extends AI {
     let dx = 0;
     let dy = 0;
     const ch = await game.getch();
+
     switch (ch) {
       case "ArrowLeft":
         dx--;
@@ -111,7 +110,7 @@ export class PlayerAI extends AI {
     }
 
     if (dx !== 0 || dy !== 0) {
-      game.gameStatus = GameStatus.NEW_TURN;
+      game.gameStatus = game.GameStatus.NEW_TURN;
 
       if (this.moveOrAttack(owner, owner.x + dx, owner.y + dy)) {
         game.player.computeFov();
@@ -120,6 +119,8 @@ export class PlayerAI extends AI {
   }
 
   async handleActionKey(owner: Actor, ascii: string) {
+    console.log(ascii);
+
     switch (ascii) {
       case "S": //save
         game.save();
@@ -134,13 +135,13 @@ export class PlayerAI extends AI {
         }
         break;
       case "g": //pickup item
-        game.gameStatus = GameStatus.NEW_TURN;
+        game.gameStatus = game.GameStatus.NEW_TURN;
         let found = false;
         for (const actor of game.actors) {
           if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
             if (actor.pickable.pick(actor, owner)) {
               found = true;
-              game.log.add(`You pick up the ${actor.name}`, "#AAA");
+              game.log.add("You pick up the " + actor.name, "#AAA");
               break;
             } else if (!found) {
               found = true;
@@ -158,7 +159,7 @@ export class PlayerAI extends AI {
         const useItem = await this.choseFromInventory(owner);
         if (useItem) {
           await useItem.pickable.use(useItem, owner);
-          game.gameStatus = GameStatus.NEW_TURN;
+          game.gameStatus = game.GameStatus.NEW_TURN;
         } else {
           game.log.add("Nevermind...");
         }
@@ -168,7 +169,7 @@ export class PlayerAI extends AI {
         const dropItem = await this.choseFromInventory(owner);
         if (dropItem) {
           await dropItem.pickable.drop(dropItem, owner);
-          game.gameStatus = GameStatus.NEW_TURN;
+          game.gameStatus = game.GameStatus.NEW_TURN;
         } else {
           game.log.add("Nevermind...");
         }
@@ -178,8 +179,8 @@ export class PlayerAI extends AI {
     }
   }
 
-  moveOrAttack(owner: Actor, targetX: number, targetY: number): boolean {
-    if (game.map.isWall(targetX, targetY)) return false; //move
+  moveOrAttack(owner: Actor, targetX: X, targetY: Y) {
+    if (game.map.isWall(targetX, targetY)) return false;
 
     for (const actor of game.actors) {
       if (
@@ -189,7 +190,7 @@ export class PlayerAI extends AI {
         actor.y === targetY
       ) {
         owner.attacker.attack(owner, actor);
-        return false; //attack
+        return false;
       }
     }
 
@@ -199,7 +200,7 @@ export class PlayerAI extends AI {
         (actor.destructible && actor.destructible.isDead) || actor.pickable;
 
       if (corpseOrItem && actor.x === targetX && actor.y === targetY) {
-        game.log.add(`There is a ${actor.name} here`);
+        game.log.add("There is a " + actor.name + " here");
       }
     }
 
@@ -244,18 +245,21 @@ export class PlayerAI extends AI {
 
 export class MonsterAI extends AI {
   moveCount: number;
-  readonly TRACKING_TURNS: number = 3;
-
+  Constants: Readonly<{ TRACKING_TURNS: number }>;
   constructor() {
     super();
     this.moveCount = 0;
+
+    this.Constants = Object.freeze({
+      TRACKING_TURNS: 3,
+    });
   }
 
   async update(owner: Actor) {
     if (owner.destructible && owner.destructible.isDead()) return;
 
     if (game.player.fov.isInFov(owner.x, owner.y)) {
-      this.moveCount = this.TRACKING_TURNS;
+      this.moveCount = this.Constants.TRACKING_TURNS;
     } else {
       this.moveCount--;
     }
@@ -265,7 +269,7 @@ export class MonsterAI extends AI {
     }
   }
 
-  moveOrAttack(owner: Actor, targetX: number, targetY: number) {
+  moveOrAttack(owner: Actor, targetX: X, targetY: Y) {
     let dx = targetX - owner.x;
     let dy = targetY - owner.y;
     const stepdx = dx > 0 ? 1 : -1;
@@ -293,9 +297,9 @@ export class MonsterAI extends AI {
 
 export class ConfusedAI extends AI {
   nbTurns: number;
-  oldAi: AI;
+  oldAi: number;
 
-  constructor(nbTurns: number, oldAi: AI) {
+  constructor(nbTurns: number, oldAi: number) {
     super();
     this.nbTurns = nbTurns;
     this.oldAi = oldAi;

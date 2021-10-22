@@ -1,43 +1,73 @@
-"use strict";
-
 import { game } from ".";
+import { PlayerAI } from "./ai";
+import Container from "./container";
+import { Character, Color, Name } from "./destructible";
+import Fov from "./fov";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 
+export type X = number;
+export type Y = number;
+
+export type PickableType = "lightingBolt" | "fireBall" | "healer" | "confuser";
+
+export interface ActorTemplate {
+  ai: PlayerAI;
+  fov: Fov;
+  container: Container;
+  pickable: {
+    type: PickableType;
+    range: number;
+    damage: number;
+    amount: number;
+    nbTurns: number;
+  };
+  create: () => void;
+}
+
 export default class Actor {
-  x: number;
-  y: number;
-  ch: string;
-  name: string;
-  color: string;
+  x: X;
+  y: Y;
+  ch: Character;
+  color: Color;
+  name: Name;
+  fov: any;
+  fovOnly: boolean;
+  blocks: boolean;
+  destructible: any;
+  attacker: any;
+  ai: any;
+  pickable: any;
+  container: any;
 
-  fov: any = null;
-  fovOnly: boolean = true;
-  blocks: boolean = true; //can we walk on this actor?
-
-  // Destructible: Something that can take damage and potentially break or die
-  destructible: any = null;
-
-  // Attacker: Something that can deal damage to a Destructible
-  attacker: any = null;
-
-  // Ai: Something that is self-updating
-  ai: any = null;
-
-  // Pickable: Something that can be picked and used
-  pickable: any = null;
-
-  // Container: Something that can contain actors
-  container: any = null;
-
-  constructor(x: number, y: number, ch: string, name: string, color: string) {
+  constructor(x: X, y: Y, ch: Character, name: Name, color: Color) {
     this.x = x | 0;
     this.y = y | 0;
     this.ch = ch;
     this.color = color;
     this.name = name;
+
+    this.fov = null;
+    this.fovOnly = true;
+    this.blocks = true; //can we walk on this actor?
+
+    // Destructible: Something that can take damage and potentially break or die
+    this.destructible = null;
+
+    // Attacker: Something that can deal damage to a Destructible
+    this.attacker = null;
+
+    // Ai: Something that is self-updating
+    this.ai = null;
+
+    // Pickable: Something that can be picked and used
+    this.pickable = null;
+
+    // Container: Something that can contain actors
+    this.container = null;
   }
 
-  create(actorTemplate: Actor) {
+  create(actorTemplate: ActorTemplate) {
+    //console.log(actorTemplate);
     if (actorTemplate.pickable.type === "lightingBolt")
       this.pickable = new LightningBolt(
         actorTemplate.pickable.range,
@@ -79,7 +109,7 @@ export default class Actor {
     }
   }
 
-  getDistance(x: number, y: number) {
+  getDistance(x: X, y: Y) {
     const dx = this.x - x;
     const dy = this.y - y;
     return Math.sqrt(dx * dx + dy * dy);

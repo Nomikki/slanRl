@@ -1,11 +1,11 @@
-"use strict";
-
 import Rectangle from "./rectangle";
 
+export type Leaf = bspNode;
+
 class bspNode extends Rectangle {
-  A: any;
-  B: any;
-  leaf: any;
+  A: bspNode | null;
+  B: bspNode | null;
+  leaf: Rectangle;
 
   constructor(leaf: Rectangle) {
     super(leaf.x, leaf.y, leaf.w, leaf.h);
@@ -14,11 +14,11 @@ class bspNode extends Rectangle {
     this.leaf = leaf;
   }
 
-  GetLeafs() {
-    if (this.A === null && this.B === null) {
+  GetLeafs(): bspNode[] | Rectangle[] {
+    if (this.A === null || this.B === null) {
       return [this.leaf];
     } else {
-      return [].concat(this.A.GetLeafs(), this.B.GetLeafs());
+      return [...this.A.GetLeafs(), ...this.B.GetLeafs()];
     }
   }
 }
