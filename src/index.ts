@@ -3,58 +3,48 @@
 import Actor from "./actor";
 import Map from "./map";
 import Fov from "./fov";
-import { MonsterDestructible, PlayerDestructible } from "./destructible";
+import Destructible, {
+  MonsterDestructible,
+  PlayerDestructible,
+} from "./destructible";
 import Attacker from "./attacker";
 import { MonsterAI, PlayerAI } from "./ai";
 import Log from "./log";
 import Container from "./container";
-//import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
-import { Menu, MenuItemCode } from "./menu";
+import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
+import { Menu } from "./menu";
 import { debugInit } from "./utils";
 
-export enum GameStatus {
-  STARTUP,
-  IDLE,
-  NEW_TURN,
-  VICTORY,
-  DEFEAT,
+enum Directions {
+  Up,
+  Right,
+  Down,
+  Left,
 }
 
 class Game {
-  gameStatus: number = 0;
-  player: any;
-  map: any;
-  stairs: any;
-  canvas: HTMLElement;
-  ctx: any;
-  fontSize: number;
-  log: any;
-
-  lastKey: string;
-  depth: number;
-  width: number;
-  height: number;
-
-  actors: Actor[];
-  masterSeed: number = 0;
-
-  menu: any;
-
   constructor() {
+    this.GameStatus = Object.freeze({
+      STARTUP: 0,
+      IDLE: 1,
+      NEW_TURN: 2,
+      VICTORY: 3,
+      DEFEAT: 4,
+    });
+
     this.player = null;
     this.map = null;
     this.stairs = null;
 
-    this.canvas = document.getElementById("screen")!;
-
-    this.ctx = (this.canvas as HTMLCanvasElement).getContext("2d");
+    this.canvas = document.getElementById("screen");
+    this.ctx = this.canvas.getContext("2d");
     this.ctx.font = "12px Arial";
     this.fontSize = 12;
     this.ctx.textAlign = "center";
 
     this.log = new Log();
 
-    this.lastKey = "";
+    this.lastKey = 0;
     this.depth = 0;
 
     this.width = 80;
@@ -62,6 +52,8 @@ class Game {
 
     this.actors = new Array();
     this.map = new Map(this.width, this.height);
+
+    console.log(`Direction up: ${Directions.Up}`);
   }
 
   async term() {
@@ -71,7 +63,7 @@ class Game {
     this.player = null;
   }
 
-  async init(withActors: boolean, createPlayer: boolean = true) {
+  async init(withActors, createPlayer = true) {
     this.map.generate(withActors, this.masterSeed, this.depth);
 
     if (withActors) {
@@ -106,7 +98,7 @@ class Game {
       this.log.add("Welcome back stranger!", "#FFF");
     }
 
-    this.gameStatus = GameStatus.STARTUP;
+    this.gameStatus = this.GameStatus.STARTUP;
   }
 
   async nextLevel() {
@@ -126,29 +118,35 @@ class Game {
   }
 
   async newGame() {
+    console.log("New game!");
     this.masterSeed = (Math.random() * 0x7ffffff) | 0;
 
     this.depth = 1;
     await this.term();
-    await this.init(true, true);
+    await this.init(true);
     await this.save();
   }
 
   async continueGame() {
+    console.log("Continue");
+
     if (window.localStorage.getItem("seed") !== null) {
       const savedVersion = window.localStorage.getItem("version");
       if (savedVersion === null)
         window.localStorage.setItem("version", VERSION);
 
-      this.masterSeed = parseInt(window.localStorage.getItem("seed")!);
-      this.depth = parseInt(window.localStorage.getItem("depth")!) | 0;
+      this.masterSeed = window.localStorage.getItem("seed");
+      this.depth = window.localStorage.getItem("depth") | 0;
 
       await this.init(false);
 
       const tempUsers = JSON.parse(
         window.localStorage.getItem("actors") || "[]"
       );
-      
+      const playerID = window.localStorage.getItem("playerID");
+
+      //console.log("temps: " + tempUsers.length);
+
       for (const actor of tempUsers) {
         const i =
           this.actors.push(
@@ -196,7 +194,7 @@ class Game {
             );
 
             this.actors[i].ai = new PlayerAI();
-            this.actors[i].destructible.xp = actor.destructible.xp;
+
             this.actors[i].destructible.hp = actor.destructible.hp;
             this.actors[i].destructible.maxHP = actor.destructible.maxHP;
             this.actors[i].destructible.defense = actor.destructible.defense;
@@ -207,11 +205,9 @@ class Game {
             this.actors[i].destructible = new MonsterDestructible(
               1,
               1,
-              "monster corpse",
-              0
+              "monster corpse"
             );
 
-            this.actors[i].destructible.xp = actor.destructible.xp;
             this.actors[i].destructible.hp = actor.destructible.hp;
             this.actors[i].destructible.maxHP = actor.destructible.maxHP;
             this.actors[i].destructible.defense = actor.destructible.defense;
@@ -222,6 +218,8 @@ class Game {
           }
         }
       }
+
+      //console.log(this.actors);
     }
   }
 
@@ -231,8 +229,10 @@ class Game {
     this.menu = new Menu();
     this.menu.clear();
     if (window.localStorage.getItem("depth"))
-      this.menu.addItem(MenuItemCode.CONTINUE, "Continue");
-    this.menu.addItem(MenuItemCode.NEW_GAME, "New Game");
+      this.menu.addItem(this.menu.constants.CONTINUE, "Continue");
+    this.menu.addItem(this.menu.constants.NEW_GAME, "New Game");
+
+    //this.menu.addItem(this.menu.constants.EXIT, "Exit");
 
     let cursor = 0;
     let selectedItem = -1;
@@ -256,11 +256,11 @@ class Game {
     }
 
     if (selectedItem != -1) {
-      if (selectedItem === MenuItemCode.NEW_GAME) {
+      if (selectedItem === this.menu.constants.NEW_GAME) {
         await this.newGame();
       }
 
-      if (selectedItem === MenuItemCode.CONTINUE) {
+      if (selectedItem === this.menu.constants.CONTINUE) {
         await this.continueGame();
       }
     }
@@ -271,12 +271,10 @@ class Game {
       window.localStorage.clear();
     } else {
       this.map.save();
-      window.localStorage.setItem(
-        "playerID",
-        this.actors.indexOf(this.player).toString()
-      );
+      window.localStorage.setItem("playerID", this.actors.indexOf(this.player));
       window.localStorage.setItem("actors", JSON.stringify(this.actors));
       window.localStorage.setItem("version", VERSION);
+      //console.log(this.actors);
     }
   }
 
@@ -295,11 +293,11 @@ class Game {
       0,
       this.height * this.fontSize,
       this.width * this.fontSize,
-      (this.canvas as HTMLCanvasElement).height - this.height * this.fontSize
+      this.canvas.height - this.height * this.fontSize
     );
   }
 
-  drawChar(ch: string, x: number, y: number, color: string = "#000") {
+  drawChar(ch, x, y, color = "#000") {
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = "#040414";
     this.ctx.fillRect(
@@ -313,7 +311,7 @@ class Game {
     this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
 
-  drawText(text: string, x: number, y: number, color: string = "#AAA") {
+  drawText(text, x, y, color = "#AAA") {
     this.ctx.textAlign = "left";
     /*
     for (let i = 0; i < text.length; i++) {
@@ -346,9 +344,9 @@ class Game {
   }
 
   waitingKeypress() {
-    return new Promise<void>((resolve) => {
+    return new Promise((resolve) => {
       document.addEventListener("keydown", onKeyHandler);
-      function onKeyHandler(e: any) {
+      function onKeyHandler(e) {
         e.preventDefault();
         if (e.keyCode !== 0) {
           document.removeEventListener("keydown", onKeyHandler);
@@ -363,7 +361,7 @@ class Game {
   async getch() {
     await this.waitingKeypress();
     const tempKey = this.lastKey;
-    this.lastKey = "";
+    this.lastKey = 0;
     return tempKey;
   }
 
@@ -371,7 +369,7 @@ class Game {
     this.clear();
 
     this.map.render();
-    this.drawChar("@", this.player.x, this.player.y, "#AAA");
+    this.drawChar("@", this.playerX, this.playerY, "#AAA");
 
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
 
@@ -403,15 +401,15 @@ class Game {
 
   async gameloop() {
     while (true) {
-      if (this.gameStatus === GameStatus.STARTUP) {
+      if (this.gameStatus === this.GameStatus.STARTUP) {
         this.player.computeFov();
         this.render();
       }
-      this.gameStatus = GameStatus.IDLE;
+      this.gameStatus = this.GameStatus.IDLE;
 
       await this.player.update();
 
-      if (this.gameStatus === GameStatus.NEW_TURN) {
+      if (this.gameStatus === this.GameStatus.NEW_TURN) {
         for (const actor of this.actors) {
           if (actor !== this.player) {
             await actor.update();
@@ -422,7 +420,7 @@ class Game {
       //finally draw screen
       this.render();
 
-      if (this.gameStatus === GameStatus.DEFEAT) {
+      if (this.gameStatus === this.GameStatus.DEFEAT) {
         this.drawText("DEFEAT!", this.width / 2 - 3, this.height / 2, "#A00");
         this.log.add("DEFEAT", "#A00");
         break;
@@ -430,7 +428,7 @@ class Game {
     }
   }
 
-  removeActor(actor: Actor) {
+  removeActor(actor) {
     for (let i = 0; i < this.actors.length; i++) {
       if (this.actors[i] === actor) {
         this.actors.splice(i, 1);
@@ -439,12 +437,12 @@ class Game {
     }
   }
 
-  sendToBack(actor: Actor) {
+  sendToBack(actor) {
     this.removeActor(actor);
     this.actors.unshift(actor);
   }
 
-  getClosestMonster(x: number, y: number, range: number) {
+  getClosestMonster(x, y, range) {
     let closest = null;
     let bestDistance = 100000;
 
@@ -464,7 +462,7 @@ class Game {
     return closest;
   }
 
-  getActor(x: number, y: number): any {
+  getActor(x, y) {
     for (const actor of this.actors) {
       if (
         actor.x === x &&
@@ -478,7 +476,7 @@ class Game {
     return null;
   }
 
-  async pickATile(x: number, y: number, range: number = 0.0) {
+  async pickATile(x, y, range = 0.0) {
     let px = x;
     let py = y;
     let inRange = false;
