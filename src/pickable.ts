@@ -2,9 +2,17 @@ import { game } from ".";
 import Actor from "./actor";
 import { ConfusedAI } from "./ai";
 
+export type PickableType =
+  | "unknown"
+  | "lightingBolt"
+  | "fireBall"
+  | "healer"
+  | "confuser";
+
 export default class Pickable {
-  type: string;
-  constructor(type = "unknow") {
+  type: PickableType = "unknown";
+
+  constructor(type: PickableType) {
     this.type = type;
   }
 
@@ -17,7 +25,7 @@ export default class Pickable {
   }
 
   async use(owner: Actor, wearer: Actor) {
-    game.log.add("You use a " + owner.name);
+    game.log.add(`You use a ${owner.name}`);
     if (wearer.container) {
       wearer.container.remove(owner);
       return true;
@@ -32,13 +40,14 @@ export default class Pickable {
       game.sendToBack(owner);
       owner.x = wearer.x;
       owner.y = wearer.y;
-      game.log.add(wearer.name + " drops a " + owner.name);
+      game.log.add(`${wearer.name} drops a ${owner.name}`);
     }
   }
 }
 
 export class Healer extends Pickable {
-  amount: any;
+  amount: number;
+
   constructor(amount: number) {
     super("healer");
     this.amount = amount;
@@ -56,8 +65,9 @@ export class Healer extends Pickable {
 }
 
 export class LightningBolt extends Pickable {
-  range: any;
-  damage: any;
+  range: number;
+  damage: number;
+
   constructor(range: number, damage: number) {
     super("lightingBolt");
     this.range = range;
@@ -76,12 +86,10 @@ export class LightningBolt extends Pickable {
     }
 
     game.log.add(
-      "A lighting bolt strikes the " +
-        closestMonster.name +
-        " with a loud thunder!",
+      `A lighting bolt strikes the ${closestMonster.name} with a loud thunder!`,
       "#0FF"
     );
-    game.log.add("The damage is " + this.damage + " hit points.", "#0FF");
+    game.log.add(`The damage is ${this.damage} hit points.`, "#0FF");
 
     closestMonster.destructible.takeDamage(closestMonster, this.damage);
     return super.use(owner, wearer);
@@ -89,8 +97,9 @@ export class LightningBolt extends Pickable {
 }
 
 export class Fireball extends Pickable {
-  range: any;
-  damage: any;
+  range: number;
+  damage: number;
+
   constructor(range: number, damage: number) {
     super("fireBall");
     this.range = range;
@@ -105,9 +114,7 @@ export class Fireball extends Pickable {
 
     if (tilePick[0] == true) {
       game.log.add(
-        "The fireball explodes, burning everything within " +
-          this.range +
-          " tiles!",
+        `The fireball explodes, burning everything within ${this.range} tiles!`,
         "#FA0"
       );
 
@@ -119,11 +126,7 @@ export class Fireball extends Pickable {
           actor.getDistance(tilePick[1], tilePick[2]) < this.range
         ) {
           game.log.add(
-            "The " +
-              actor.name +
-              " gets burned for " +
-              this.damage +
-              " hit points.",
+            `The ${actor.name} gets burned for ${this.damage} hit points.`,
             "#FA0"
           );
           actor.destructible.takeDamage(actor, this.damage);
@@ -140,6 +143,7 @@ export class Fireball extends Pickable {
 export class Confuser extends Pickable {
   nbTurns: number;
   range: number;
+
   constructor(nbTurns: number, range: number) {
     super("confuser");
     this.nbTurns = nbTurns;
@@ -165,7 +169,7 @@ export class Confuser extends Pickable {
     const ai = new ConfusedAI(this.nbTurns, actor.ai);
     actor.ai = ai;
 
-    game.log.add("The eyes of the " + actor.name + " look vacant", "#AFD");
+    game.log.add(`The eyes of the ${actor.name} look vacant`, "#AFD");
     game.log.add("as he starts to stumble around!", "#AFD");
 
     return super.use(owner, wearer);

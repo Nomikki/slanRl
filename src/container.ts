@@ -1,17 +1,17 @@
-"use strict";
-
 import Actor from "./actor";
 
+export type Size = number;
+
 export default class Container {
-  size: number;
+  size: Size;
   inventory: Actor[];
 
-  constructor(size: number) {
+  constructor(size: Size) {
     this.size = size; //maximum number of actors
     this.inventory = new Array();
   }
 
-  add(actor: Actor): boolean {
+  add(actor: Actor) {
     if (this.size > 0 && this.inventory.length >= this.size) {
       //inventory is full
       return false;

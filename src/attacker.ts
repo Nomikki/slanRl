@@ -12,24 +12,20 @@ export default class Attacker {
 
   attack(owner: Actor, target: Target) {
     if (target.destructible && !target.destructible.isDead()) {
-      if (this.power - target.destructible.defense > 0) {
+      const damage = this.power - target.destructible.defense;
+      if (damage > 0) {
         game.log.add(
-          owner.name +
-            " attacks " +
-            target.name +
-            " for " +
-            (this.power - target.destructible.defense) +
-            " hit points.",
+          `${owner.name} attacks ${target.name} for ${damage} hit points.`,
           owner === game.player ? "#DDD" : "#AAA"
         );
       } else {
         game.log.add(
-          owner.name + " attacks " + target.name + " but it has no effect!"
+          `${owner.name} attacks ${target.name} but it has no effect!`
         );
       }
       target.destructible.takeDamage(target, this.power);
     } else {
-      game.log.add(owner.name + " attacks " + target.name + " in vain.");
+      game.log.add(`${owner.name} attacks ${target.name} in vain.`);
     }
   }
 }
