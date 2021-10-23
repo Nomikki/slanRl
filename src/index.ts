@@ -196,7 +196,7 @@ class Game {
             );
 
             this.actors[i].ai = new PlayerAI();
-
+            this.actors[i].destructible.xp = actor.destructible.xp;
             this.actors[i].destructible.hp = actor.destructible.hp;
             this.actors[i].destructible.maxHP = actor.destructible.maxHP;
             this.actors[i].destructible.defense = actor.destructible.defense;
@@ -211,6 +211,7 @@ class Game {
               0
             );
 
+            this.actors[i].destructible.xp = actor.destructible.xp;
             this.actors[i].destructible.hp = actor.destructible.hp;
             this.actors[i].destructible.maxHP = actor.destructible.maxHP;
             this.actors[i].destructible.defense = actor.destructible.defense;
