@@ -7,7 +7,7 @@ export const storage = {
     try {
       return value !== null ? JSON.parse(value) : null;
     } catch {
-      return value !== null ? value : null;
+      return typeof value === "string" ? value : null;
     }
   },
   clear: () => {
