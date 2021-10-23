@@ -1,5 +1,5 @@
 import { game } from '.';
-import Actor, { X, Y } from './actor';
+import Actor from './actor';
 import { MonsterAI } from './ai';
 import Attacker from './attacker';
 import bspGenerator from './bsp_generator';
@@ -52,16 +52,16 @@ export default class Map {
     //console.log("map load, wip");
   }
 
-  isWall(x: X, y: Y) {
+  isWall(x: number, y: number) {
     const index = x + y * this.width;
     return !ensure(this.tiles)[index]?.canWalk;
   }
 
-  setWall(x: X, y: Y) {
+  setWall(x: number, y: number) {
     ensure(this.tiles)[x + y * this.width].canWalk = false;
   }
 
-  canWalk(x: X, y: Y) {
+  canWalk(x: number, y: number) {
     if (this.isWall(x, y)) return false;
     for (const actor of game.actors) {
       if (actor.x === x && actor.y === y && actor.blocks) {
@@ -72,7 +72,7 @@ export default class Map {
     return true;
   }
 
-  addMonster(x: X, y: Y) {
+  addMonster(x: number, y: number) {
     const rng = random.getInt(0, 100);
 
     if (rng < 80) {
@@ -97,7 +97,7 @@ export default class Map {
     }
   }
 
-  additem(x: X, y: Y) {
+  additem(x: number, y: number) {
     const rng = random.getInt(0, 100);
     if (rng < 70) {
       if (random.getInt(0, 100) < 95) {
@@ -154,7 +154,7 @@ export default class Map {
     }
   }
 
-  dig(x1: X, y1: X, x2: X, y2: Y) {
+  dig(x1: number, y1: number, x2: number, y2: number) {
     x1 = x1 | 0;
     x2 = x2 | 0;
     y1 = y1 | 0;
@@ -208,7 +208,7 @@ export default class Map {
     }
   }
 
-  createRoom(x1: X, y1: Y, x2: X, y2: Y) {
+  createRoom(x1: number, y1: number, x2: number, y2: number) {
     this.dig(x1, y1, x2, y2);
 
     /*

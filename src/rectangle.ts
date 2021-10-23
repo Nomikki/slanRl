@@ -1,13 +1,10 @@
-import { X, Y } from './actor';
-import { Height, Width } from './fov';
-
 class Rectangle {
-  x: X;
-  y: Y;
-  w: Width;
-  h: Height;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 
-  constructor(x: X, y: Y, w: Width, h: Height) {
+  constructor(x: number, y: number, w: number, h: number) {
     this.x = x;
     this.y = y;
     this.w = w;

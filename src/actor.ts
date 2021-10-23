@@ -2,7 +2,7 @@ import { game } from '.';
 import { ConfusedAI, MonsterAI, PlayerAI } from './ai';
 import Attacker from './attacker';
 import Container from './container';
-import Destructible, { Character, Color, Name } from './destructible';
+import Destructible from './destructible';
 import Fov from './fov';
 import {
   Confuser,
@@ -11,57 +11,53 @@ import {
   LightningBolt,
   PickableType,
 } from './pickable';
-
-export type AiType = PlayerAI | MonsterAI | ConfusedAI;
-
-export type X = number;
-export type Y = number;
+import { ensure } from './utils';
 
 export default class Actor {
+  // Ai: Something that is self-updating
   ai?: PlayerAI | MonsterAI | ConfusedAI;
+
+  // Attacker: Something that can deal damage to a Destructible
   attacker?: Attacker;
-  blocks = true;
-  ch: Character;
-  color: Color;
+  blocks = true; //can we walk on this actor?
+  ch: string;
+  color: string;
+
+  // Container: Something that can contain actors
   container?: Container;
+
+  // Destructible: Something that can take damage and potentially break or die
   destructible?: Destructible;
   fov?: Fov;
   fovOnly = true;
-  name: Name;
-  pickable?: PickableType;
-  x: X;
-  y: Y;
+  name: string;
 
-  constructor(x: X, y: Y, ch: Character, name: Name, color: Color) {
-    this.x = x;
-    this.y = y;
+  // Pickable: Something that can be picked and used
+  pickable?: PickableType;
+  x: number;
+  y: number;
+
+  constructor(x: number, y: number, ch: string, name: string, color: string) {
+    this.x = x | 0;
+    this.y = y | 0;
     this.ch = ch;
-    this.name = name;
     this.color = color;
+    this.name = name;
   }
 
   create(actorTemplate: Actor) {
-    if (!actorTemplate.pickable?.type) {
-      return;
-    }
-    const { pickable } = actorTemplate;
+    const pickable = ensure(actorTemplate.pickable);
 
-    switch (pickable.type) {
-      case 'lightingBolt':
-        this.pickable = new LightningBolt(pickable.range, pickable.damage);
-        break;
-      case 'fireBall':
-        this.pickable = new Fireball(pickable.range, pickable.damage);
-        break;
-      case 'healer':
-        this.pickable = new Healer(pickable.amount);
-        break;
-      case 'confuser':
-        this.pickable = new Confuser(pickable.nbTurns, pickable.range);
-        break;
-      default:
-        break;
-    }
+    if (pickable.type === 'lightingBolt')
+      this.pickable = new LightningBolt(pickable.range, pickable.damage);
+
+    if (pickable.type === 'fireBall')
+      this.pickable = new Fireball(pickable.range, pickable.damage);
+
+    if (pickable.type === 'healer') this.pickable = new Healer(pickable.amount);
+
+    if (pickable.type === 'confuser')
+      this.pickable = new Confuser(pickable.nbTurns, pickable.range);
   }
 
   render() {
@@ -83,7 +79,7 @@ export default class Actor {
     }
   }
 
-  getDistance(x: X, y: Y) {
+  getDistance(x: number, y: number) {
     const dx = this.x - x;
     const dy = this.y - y;
     return Math.sqrt(dx * dx + dy * dy);

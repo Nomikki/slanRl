@@ -1,10 +1,9 @@
-import Actor, { X, Y } from './actor';
+import Actor from './actor';
 import { MonsterAI, PlayerAI } from './ai';
 import Attacker from './attacker';
 import Container from './container';
 import {
   Character,
-  Color,
   MonsterDestructible,
   PlayerDestructible,
 } from './destructible';
@@ -307,7 +306,7 @@ class Game {
     );
   }
 
-  drawChar(ch: Character, x: X, y: Y, color: Color = '#000') {
+  drawChar(ch: Character, x: number, y: number, color = '#000') {
     this.ctx.textAlign = 'center';
     this.ctx.fillStyle = '#040414';
     this.ctx.fillRect(
@@ -321,7 +320,7 @@ class Game {
     this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
 
-  drawText(text: string, x: X, y: Y, color: Color = '#AAA') {
+  drawText(text: string, x: number, y: number, color = '#AAA') {
     this.ctx.textAlign = 'left';
     /*
     for (let i = 0; i < text.length; i++) {
@@ -461,7 +460,7 @@ class Game {
     this.actors.unshift(actor);
   }
 
-  getClosestMonster(x: X, y: Y, range: number) {
+  getClosestMonster(x: number, y: number, range: number) {
     let closest = null;
     let bestDistance = 100000;
 
@@ -481,7 +480,7 @@ class Game {
     return closest;
   }
 
-  getActor(x: X, y: Y) {
+  getActor(x: number, y: number) {
     for (const actor of this.actors) {
       if (
         actor.x === x &&
@@ -495,7 +494,7 @@ class Game {
     return null;
   }
 
-  async pickATile(x: X, y: Y, range = 0.0): Promise<Tile> {
+  async pickATile(x: number, y: number, range = 0.0): Promise<Tile> {
     let px = x;
     let py = y;
     let inRange = false;

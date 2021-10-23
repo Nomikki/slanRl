@@ -1,5 +1,5 @@
 import { game } from '.';
-import Actor, { X, Y } from './actor';
+import Actor from './actor';
 import { XP } from './destructible';
 import { Menu } from './menu';
 import Randomizer from './random';
@@ -203,7 +203,7 @@ export class PlayerAI extends AI {
     }
   }
 
-  moveOrAttack(owner: Actor, targetX: X, targetY: Y) {
+  moveOrAttack(owner: Actor, targetX: number, targetY: number) {
     if (game.map?.isWall(targetX, targetY)) return false;
 
     for (const actor of game.actors) {
@@ -292,7 +292,7 @@ export class MonsterAI extends AI {
     }
   }
 
-  moveOrAttack(owner: Actor, targetX: X, targetY: Y) {
+  moveOrAttack(owner: Actor, targetX: number, targetY: number) {
     let dx = targetX - owner.x;
     let dy = targetY - owner.y;
     const stepdx = dx > 0 ? 1 : -1;

@@ -1,6 +1,4 @@
-import { X, Y } from './actor';
 import bspNode from './bsp_node';
-import { Height, Width } from './fov';
 import Randomizer from './random';
 import Rectangle from './rectangle';
 import { ensure } from './utils';
@@ -23,7 +21,7 @@ class bspGenerator {
   tempRooms: Rectangle[];
   tree: bspNode;
 
-  constructor(x: X, y: Y, w: Width, h: Height, maxLevel = 5) {
+  constructor(x: number, y: number, w: number, h: number, maxLevel = 5) {
     this.maxLevel = maxLevel;
 
     this.rootContainer = new Rectangle(x + 1, y + 1, w - 2, h - 2);
@@ -115,7 +113,7 @@ class bspGenerator {
     }
   }
 
-  IsThereRoom(x: X, y: Y) {
+  IsThereRoom(x: number, y: number) {
     for (const room of this.tempRooms) {
       if (x >= room.x && y >= room.y && x <= room.w && y <= room.h) {
         return true;

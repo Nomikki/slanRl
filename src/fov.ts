@@ -1,5 +1,4 @@
 import { game } from '.';
-import { X, Y } from './actor';
 
 export type Width = number;
 export type Height = number;
@@ -34,7 +33,7 @@ export default class Fov {
   }
 
   /* Just a placeholder */
-  compute(x: X, y: Y, len: Length) {
+  compute(x: number, y: number, len: number) {
     this.clear();
 
     let dx = 0;
@@ -69,13 +68,13 @@ export default class Fov {
     }
   }
 
-  getMapped(x: X, y: Y) {
+  getMapped(x: number, y: number) {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height)
       return this.mapped[x + y * this.width];
     else return 2;
   }
 
-  isInFov(x: X, y: Y) {
+  isInFov(x: number, y: number) {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
       return this.mapped[x + y * this.width] > 0;
     }
