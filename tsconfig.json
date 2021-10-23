@@ -4,7 +4,7 @@
     "target": "ES6",
     "module": "commonjs",
     "outDir": "dist",
-    "lib": ["es2020", "dom"],
+    "lib": ["es5", "dom"],
     "moduleResolution": "node",
     "paths": {
       "*": ["types/*.d.ts"]
