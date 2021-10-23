@@ -141,7 +141,7 @@ class Game {
 
       await this.init(false);
 
-      const tempUsers = storage.get("actors") || [];
+      const tempUsers = storage.get("actors", []);
 
       for (const actor of tempUsers) {
         const i =
