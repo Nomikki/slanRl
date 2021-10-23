@@ -127,21 +127,21 @@ class Game {
   }
 
   async continueGame() {
-    const seed = storage.get("seed");
+    const seed = storage.get<number>("seed");
     if (seed !== null) {
-      const savedVersion = storage.get("version");
+      const savedVersion = storage.get<string>("version");
       if (savedVersion === null) {
         storage.set("version", VERSION);
       }
 
-      const depth = storage.get("depth");
+      const depth = ensure(storage.get<number>("depth", 0));
 
       this.masterSeed = seed;
-      this.depth = depth || 0;
+      this.depth = depth;
 
       await this.init(false);
 
-      const tempUsers = storage.get("actors", []);
+      const tempUsers = ensure(storage.get<Actor[]>("actors", []));
 
       for (const actor of tempUsers) {
         const i =
@@ -159,7 +159,7 @@ class Game {
         }
 
         if (actor.container) {
-          thisActor.container = await new Container(26);
+          thisActor.container = new Container(26);
 
           for (const it of actor.container.inventory) {
             const k =
@@ -218,12 +218,12 @@ class Game {
   }
 
   async load() {
-    if (storage.get("version") !== VERSION) {
+    if (storage.get<string>("version") !== VERSION) {
       storage.clear();
     }
     this.menu = new Menu();
     this.menu.clear();
-    if (storage.get("depth")) {
+    if (storage.get<number>("depth")) {
       this.menu.addItem(MenuItemCode.CONTINUE, "Continue");
     }
     this.menu.addItem(MenuItemCode.NEW_GAME, "New Game");
