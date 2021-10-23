@@ -22,7 +22,7 @@ export default class Pickable implements PickableBase {
     this.type = type;
   }
 
-  pick(owner: Actor, wearer: Actor) {
+  pick(owner: Actor, wearer: Actor): boolean {
     if (wearer.container && wearer.container.add(owner)) {
       game.removeActor(owner);
       return true;
