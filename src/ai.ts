@@ -199,7 +199,7 @@ export class PlayerAI extends AI {
         (actor.destructible && actor.destructible.isDead) || actor.pickable;
 
       if (corpseOrItem && actor.x === targetX && actor.y === targetY) {
-        game.log.add(`There is a   ${actor.name} here`);
+        game.log.add(`There is a ${actor.name} here`);
       }
     }
 
