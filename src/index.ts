@@ -343,7 +343,7 @@ class Game {
       document.addEventListener("keydown", onKeyHandler);
       function onKeyHandler(e: KeyboardEvent) {
         e.preventDefault();
-        if (e.keyCode !== 0) {
+        if (e.key) {
           document.removeEventListener("keydown", onKeyHandler);
           game.lastKey = e.key;
           resolve();
