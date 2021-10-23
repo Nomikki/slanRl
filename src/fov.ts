@@ -3,7 +3,11 @@
 import { game } from ".";
 
 export default class Fov {
-  constructor(w, h) {
+  width: number;
+  height: number;
+  mapped: number[];
+
+  constructor(w: number, h: number) {
     this.width = w;
     this.height = h;
 
@@ -22,12 +26,12 @@ export default class Fov {
     this.mapped = new Array(this.width * this.height).fill(0);
   }
 
-  float2int(value) {
+  float2int(value: number): number {
     return value | 0;
   }
 
   /* Just a placeholder */
-  compute(x, y, len) {
+  compute(x: number, y: number, len: number) {
     this.clear();
 
     let dx = 0;
@@ -43,7 +47,6 @@ export default class Fov {
 
       px = x + 0.5;
       py = y + 0.5;
-      
 
       for (let l = 0; l < len; l++) {
         px += dx;
@@ -63,13 +66,13 @@ export default class Fov {
     }
   }
 
-  getMapped(x, y) {
+  getMapped(x: number, y: number): number {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height)
       return this.mapped[x + y * this.width];
     else return 2;
   }
 
-  isInFov(x, y) {
+  isInFov(x: number, y: number): boolean {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
       return this.mapped[x + y * this.width] > 0;
     }

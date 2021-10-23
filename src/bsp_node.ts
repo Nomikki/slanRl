@@ -1,10 +1,14 @@
 "use strict";
 
-import Rectangle from "./rectangle.js";
+import Rectangle from "./rectangle";
 
 class bspNode extends Rectangle {
-  constructor(leaf) {
-    super(leaf);
+  A: any;
+  B: any;
+  leaf: any;
+
+  constructor(leaf: Rectangle) {
+    super(leaf.x, leaf.y, leaf.w, leaf.h);
     this.A = null;
     this.B = null;
     this.leaf = leaf;

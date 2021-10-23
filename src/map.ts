@@ -13,68 +13,67 @@ import Rectangle from "./rectangle";
 export const random = new Randomizer();
 
 class Tile {
-  constructor() {
-    this.canWalk = false;
-    this.explored = false;
-  }
+  canWalk: boolean = false;
+  explored: boolean = false;
+
+  constructor() {}
 }
 
 export default class Map {
-  constructor(width, height) {
+  width: number;
+  height: number;
+
+  startX: number = 0;
+  startY: number = 0;
+  stairsX: number = 0;
+  stairsY: number = 0;
+
+  root: any;
+  levelSeed: number = 0;
+  depth: number = 0;
+
+  readonly ROOM_MAX_SIZE: number = 10;
+  readonly ROOM_MIN_SIZE: number = 4;
+  readonly MAX_ROOM_MONSTERS: number = 3;
+  readonly MAX_ROOM_ITEMS: number = 2;
+
+  tiles: any;
+
+  constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
-
-    this.startX = 0;
-    this.startY = 0;
-
-    this.stairsX = 0;
-    this.stairsY = 0;
-
-    //console.log("size of map: " + this.width + ", " + this.height);
-
-    this.constants = Object.freeze({
-      ROOM_MAX_SIZE: 10,
-      ROOM_MIN_SIZE: 4,
-      MAX_ROOM_MONSTERS: 3,
-      MAX_ROOM_ITEMS: 2,
-    });
-
-    this.root = null;
-    this.levelSeed = 0;
-    this.depth = 0;
   }
 
   save() {
     //console.log("map save, wip");
-    window.localStorage.setItem("seed", this.levelSeed);
-    window.localStorage.setItem("depth", this.depth);
+    window.localStorage.setItem("seed", this.levelSeed.toString());
+    window.localStorage.setItem("depth", this.depth.toString());
   }
 
   load() {
     //console.log("map load, wip");
   }
 
-  isWall(x, y) {
+  isWall(x: number, y: number): boolean {
     const index = x + y * this.width;
     return !this.tiles[index].canWalk;
   }
 
-  setWall(x, y) {
+  setWall(x: number, y: number) {
     this.tiles[x + y * this.width].canWalk = false;
   }
 
-  canWalk(x, y) {
+  canWalk(x: number, y: number): boolean {
     if (this.isWall(x, y)) return false;
     for (const actor of game.actors) {
       if (actor.x === x && actor.y === y && actor.blocks) {
         return false;
       }
     }
-
     return true;
   }
 
-  addMonster(x, y) {
+  addMonster(x: number, y: number) {
     const rng = random.getInt(0, 100);
 
     if (rng < 80) {
@@ -87,14 +86,19 @@ export default class Map {
     } else {
       let troll = new Actor(x, y, "t", "lan troll", "#008800");
 
-      troll.destructible = new MonsterDestructible(10, 0, "wasted lan troll", 15);
+      troll.destructible = new MonsterDestructible(
+        10,
+        0,
+        "wasted lan troll",
+        15
+      );
       troll.attacker = new Attacker(3);
       troll.ai = new MonsterAI();
       game.actors.push(troll);
     }
   }
 
-  additem(x, y) {
+  additem(x: number, y: number) {
     const rng = random.getInt(0, 100);
     if (rng < 70) {
       if (random.getInt(0, 100) < 95) {
@@ -151,7 +155,7 @@ export default class Map {
     }
   }
 
-  dig(x1, y1, x2, y2) {
+  dig(x1: number, y1: number, x2: number, y2: number) {
     x1 = x1 | 0;
     x2 = x2 | 0;
     y1 = y1 | 0;
@@ -177,9 +181,9 @@ export default class Map {
     }
   }
 
-  addActors(room) {
-    let numberOfMonsters = random.getInt(0, this.constants.MAX_ROOM_MONSTERS);
-    let numberOfItems = random.getInt(0, this.constants.MAX_ROOM_ITEMS);
+  addActors(room: Rectangle) {
+    let numberOfMonsters = random.getInt(0, this.MAX_ROOM_MONSTERS);
+    let numberOfItems = random.getInt(0, this.MAX_ROOM_ITEMS);
     //console.log(room);
     const x1 = room.x;
     const x2 = room.x + room.w;
@@ -205,7 +209,7 @@ export default class Map {
     }
   }
 
-  createRoom(x1, y1, x2, y2) {
+  createRoom(x1: number, y1: number, x2: number, y2: number) {
     this.dig(x1, y1, x2, y2);
 
     /*
@@ -218,9 +222,9 @@ export default class Map {
     */
   }
 
-  generate(withActors, seed, depth) {
-    this.levelSeed = parseInt(seed);
-    this.depth = parseInt(depth);
+  generate(withActors: boolean, seed: number, depth: number) {
+    this.levelSeed = seed;
+    this.depth = depth;
 
     random.setSeed(this.levelSeed + depth * 25);
     console.log("seed: " + this.levelSeed);
@@ -233,7 +237,7 @@ export default class Map {
 
     //const option = random.getInt(0, 2);
     //console.log("option: " + option);
-    const option = 2;
+    const option: number = 2;
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
@@ -277,8 +281,8 @@ export default class Map {
 
       //option 2
       if (option === 2) {
-        w = random.getInt(this.constants.ROOM_MIN_SIZE, room.w - 2);
-        h = random.getInt(this.constants.ROOM_MIN_SIZE, room.h - 2);
+        w = random.getInt(this.ROOM_MIN_SIZE, room.w - 2);
+        h = random.getInt(this.ROOM_MIN_SIZE, room.h - 2);
         x = random.getInt(room.x, room.x + room.w - w - 0) + 1;
         y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
 

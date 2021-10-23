@@ -4,34 +4,40 @@ import { game } from ".";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 
 export default class Actor {
-  constructor(x, y, ch, name, color) {
+  x: number;
+  y: number;
+  ch: string;
+  name: string;
+  color: string;
+
+  fov: any = null;
+  fovOnly: boolean = true;
+  blocks: boolean = true; //can we walk on this actor?
+
+  // Destructible: Something that can take damage and potentially break or die
+  destructible: any = null;
+
+  // Attacker: Something that can deal damage to a Destructible
+  attacker: any = null;
+
+  // Ai: Something that is self-updating
+  ai: any = null;
+
+  // Pickable: Something that can be picked and used
+  pickable: any = null;
+
+  // Container: Something that can contain actors
+  container: any = null;
+
+  constructor(x: number, y: number, ch: string, name: string, color: string) {
     this.x = x | 0;
     this.y = y | 0;
     this.ch = ch;
     this.color = color;
     this.name = name;
-
-    this.fov = null;
-    this.fovOnly = true;
-    this.blocks = true; //can we walk on this actor?
-
-    // Destructible: Something that can take damage and potentially break or die
-    this.destructible = null;
-
-    // Attacker: Something that can deal damage to a Destructible
-    this.attacker = null;
-
-    // Ai: Something that is self-updating
-    this.ai = null;
-
-    // Pickable: Something that can be picked and used
-    this.pickable = null;
-
-    // Container: Something that can contain actors
-    this.container = null;
   }
 
-  create(actorTemplate) {
+  create(actorTemplate: Actor) {
     //console.log(actorTemplate);
     if (actorTemplate.pickable.type === "lightingBolt")
       this.pickable = new LightningBolt(
@@ -74,7 +80,7 @@ export default class Actor {
     }
   }
 
-  getDistance(x, y) {
+  getDistance(x: number, y: number) {
     const dx = this.x - x;
     const dy = this.y - y;
     return Math.sqrt(dx * dx + dy * dy);

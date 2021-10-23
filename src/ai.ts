@@ -1,17 +1,21 @@
 "use strict";
 
-import { game } from ".";
+import { game, GameStatus } from ".";
 import { Menu } from "./menu";
 import Randomizer from "./random";
+import Actor from "./actor";
+
 export const random = new Randomizer();
 
 export default class AI {
   constructor() {}
 
-  update(owner) {}
+  update(_owner: Actor) {}
 }
 
 export class PlayerAI extends AI {
+  xpLevel: number;
+
   constructor() {
     super();
     this.xpLevel = 1;
@@ -24,7 +28,7 @@ export class PlayerAI extends AI {
     return LEVEL_UP_BASE + (this.xpLevel * LEVEL_UP_FACTOR);
   }
 
-  async update(owner) {
+  async update(owner: Actor) {
 
     const levelUpXp = this.getNextLevelXP();
     if (owner.destructible.xp >= levelUpXp)
@@ -88,7 +92,7 @@ export class PlayerAI extends AI {
     let dx = 0;
     let dy = 0;
     const ch = await game.getch();
-
+    //console.log(`ch: ${ch}`);
     switch (ch) {
       case "ArrowLeft":
         dx--;
@@ -108,7 +112,8 @@ export class PlayerAI extends AI {
     }
 
     if (dx !== 0 || dy !== 0) {
-      game.gameStatus = game.GameStatus.NEW_TURN;
+
+      game.gameStatus = GameStatus.NEW_TURN;
 
       if (this.moveOrAttack(owner, owner.x + dx, owner.y + dy)) {
         game.player.computeFov();
@@ -116,7 +121,7 @@ export class PlayerAI extends AI {
     }
   }
 
-  async handleActionKey(owner, ascii) {
+  async handleActionKey(owner: Actor, ascii: string) {
     console.log(ascii);
 
     switch (ascii) {
@@ -134,7 +139,7 @@ export class PlayerAI extends AI {
         }
         break;
       case "g": //pickup item
-        game.gameStatus = game.GameStatus.NEW_TURN;
+        game.gameStatus = GameStatus.NEW_TURN;
         let found = false;
         for (const actor of game.actors) {
           if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
@@ -158,7 +163,7 @@ export class PlayerAI extends AI {
         const useItem = await this.choseFromInventory(owner);
         if (useItem) {
           await useItem.pickable.use(useItem, owner);
-          game.gameStatus = game.GameStatus.NEW_TURN;
+          game.gameStatus = GameStatus.NEW_TURN;
         } else {
           game.log.add("Nevermind...");
         }
@@ -168,7 +173,7 @@ export class PlayerAI extends AI {
         const dropItem = await this.choseFromInventory(owner);
         if (dropItem) {
           await dropItem.pickable.drop(dropItem, owner);
-          game.gameStatus = game.GameStatus.NEW_TURN;
+          game.gameStatus = GameStatus.NEW_TURN;
         } else {
           game.log.add("Nevermind...");
         }
@@ -178,8 +183,8 @@ export class PlayerAI extends AI {
     }
   }
 
-  moveOrAttack(owner, targetX, targetY) {
-    if (game.map.isWall(targetX, targetY)) return false;
+  moveOrAttack(owner: Actor, targetX: number, targetY: number): boolean {
+    if (game.map.isWall(targetX, targetY)) return false; //move
 
     for (const actor of game.actors) {
       if (
@@ -189,7 +194,7 @@ export class PlayerAI extends AI {
         actor.y === targetY
       ) {
         owner.attacker.attack(owner, actor);
-        return false;
+        return false; //attack
       }
     }
 
@@ -208,7 +213,7 @@ export class PlayerAI extends AI {
     return true;
   }
 
-  async choseFromInventory(owner) {
+  async choseFromInventory(owner: Actor) {
     game.clear();
     game.render();
     for (let y = 0; y < 28; y++) {
@@ -243,20 +248,20 @@ export class PlayerAI extends AI {
 }
 
 export class MonsterAI extends AI {
+  moveCount: number;
+  readonly TRACKING_TURNS: number = 3;
+
   constructor() {
     super();
     this.moveCount = 0;
 
-    this.Constants = Object.freeze({
-      TRACKING_TURNS: 3,
-    });
   }
 
-  async update(owner) {
+  async update(owner: Actor) {
     if (owner.destructible && owner.destructible.isDead()) return;
 
     if (game.player.fov.isInFov(owner.x, owner.y)) {
-      this.moveCount = this.Constants.TRACKING_TURNS;
+      this.moveCount = this.TRACKING_TURNS;
     } else {
       this.moveCount--;
     }
@@ -266,7 +271,7 @@ export class MonsterAI extends AI {
     }
   }
 
-  moveOrAttack(owner, targetX, targetY) {
+  moveOrAttack(owner: Actor, targetX: number, targetY: number) {
     let dx = targetX - owner.x;
     let dy = targetY - owner.y;
     const stepdx = dx > 0 ? 1 : -1;
@@ -293,13 +298,16 @@ export class MonsterAI extends AI {
 }
 
 export class ConfusedAI extends AI {
-  constructor(nbTurns, oldAi) {
+  nbTurns: number;
+  oldAi: AI;
+
+  constructor(nbTurns: number, oldAi: AI) {
     super();
     this.nbTurns = nbTurns;
     this.oldAi = oldAi;
   }
 
-  async update(owner) {
+  async update(owner: Actor) {
     const dx = random.getInt(-1, 1);
     const dy = random.getInt(-1, 1);
 

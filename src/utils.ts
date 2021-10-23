@@ -1,4 +1,4 @@
-export const paddedLogObject = (object) => {
+export const paddedLogObject = (object: { [k in string]: string }) => {
   const maxKeyLength = Object.keys(object).reduce(
     (previousValue, currentValue) =>
       currentValue.length + 3 > previousValue
@@ -18,7 +18,7 @@ export const populateVersion = () =>
   `Commit ID: <span>${COMMIT_HASH}</span> | Version: <span>${VERSION}</span>`;
 
 export const printVersionContainer = () => {
-  document.querySelector("#version").innerHTML = populateVersion();
+  document.querySelector("#version")!.innerHTML = populateVersion();
 };
 
 export const debugInit = () => {

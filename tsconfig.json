@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    "target": "ES6",
+    "module": "commonjs",
+    "outDir": "dist",
+    "lib": ["es2020", "dom"],
+    "moduleResolution": "node",
+    "paths": {
+      "*": ["types/*.d.ts"]
+    },
+    "suppressExcessPropertyErrors": true,
+    // "sourceMap": false,
+    // "noEmitOnError": true,
+    "strict": true,
+    // "noImplicitAny": true,
+    // "strictNullChecks": true,
+     "alwaysStrict": true,
+     "noUnusedLocals": true,
+     "noUnusedParameters": true,
+    // "noImplicitReturns": true,
+    // "noFallthroughCasesInSwitch": true,
+     "strictFunctionTypes": true,
+    // "esModuleInterop": true,
+    // "preserveWatchOutput": true,
+    // "resolveJsonModule": true,
+  },
+  "exclude": ["node_modules"],
+}

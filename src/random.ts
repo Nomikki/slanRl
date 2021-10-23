@@ -1,13 +1,15 @@
 "use strict";
 
-let _seed = 0;
+let _seed: number = 0;
 
 class Randomizer {
+  rnd: number;
+
   constructor() {
     this.rnd = 0;
   }
 
-  setSeed(seed) {
+  setSeed(seed: number) {
     _seed = seed;
   }
 
@@ -16,15 +18,15 @@ class Randomizer {
     this.rnd = _seed / 233280.0;
   }
 
-  getInt(min, max) {
+  getInt(min: number, max: number): number {
     max = max || 1;
     min = min || 0;
     this.calc();
     return Math.floor(min + this.rnd * (max - min));
   }
 
-  dice(dices, eyes, bonus = 0) {
-    let v = 0;
+  dice(dices: number, eyes: number, bonus: number = 0): number {
+    let v: number = 0;
     eyes++;
     for (let i = 0; i < dices; i++) {
       v += Number(this.getInt(1, eyes));

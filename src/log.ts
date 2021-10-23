@@ -3,18 +3,21 @@
 import { game } from ".";
 
 class LogText {
-  constructor(text, color) {
+  text: string;
+  color: string;
+
+  constructor(text: string, color: string) {
     this.text = text;
     this.color = color;
   }
 }
 
 export default class Log {
-  constructor() {
-    this.constants = Object.freeze({
-      SIZE_OF_LOG: 100,
-    });
+  SIZE_OF_LOG: number = 100;
+  texts: LogText[];
 
+  constructor() {
+  
     this.texts = new Array();
   }
 
@@ -33,10 +36,10 @@ export default class Log {
     }
   }
 
-  add(text, color = "#AAA") {
+  add(text: string, color: string = "#AAA") {
     //console.log(text);
     this.texts.push(new LogText(text, color));
-    if (this.texts.length > this.constants.SIZE_OF_LOG) {
+    if (this.texts.length > this.SIZE_OF_LOG) {
       this.texts.splice(0, 1);
     }
   }

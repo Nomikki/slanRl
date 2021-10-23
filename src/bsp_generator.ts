@@ -1,13 +1,29 @@
 "use strict";
 
-import Rectangle from "./rectangle.js";
-import bspNode from "./bsp_node.js";
-import Randomizer from "./random.js";
+import Rectangle from "./rectangle";
+import bspNode from "./bsp_node";
+import Randomizer from "./random";
 
 const random = new Randomizer();
 
 class bspGenerator {
-  constructor(x, y, w, h, maxLevel = 5) {
+  maxLevel: number;
+  rootContainer: Rectangle;
+  rows: number;
+  cols: number;
+  map: any;
+  doorPlaces: any = null;
+  tempRooms: any = null;
+  rooms: Rectangle[];
+  tree: bspNode;
+
+  constructor(
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    maxLevel: number = 5
+  ) {
     this.maxLevel = maxLevel;
 
     this.rootContainer = new Rectangle(x + 1, y + 1, w - 2, h - 2);
@@ -17,7 +33,7 @@ class bspGenerator {
 
     this.map = [];
     this.doorPlaces = [];
-    this.tempRooms = [];
+    this.tempRooms = []; 
 
     for (let h = 0; h < this.rows; h++) {
       for (let w = 0; w < this.cols; w++) {
@@ -32,10 +48,10 @@ class bspGenerator {
     this.ConnectRooms(this.tree);
   }
 
-  RandomSplit(container) {
+  RandomSplit(container: Rectangle) {
     let r1, r2;
 
-    let splitVertical = random.getInt(0, 1);
+    let splitVertical: boolean = random.getInt(0, 1) ? false : true;
 
     if (container.w > container.h && container.w / container.h >= 0.05) {
       splitVertical = true;
@@ -67,7 +83,7 @@ class bspGenerator {
     return [r1, r2];
   }
 
-  Devide(container, level) {
+  Devide(container: Rectangle, level: number): bspNode {
     const root = new bspNode(container);
 
     if (level < this.maxLevel) {
@@ -98,7 +114,7 @@ class bspGenerator {
     }
   }
 
-  IsThereRoom(x, y) {
+  IsThereRoom(x: number, y: number): boolean {
     for (const room of this.tempRooms) {
       if (x >= room.x && y >= room.y && x <= room.w && y <= room.h) {
         return true;
@@ -107,7 +123,7 @@ class bspGenerator {
     return false;
   }
 
-  ConnectRooms(node) {
+  ConnectRooms(node: bspNode) {
     if (node.A === null || node.B === null) return false;
 
     const x1 = node.A.leaf.GetCenterX() >> 0;

@@ -1,14 +1,17 @@
 "use strict";
 
 import { game } from ".";
+import Actor from "./actor";
 import { ConfusedAI } from "./ai";
 
 export default class Pickable {
+  type: string;
+
   constructor(type = "unknow") {
     this.type = type;
   }
 
-  pick(owner, wearer) {
+  pick(owner: Actor, wearer: Actor): boolean {
     if (wearer.container && wearer.container.add(owner)) {
       game.removeActor(owner);
       return true;
@@ -16,7 +19,7 @@ export default class Pickable {
     return false;
   }
 
-  use(owner, wearer) {
+  async use(owner: Actor, wearer: Actor) {
     game.log.add("You use a " + owner.name);
     if (wearer.container) {
       wearer.container.remove(owner);
@@ -25,7 +28,7 @@ export default class Pickable {
     return false;
   }
 
-  drop(owner, wearer) {
+  drop(owner: Actor, wearer: Actor) {
     if (wearer.container) {
       wearer.container.remove(owner);
       game.actors.push(owner);
@@ -38,12 +41,14 @@ export default class Pickable {
 }
 
 export class Healer extends Pickable {
-  constructor(amount) {
+  amount: number;
+
+  constructor(amount: number) {
     super("healer");
     this.amount = amount;
   }
 
-  use(owner, wearer) {
+  async use(owner: Actor, wearer: Actor) {
     if (wearer.destructible) {
       const amountHealed = wearer.destructible.heal(this.amount);
       if (amountHealed > 0) {
@@ -55,13 +60,16 @@ export class Healer extends Pickable {
 }
 
 export class LightningBolt extends Pickable {
-  constructor(range, damage) {
+  range: number;
+  damage: number;
+
+  constructor(range: number, damage: number) {
     super("lightingBolt");
     this.range = range;
     this.damage = damage;
   }
 
-  use(owner, wearer) {
+  async use(owner: Actor, wearer: Actor) {
     const closestMonster = game.getClosestMonster(
       wearer.x,
       wearer.y,
@@ -86,13 +94,16 @@ export class LightningBolt extends Pickable {
 }
 
 export class Fireball extends Pickable {
-  constructor(range, damage) {
+  range: number;
+  damage: number;
+
+  constructor(range: number, damage: number) {
     super("fireBall");
     this.range = range;
     this.damage = damage;
   }
 
-  async use(owner, wearer) {
+  async use(owner: Actor, wearer: Actor) {
     game.log.add(
       "Use arrow keys to target tile for fireball. Enter to select target. Esc to cancel."
     );
@@ -111,7 +122,7 @@ export class Fireball extends Pickable {
         if (
           actor.destructible &&
           !actor.destructible.isDead() &&
-          actor.getDistance(tilePick[1], tilePick[2]) < this.range
+          actor.getDistance(tilePick[1] as number, tilePick[2] as number) < this.range
         ) {
           game.log.add(
             "The " +
@@ -133,13 +144,16 @@ export class Fireball extends Pickable {
 }
 
 export class Confuser extends Pickable {
-  constructor(nbTurns, range) {
+  nbTurns: number;
+  range: number;
+
+  constructor(nbTurns: number, range: number) {
     super("confuser");
     this.nbTurns = nbTurns;
     this.range = range;
   }
 
-  async use(owner, wearer) {
+  async use(owner: Actor, wearer: Actor) {
     game.log.add(
       "Arrow keys to select a creature. Enter to select target. Esc to cancel."
     );
@@ -150,7 +164,7 @@ export class Confuser extends Pickable {
       return false;
     }
 
-    const actor = game.getActor(tilePick[1], tilePick[2]);
+    const actor = game.getActor(tilePick[1] as number, tilePick[2] as number);
     if (!actor) {
       return false;
     }

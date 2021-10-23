@@ -1,25 +1,31 @@
 "use strict";
 
 class Rectangle {
-  constructor(x, y, w, h) {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+
+  constructor(x: number, y: number, w: number, h: number) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
   }
 
-  GetHalfDimensionX() {
+  GetHalfDimensionX(): number {
     return this.w / 2;
   }
-  GetHalfDimensionY() {
+
+  GetHalfDimensionY(): number {
     return this.h / 2;
   }
 
-  GetCenterX() {
+  GetCenterX(): number {
     return this.x + this.GetHalfDimensionX();
   }
 
-  GetCenterY() {
+  GetCenterY(): number {
     return this.y + this.GetHalfDimensionY();
   }
 }
