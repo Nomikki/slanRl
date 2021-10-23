@@ -1,12 +1,12 @@
-const constants = {
-  NONE: 0,
-  NEW_GAME: 1,
-  CONTINUE: 2,
-  EXIT: 3,
-  CONSTITUTION: 4,
-  STRENGTH: 5,
-  AGILITY: 6,
-};
+export enum MenuItemCode {
+  NONE,
+  NEW_GAME,
+  CONTINUE,
+  EXIT,
+  CONSTITUTION,
+  STRENGTH,
+  AGILITY,
+}
 
 export class MenuItem {
   code = 0;
@@ -14,7 +14,6 @@ export class MenuItem {
 }
 
 export class Menu {
-  constants: Readonly<typeof constants> = constants;
   items: MenuItem[] = [];
 
   clear() {

@@ -1,4 +1,4 @@
-import { game } from '.';
+import { game, GameStatus } from '.';
 import Actor from './actor';
 import { ensure } from './utils';
 
@@ -105,6 +105,6 @@ export class PlayerDestructible extends Destructible {
   die(owner: Actor) {
     game.log.add('You died', '#A00');
     super.die(owner);
-    game.gameStatus = game.GameStatus.DEFEAT;
+    game.gameStatus = GameStatus.DEFEAT;
   }
 }

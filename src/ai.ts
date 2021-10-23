@@ -1,10 +1,11 @@
-import { game } from '.';
+import { game, GameStatus } from '.';
 import Actor from './actor';
 import { XP } from './destructible';
-import { Menu } from './menu';
+import { Menu, MenuItemCode } from './menu';
 import Randomizer from './random';
 import { ensure } from './utils';
-export const random = new Randomizer();
+
+const random = new Randomizer();
 
 const monsterConstants = {
   TRACKING_TURNS: 3,
@@ -44,12 +45,9 @@ export class PlayerAI extends AI {
 
       game.menu = new Menu();
       game.menu.clear();
-      game.menu.addItem(
-        game.menu.constants.CONSTITUTION,
-        'Constitution (+20 hp)',
-      );
-      game.menu.addItem(game.menu.constants.STRENGTH, 'Strenght (+1 attack)');
-      game.menu.addItem(game.menu.constants.AGILITY, 'Agility (+1 defense)');
+      game.menu.addItem(MenuItemCode.CONSTITUTION, 'Constitution (+20 hp)');
+      game.menu.addItem(MenuItemCode.STRENGTH, 'Strenght (+1 attack)');
+      game.menu.addItem(MenuItemCode.AGILITY, 'Agility (+1 defense)');
 
       let cursor = 0;
       let selectedItem = -1;
@@ -74,16 +72,16 @@ export class PlayerAI extends AI {
       }
 
       if (selectedItem != -1) {
-        if (selectedItem === game.menu.constants.CONSTITUTION) {
+        if (selectedItem === MenuItemCode.CONSTITUTION) {
           destructible.hp += 20;
           destructible.maxHP += 20;
         }
 
-        if (selectedItem === game.menu.constants.STRENGTH) {
+        if (selectedItem === MenuItemCode.STRENGTH) {
           ensure(owner.attacker).power += 1;
         }
 
-        if (selectedItem === game.menu.constants.AGILITY) {
+        if (selectedItem === MenuItemCode.AGILITY) {
           destructible.defense += 1;
         }
       }
@@ -116,7 +114,7 @@ export class PlayerAI extends AI {
     }
 
     if (dx !== 0 || dy !== 0) {
-      game.gameStatus = game.GameStatus.NEW_TURN;
+      game.gameStatus = GameStatus.NEW_TURN;
 
       if (this.moveOrAttack(owner, owner.x + dx, owner.y + dy)) {
         game.player?.computeFov();
@@ -139,7 +137,7 @@ export class PlayerAI extends AI {
     };
 
     const handlePickup = () => {
-      game.gameStatus = game.GameStatus.NEW_TURN;
+      game.gameStatus = GameStatus.NEW_TURN;
       let found = false;
       for (const actor of game.actors) {
         if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
@@ -163,7 +161,7 @@ export class PlayerAI extends AI {
       const useItem = await this.choseFromInventory(owner);
       if (useItem) {
         await useItem.pickable?.use(useItem, owner);
-        game.gameStatus = game.GameStatus.NEW_TURN;
+        game.gameStatus = GameStatus.NEW_TURN;
       } else {
         game.log.add('Nevermind...');
       }
@@ -173,7 +171,7 @@ export class PlayerAI extends AI {
       const dropItem = await this.choseFromInventory(owner);
       if (dropItem) {
         await dropItem.pickable?.drop(dropItem, owner);
-        game.gameStatus = game.GameStatus.NEW_TURN;
+        game.gameStatus = GameStatus.NEW_TURN;
       } else {
         game.log.add('Nevermind...');
       }

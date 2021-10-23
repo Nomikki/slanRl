@@ -10,16 +10,16 @@ import {
 import Fov from './fov';
 import Log from './log';
 import Map from './map';
-import { Menu } from './menu';
+import { Menu, MenuItemCode } from './menu';
 import { debugInit, ensure } from './utils';
 
-const gameStatuses = {
-  STARTUP: 0,
-  IDLE: 1,
-  NEW_TURN: 2,
-  VICTORY: 3,
-  DEFEAT: 4,
-};
+export enum GameStatus {
+  STARTUP,
+  IDLE,
+  NEW_TURN,
+  VICTORY,
+  DEFEAT,
+}
 
 export type Tile = [boolean, number, number];
 
@@ -32,7 +32,6 @@ class Game {
   depth = 0;
   fontSize = 12;
   gameStatus = 0;
-  GameStatus: Readonly<typeof gameStatuses> = gameStatuses;
   height = 40;
   lastKey = '';
   log: Log = new Log();
@@ -102,7 +101,7 @@ class Game {
       this.log.add('Welcome back stranger!', '#FFF');
     }
 
-    this.gameStatus = this.GameStatus.STARTUP;
+    this.gameStatus = GameStatus.STARTUP;
   }
 
   async nextLevel() {
@@ -127,7 +126,7 @@ class Game {
 
     this.depth = 1;
     await this.term();
-    await this.init(true);
+    await this.init(true, true);
     await this.save();
   }
 
@@ -236,10 +235,10 @@ class Game {
     this.menu = new Menu();
     this.menu.clear();
     if (window.localStorage.getItem('depth'))
-      this.menu.addItem(this.menu.constants.CONTINUE, 'Continue');
-    this.menu.addItem(this.menu.constants.NEW_GAME, 'New Game');
+      this.menu.addItem(MenuItemCode.CONTINUE, 'Continue');
+    this.menu.addItem(MenuItemCode.NEW_GAME, 'New Game');
 
-    //this.menu.addItem(this.menu.constants.EXIT, "Exit");
+    //this.menu.addItem(MenuItemCode.EXIT, "Exit");
 
     let cursor = 0;
     let selectedItem = -1;
@@ -263,11 +262,11 @@ class Game {
     }
 
     if (selectedItem != -1) {
-      if (selectedItem === this.menu.constants.NEW_GAME) {
+      if (selectedItem === MenuItemCode.NEW_GAME) {
         await this.newGame();
       }
 
-      if (selectedItem === this.menu.constants.CONTINUE) {
+      if (selectedItem === MenuItemCode.CONTINUE) {
         await this.continueGame();
       }
     }
@@ -419,15 +418,15 @@ class Game {
   async gameloop() {
     const player = ensure(this.player);
     while (true) {
-      if (this.gameStatus === this.GameStatus.STARTUP) {
+      if (this.gameStatus === GameStatus.STARTUP) {
         player.computeFov();
         this.render();
       }
-      this.gameStatus = this.GameStatus.IDLE;
+      this.gameStatus = GameStatus.IDLE;
 
       await player.update();
 
-      if (this.gameStatus === this.GameStatus.NEW_TURN) {
+      if (this.gameStatus === GameStatus.NEW_TURN) {
         for (const actor of this.actors) {
           if (actor !== player) {
             await actor.update();
@@ -438,7 +437,7 @@ class Game {
       //finally draw screen
       this.render();
 
-      if (this.gameStatus === this.GameStatus.DEFEAT) {
+      if (this.gameStatus === GameStatus.DEFEAT) {
         this.drawText('DEFEAT!', this.width / 2 - 3, this.height / 2, '#A00');
         this.log.add('DEFEAT', '#A00');
         break;
