@@ -1,8 +1,8 @@
-import { game, GameStatus } from '.';
-import Actor from './actor';
-import { ensure } from './utils';
+import { game, GameStatus } from ".";
+import Actor from "./actor";
+import { ensure } from "./utils";
 
-export type DestructibleType = 'player' | 'monster';
+export type DestructibleType = "player" | "monster";
 
 export default class Destructible {
   corpseName: string;
@@ -55,8 +55,8 @@ export default class Destructible {
   }
 
   die(owner: Actor) {
-    owner.ch = '%';
-    owner.color = '#AA0000';
+    owner.ch = "%";
+    owner.color = "#AA0000";
     owner.name = this.corpseName;
     owner.blocks = false;
     game.sendToBack(owner);
@@ -67,7 +67,7 @@ export class MonsterDestructible extends Destructible {
   xp: number;
 
   constructor(maxHP: number, defense: number, corpseName: string, xp = 0) {
-    super(maxHP, defense, corpseName, 'monster', xp);
+    super(maxHP, defense, corpseName, "monster", xp);
     this.xp = xp;
   }
 
@@ -80,11 +80,11 @@ export class MonsterDestructible extends Destructible {
 
 export class PlayerDestructible extends Destructible {
   constructor(maxHP: number, defense: number, corpseName: string) {
-    super(maxHP, defense, corpseName, 'player', 0);
+    super(maxHP, defense, corpseName, "player", 0);
   }
 
   die(owner: Actor) {
-    game.log.add('You died', '#A00');
+    game.log.add("You died", "#A00");
     super.die(owner);
     game.gameStatus = GameStatus.DEFEAT;
   }

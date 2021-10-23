@@ -3,6 +3,5 @@
   "printWidth": 80,
   "proseWrap": "never",
   "semi": true,
-  "singleQuote": true,
   "trailingComma": "all"
 }

@@ -1,17 +1,17 @@
-import { game } from '.';
-import { ConfusedAI, MonsterAI, PlayerAI } from './ai';
-import Attacker from './attacker';
-import Container from './container';
-import Destructible from './destructible';
-import Fov from './fov';
+import { game } from ".";
+import { ConfusedAI, MonsterAI, PlayerAI } from "./ai";
+import Attacker from "./attacker";
+import Container from "./container";
+import Destructible from "./destructible";
+import Fov from "./fov";
 import {
   Confuser,
   Fireball,
   Healer,
   LightningBolt,
   PickableType,
-} from './pickable';
-import { ensure } from './utils';
+} from "./pickable";
+import { ensure } from "./utils";
 
 export default class Actor {
   // Ai: Something that is self-updating
@@ -48,15 +48,15 @@ export default class Actor {
   create(actorTemplate: Actor) {
     const pickable = ensure(actorTemplate.pickable);
 
-    if (pickable.type === 'lightingBolt')
+    if (pickable.type === "lightingBolt")
       this.pickable = new LightningBolt(pickable.range, pickable.damage);
 
-    if (pickable.type === 'fireBall')
+    if (pickable.type === "fireBall")
       this.pickable = new Fireball(pickable.range, pickable.damage);
 
-    if (pickable.type === 'healer') this.pickable = new Healer(pickable.amount);
+    if (pickable.type === "healer") this.pickable = new Healer(pickable.amount);
 
-    if (pickable.type === 'confuser')
+    if (pickable.type === "confuser")
       this.pickable = new Confuser(pickable.nbTurns, pickable.range);
   }
 

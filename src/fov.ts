@@ -1,4 +1,4 @@
-import { game } from '.';
+import { game } from ".";
 
 export default class Fov {
   height: number;

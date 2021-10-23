@@ -10,7 +10,7 @@ export enum MenuItemCode {
 
 export class MenuItem {
   code = 0;
-  label = '';
+  label = "";
 }
 
 export class Menu {

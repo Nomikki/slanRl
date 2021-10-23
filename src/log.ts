@@ -1,5 +1,5 @@
-import { game } from '.';
-import { Color } from './destructible';
+import { game } from ".";
+import { Color } from "./destructible";
 
 const constants = {
   SIZE_OF_LOG: 100,
@@ -34,7 +34,7 @@ export default class Log {
     }
   }
 
-  add(text: string, color: Color = '#AAA') {
+  add(text: string, color: Color = "#AAA") {
     this.texts.push(new LogText(text, color));
     if (this.texts.length > this.constants.SIZE_OF_LOG) {
       this.texts.splice(0, 1);

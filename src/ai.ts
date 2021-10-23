@@ -1,24 +1,24 @@
-import { game, GameStatus } from '.';
-import Actor from './actor';
-import { XP } from './destructible';
-import { Menu, MenuItemCode } from './menu';
-import Randomizer from './random';
-import { ensure } from './utils';
+import { game, GameStatus } from ".";
+import Actor from "./actor";
+import { XP } from "./destructible";
+import { Menu, MenuItemCode } from "./menu";
+import Randomizer from "./random";
+import { ensure } from "./utils";
 
 const random = new Randomizer();
 
-export type AiType = 'player' | 'monster' | 'confused' | 'unknown';
+export type AiType = "player" | "monster" | "confused" | "unknown";
 
 export interface AiBase {
   type: AiType;
 }
 
 export default class AI implements AiBase {
-  type: AiType = 'unknown';
+  type: AiType = "unknown";
 }
 
 export class PlayerAI extends AI {
-  type: 'player' = 'player';
+  type: "player" = "player";
   xpLevel: XP = 1;
 
   getNextLevelXP() {
@@ -36,29 +36,29 @@ export class PlayerAI extends AI {
       destructible.xp -= levelUpXp;
       game.log.add(
         `Your battle skills grow stronger! You reached level ${this.xpLevel}`,
-        '#FFFF00',
+        "#FFFF00",
       );
 
       game.menu = new Menu();
       game.menu.clear();
-      game.menu.addItem(MenuItemCode.CONSTITUTION, 'Constitution (+20 hp)');
-      game.menu.addItem(MenuItemCode.STRENGTH, 'Strenght (+1 attack)');
-      game.menu.addItem(MenuItemCode.AGILITY, 'Agility (+1 defense)');
+      game.menu.addItem(MenuItemCode.CONSTITUTION, "Constitution (+20 hp)");
+      game.menu.addItem(MenuItemCode.STRENGTH, "Strenght (+1 attack)");
+      game.menu.addItem(MenuItemCode.AGILITY, "Agility (+1 defense)");
 
       let cursor = 0;
       let selectedItem = -1;
       while (true) {
         game.clear();
         game.renderUI();
-        game.drawChar('>', game.width / 2 - 12, 10 + cursor, '#FFF');
+        game.drawChar(">", game.width / 2 - 12, 10 + cursor, "#FFF");
         for (let i = 0; i < game.menu.items.length; i++) {
           game.drawText(game.menu.items[i].label, game.width / 2 - 10, 10 + i);
         }
 
         const ch = await game.getch();
-        if (ch === 'ArrowDown') cursor++;
-        if (ch === 'ArrowUp') cursor--;
-        if (ch === 'Enter') {
+        if (ch === "ArrowDown") cursor++;
+        if (ch === "ArrowUp") cursor--;
+        if (ch === "Enter") {
           selectedItem = game.menu.items[cursor].code;
           break;
         }
@@ -92,16 +92,16 @@ export class PlayerAI extends AI {
     const ch = await game.getch();
 
     switch (ch) {
-      case 'ArrowLeft':
+      case "ArrowLeft":
         dx--;
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         dx++;
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         dy--;
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         dy++;
         break;
       default:
@@ -121,14 +121,14 @@ export class PlayerAI extends AI {
   async handleActionKey(owner: Actor, ascii: string) {
     const handleSave = () => {
       game.save();
-      game.log.add('Game saved...', '#0FA');
+      game.log.add("Game saved...", "#0FA");
     };
 
     const handleNextLevel = () => {
       if (game.stairs?.x === owner.x && game.stairs?.y === owner.y) {
         game.nextLevel();
       } else {
-        game.log.add('There are no stairs here.');
+        game.log.add("There are no stairs here.");
       }
     };
 
@@ -139,11 +139,11 @@ export class PlayerAI extends AI {
         if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
           if (actor.pickable.pick(actor, owner)) {
             found = true;
-            game.log.add(`You pick up the ${actor.name}`, '#AAA');
+            game.log.add(`You pick up the ${actor.name}`, "#AAA");
             break;
           } else if (!found) {
             found = true;
-            game.log.add('Your inventory is full.', '#F00');
+            game.log.add("Your inventory is full.", "#F00");
           }
         }
       }
@@ -153,13 +153,13 @@ export class PlayerAI extends AI {
     };
 
     const handleUseItem = async () => {
-      game.log.add('Use item');
+      game.log.add("Use item");
       const useItem = await this.choseFromInventory(owner);
       if (useItem) {
         await useItem.pickable?.use(useItem, owner);
         game.gameStatus = GameStatus.NEW_TURN;
       } else {
-        game.log.add('Nevermind...');
+        game.log.add("Nevermind...");
       }
     };
 
@@ -169,27 +169,27 @@ export class PlayerAI extends AI {
         await dropItem.pickable?.drop(dropItem, owner);
         game.gameStatus = GameStatus.NEW_TURN;
       } else {
-        game.log.add('Nevermind...');
+        game.log.add("Nevermind...");
       }
     };
 
     switch (ascii) {
-      case 'S': //save
+      case "S": //save
         handleSave();
         break;
 
-      case '>': //go down
+      case ">": //go down
         handleNextLevel();
         break;
-      case 'g': //pickup item
+      case "g": //pickup item
         handlePickup();
         break;
 
-      case 'i': //use item
+      case "i": //use item
         await handleUseItem();
         break;
 
-      case 'd': //drop item
+      case "d": //drop item
         await handleDropItem();
         break;
       default:
@@ -234,23 +234,23 @@ export class PlayerAI extends AI {
     for (let y = 0; y < 28; y++) {
       for (let x = 0; x < 40; x++) {
         if ((y === 0 || y === 27) && x > 0 && x < 39)
-          game.drawChar('-', x + 20, y, '#AAA');
+          game.drawChar("-", x + 20, y, "#AAA");
         else if ((x === 0 || x === 39) && y > 0 && y < 27)
-          game.drawChar('|', x + 20, y, '#AAA');
+          game.drawChar("|", x + 20, y, "#AAA");
         else if (y === 0 || x === 0 || y === 27 || x === 39)
-          game.drawChar('+', x + 20, y, '#AAA');
-        else game.drawChar(' ', x + 20, y);
+          game.drawChar("+", x + 20, y, "#AAA");
+        else game.drawChar(" ", x + 20, y);
       }
     }
-    game.drawText(' INVENTORY ', 34, 0);
+    game.drawText(" INVENTORY ", 34, 0);
     //game.renderUI();
 
     const container = ensure(owner.container);
 
-    let shortcut = 'a';
+    let shortcut = "a";
     let i = 0;
     for (const it of container.inventory) {
-      game.drawText(shortcut + ') ' + it.name, 22, 2 + i);
+      game.drawText(shortcut + ") " + it.name, 22, 2 + i);
       shortcut = String.fromCharCode(shortcut.charCodeAt(0) + 1);
       i++;
     }
@@ -265,7 +265,7 @@ export class PlayerAI extends AI {
 }
 
 export class MonsterAI extends AI {
-  type: 'monster' = 'monster';
+  type: "monster" = "monster";
   moveCount = 0;
   readonly TRACKING_TURNS: number = 3;
 
@@ -314,7 +314,7 @@ export class MonsterAI extends AI {
 }
 
 export class ConfusedAI extends AI {
-  type: 'confused' = 'confused';
+  type: "confused" = "confused";
   nbTurns: number;
   oldAi: PlayerAI | MonsterAI | ConfusedAI;
 

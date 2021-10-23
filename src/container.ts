@@ -1,4 +1,4 @@
-import Actor from './actor';
+import Actor from "./actor";
 
 export default class Container {
   inventory: Actor[];

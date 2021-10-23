@@ -9,8 +9,8 @@ export const paddedLogObject = (object: { [k in string]: string }) => {
 
   console.log(
     Object.keys(object)
-      .map(key => `${key.padEnd(maxKeyLength, ' ')}: ${object[key]}`)
-      .join('\n'),
+      .map(key => `${key.padEnd(maxKeyLength, " ")}: ${object[key]}`)
+      .join("\n"),
   );
 };
 
@@ -18,7 +18,7 @@ export const populateVersion = () =>
   `Commit ID: <span>${COMMIT_HASH}</span> | Version: <span>${VERSION}</span>`;
 
 export const printVersionContainer = () => {
-  ensure(document.querySelector('#version')).innerHTML = populateVersion();
+  ensure(document.querySelector("#version")).innerHTML = populateVersion();
 };
 
 export const debugInit = () => {
@@ -37,7 +37,7 @@ export const debugInit = () => {
 
 export const ensure = <T>(
   argument: T | undefined | null,
-  message = 'This value was promised to be there.',
+  message = "This value was promised to be there.",
 ): T => {
   if (argument === undefined || argument === null) {
     throw new TypeError(message);

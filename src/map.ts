@@ -1,14 +1,14 @@
-import { game } from '.';
-import Actor from './actor';
-import { MonsterAI } from './ai';
-import Attacker from './attacker';
-import bspGenerator from './bsp_generator';
-import { MonsterDestructible } from './destructible';
-import { Height, Width } from './fov';
-import { Confuser, Fireball, Healer, LightningBolt } from './pickable';
-import Randomizer from './random';
-import Rectangle from './rectangle';
-import { ensure } from './utils';
+import { game } from ".";
+import Actor from "./actor";
+import { MonsterAI } from "./ai";
+import Attacker from "./attacker";
+import bspGenerator from "./bsp_generator";
+import { MonsterDestructible } from "./destructible";
+import { Height, Width } from "./fov";
+import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
+import Randomizer from "./random";
+import Rectangle from "./rectangle";
+import { ensure } from "./utils";
 
 export const random = new Randomizer();
 
@@ -44,8 +44,8 @@ export default class Map {
 
   save() {
     //console.log("map save, wip");
-    window.localStorage.setItem('seed', `${this.levelSeed}`);
-    window.localStorage.setItem('depth', `${this.depth}`);
+    window.localStorage.setItem("seed", `${this.levelSeed}`);
+    window.localStorage.setItem("depth", `${this.depth}`);
   }
 
   load() {
@@ -76,19 +76,19 @@ export default class Map {
     const rng = random.getInt(0, 100);
 
     if (rng < 80) {
-      const orc = new Actor(x, y, 'o', 'lan orc', '#00AA00');
+      const orc = new Actor(x, y, "o", "lan orc", "#00AA00");
 
-      orc.destructible = new MonsterDestructible(10, 0, 'wasted lan orc', 10);
+      orc.destructible = new MonsterDestructible(10, 0, "wasted lan orc", 10);
       orc.attacker = new Attacker(3);
       orc.ai = new MonsterAI();
       game.actors.push(orc);
     } else {
-      const troll = new Actor(x, y, 't', 'lan troll', '#008800');
+      const troll = new Actor(x, y, "t", "lan troll", "#008800");
 
       troll.destructible = new MonsterDestructible(
         10,
         0,
-        'wasted lan troll',
+        "wasted lan troll",
         15,
       );
       troll.attacker = new Attacker(3);
@@ -101,26 +101,26 @@ export default class Map {
     const rng = random.getInt(0, 100);
     if (rng < 70) {
       if (random.getInt(0, 100) < 95) {
-        const healthPotion = new Actor(x, y, '!', 'health potion', '#FF00FF');
+        const healthPotion = new Actor(x, y, "!", "health potion", "#FF00FF");
         healthPotion.blocks = false;
         healthPotion.pickable = new Healer(4);
         game.actors.push(healthPotion);
         game.sendToBack(healthPotion);
       } else {
-        const healthPotion = new Actor(x, y, '@', 'Nutella bun', '#A80');
+        const healthPotion = new Actor(x, y, "@", "Nutella bun", "#A80");
         healthPotion.blocks = false;
         healthPotion.pickable = new Healer(30);
         game.actors.push(healthPotion);
         game.sendToBack(healthPotion);
-        console.log('Jossain haisoo nutella!');
+        console.log("Jossain haisoo nutella!");
       }
     } else if (rng < 70 + 10) {
       const scrollOfLightingBolt = new Actor(
         x,
         y,
-        '#',
-        'scroll of lighting bolt',
-        '#0FF',
+        "#",
+        "scroll of lighting bolt",
+        "#0FF",
       );
       scrollOfLightingBolt.blocks = false;
       scrollOfLightingBolt.pickable = new LightningBolt(5, 20);
@@ -130,9 +130,9 @@ export default class Map {
       const scrollOfFireball = new Actor(
         x,
         y,
-        '#',
-        'scroll of Fireball',
-        '#FA0',
+        "#",
+        "scroll of Fireball",
+        "#FA0",
       );
       scrollOfFireball.blocks = false;
       scrollOfFireball.pickable = new Fireball(2, 5);
@@ -142,9 +142,9 @@ export default class Map {
       const scrollOfConfusion = new Actor(
         x,
         y,
-        '#',
-        'scroll of Confusion',
-        '#FFA',
+        "#",
+        "scroll of Confusion",
+        "#FFA",
       );
       scrollOfConfusion.blocks = false;
       scrollOfConfusion.pickable = new Confuser(10, 8);
@@ -226,8 +226,8 @@ export default class Map {
     this.depth = depth;
 
     random.setSeed(this.levelSeed + depth * 25);
-    console.log('seed: ' + this.levelSeed);
-    console.log('depth: ' + this.depth);
+    console.log("seed: " + this.levelSeed);
+    console.log("depth: " + this.depth);
 
     this.root = new bspGenerator(0, 0, this.width, this.height, 5);
     this.tiles = new Array(this.width * this.height).fill(false);
@@ -261,9 +261,9 @@ export default class Map {
     const stairsRoomIndex = random.getInt(0, this.root.rooms.length - 1);
 
     console.log(
-      'spwanroom index: ' +
+      "spwanroom index: " +
         spawnRoomIndex +
-        ' / ' +
+        " / " +
         (this.root.rooms.length - 1),
     );
     for (let i = 0; i < this.root.rooms.length; i++) {
@@ -324,8 +324,8 @@ export default class Map {
   }
 
   render() {
-    const darkWall = '#';
-    const darkGround = '.';
+    const darkWall = "#";
+    const darkGround = ".";
 
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
@@ -336,14 +336,14 @@ export default class Map {
               this.isWall(x, y) ? darkWall : darkGround,
               x,
               y,
-              '#AAA',
+              "#AAA",
             );
           } else {
             game.drawChar(
               this.isWall(x, y) ? darkWall : darkGround,
               x,
               y,
-              '#444',
+              "#444",
             );
           }
         }
