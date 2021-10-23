@@ -1,6 +1,5 @@
 import { game, GameStatus } from ".";
 import Actor from "./actor";
-import { XP } from "./destructible";
 import { Menu, MenuItemCode } from "./menu";
 import Randomizer from "./random";
 import { ensure } from "./utils";
@@ -19,7 +18,7 @@ export default class AI implements AiBase {
 
 export class PlayerAI extends AI {
   type: "player" = "player";
-  xpLevel: XP = 1;
+  xpLevel = 1;
 
   getNextLevelXP() {
     const LEVEL_UP_BASE = 200;
