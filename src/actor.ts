@@ -38,8 +38,8 @@ export default class Actor {
   y: number;
 
   constructor(x: number, y: number, ch: string, name: string, color: string) {
-    this.x = x | 0;
-    this.y = y | 0;
+    this.x = x || 0;
+    this.y = y || 0;
     this.ch = ch;
     this.color = color;
     this.name = name;
@@ -68,9 +68,7 @@ export default class Actor {
   }
 
   async update() {
-    if (this.ai) {
-      await this.ai.update(this);
-    }
+    await this.ai?.update(this);
   }
 
   computeFov() {
