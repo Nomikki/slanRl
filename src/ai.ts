@@ -34,7 +34,7 @@ export class PlayerAI extends AI {
       this.xpLevel++;
       owner.destructible.xp -= levelUpXp;
       game.log.add(
-        "Your battle skills grow stronger! You reached level " + this.xpLevel,
+        `Your battle skills grow stronger! You reached level ${this.xpLevel}`,
         "#FFFF00"
       );
 
@@ -140,7 +140,7 @@ export class PlayerAI extends AI {
           if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
             if (actor.pickable.pick(actor, owner)) {
               found = true;
-              game.log.add("You pick up the " + actor.name, "#AAA");
+              game.log.add(`You pick up the ${actor.name}`, "#AAA");
               break;
             } else if (!found) {
               found = true;
@@ -199,7 +199,7 @@ export class PlayerAI extends AI {
         (actor.destructible && actor.destructible.isDead) || actor.pickable;
 
       if (corpseOrItem && actor.x === targetX && actor.y === targetY) {
-        game.log.add("There is a " + actor.name + " here");
+        game.log.add(`There is a   ${actor.name} here`);
       }
     }
 

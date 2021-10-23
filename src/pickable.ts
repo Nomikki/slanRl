@@ -20,7 +20,7 @@ export default class Pickable {
   }
 
   async use(owner: Actor, wearer: Actor) {
-    game.log.add("You use a " + owner.name);
+    game.log.add(`You use a ${owner.name}`);
     if (wearer.container) {
       wearer.container.remove(owner);
       return true;
@@ -35,7 +35,7 @@ export default class Pickable {
       game.sendToBack(owner);
       owner.x = wearer.x;
       owner.y = wearer.y;
-      game.log.add(wearer.name + " drops a " + owner.name);
+      game.log.add(`${wearer.name} drops a ${owner.name}`);
     }
   }
 }
@@ -81,12 +81,10 @@ export class LightningBolt extends Pickable {
     }
 
     game.log.add(
-      "A lighting bolt strikes the " +
-        closestMonster.name +
-        " with a loud thunder!",
+      `A lighting bolt strikes the ${closestMonster.name} with a loud thunder!`,
       "#0FF"
     );
-    game.log.add("The damage is " + this.damage + " hit points.", "#0FF");
+    game.log.add(`The damage is ${this.damage} hit points.`, "#0FF");
 
     closestMonster.destructible.takeDamage(closestMonster, this.damage);
     return super.use(owner, wearer);
@@ -111,9 +109,7 @@ export class Fireball extends Pickable {
 
     if (tilePick[0] == true) {
       game.log.add(
-        "The fireball explodes, burning everything within " +
-          this.range +
-          " tiles!",
+        `The fireball explodes, burning everything within ${this.range} tiles!`,
         "#FA0"
       );
 
@@ -126,11 +122,7 @@ export class Fireball extends Pickable {
             this.range
         ) {
           game.log.add(
-            "The " +
-              actor.name +
-              " gets burned for " +
-              this.damage +
-              " hit points.",
+            `The ${actor.name} gets burned for ${this.damage} hit points.`,
             "#FA0"
           );
           actor.destructible.takeDamage(actor, this.damage);
@@ -172,7 +164,7 @@ export class Confuser extends Pickable {
     const ai = new ConfusedAI(this.nbTurns, actor.ai);
     actor.ai = ai;
 
-    game.log.add("The eyes of the " + actor.name + " look vacant", "#AFD");
+    game.log.add(`The eyes of the ${actor.name} look vacant`, "#AFD");
     game.log.add("as he starts to stumble around!", "#AFD");
 
     return super.use(owner, wearer);

@@ -69,7 +69,7 @@ export class MonsterDestructible extends Destructible {
   }
 
   die(owner: Actor) {
-    game.log.add(owner.name + " is dead. You gain " + this.xp + " xp");
+    game.log.add(`${owner.name} is dead. You gain ${this.xp} xp`);
     game.player.destructible.xp += this.xp;
     super.die(owner);
   }
