@@ -1,17 +1,17 @@
-import { ActorTemplate } from "./actor";
+import Actor from "./actor";
 
 export type Size = number;
 
 export default class Container {
   size: Size;
-  inventory: ActorTemplate[];
+  inventory: Actor[];
 
   constructor(size: Size) {
     this.size = size; //maximum number of actors
     this.inventory = new Array();
   }
 
-  add(actor: ActorTemplate) {
+  add(actor: Actor) {
     if (this.size > 0 && this.inventory.length >= this.size) {
       //inventory is full
       return false;
@@ -21,7 +21,7 @@ export default class Container {
     }
   }
 
-  remove(actor: ActorTemplate) {
+  remove(actor: Actor) {
     for (let i = 0; i < this.inventory.length; i++) {
       if (this.inventory[i] === actor) {
         this.inventory.splice(i, 1);
