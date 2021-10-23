@@ -10,10 +10,10 @@ export default class Attacker {
 
   attack(owner: Actor, target: Actor) {
     if (target.destructible && !target.destructible.isDead()) {
-      const damage = this.power - target.destructible.defense;
-      if (damage > 0) {
+      const dmg = this.power - target.destructible.defense;
+      if (dmg > 0) {
         game.log.add(
-          `${owner.name} attacks ${target.name} for ${damage} hit points.`,
+          `${owner.name} attacks ${target.name} for ${dmg} hit points.`,
           owner === game.player ? "#DDD" : "#AAA",
         );
       } else {
