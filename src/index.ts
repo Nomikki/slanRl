@@ -136,8 +136,8 @@ class Game {
 
       const depth = storage.get("depth");
 
-      this.masterSeed = parseInt(seed, 10);
-      this.depth = depth ? parseInt(depth, 10) : 0;
+      this.masterSeed = seed;
+      this.depth = depth || 0;
 
       await this.init(false);
 
