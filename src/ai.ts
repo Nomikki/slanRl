@@ -121,8 +121,6 @@ export class PlayerAI extends AI {
   }
 
   async handleActionKey(owner: Actor, ascii: string) {
-    console.log(ascii);
-
     const handleSave = () => {
       game.save();
       game.log.add('Game saved...', '#0FA');

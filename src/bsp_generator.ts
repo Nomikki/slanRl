@@ -125,7 +125,7 @@ class bspGenerator {
   }
 
   ConnectRooms(node: bspNode): false | void {
-    if (node.A === null || node.B === null) {
+    if (!node.A || !node.B) {
       return false;
     }
 
@@ -174,8 +174,8 @@ class bspGenerator {
       }
     }
 
-    this.ConnectRooms(ensure(node.A));
-    this.ConnectRooms(ensure(node.B));
+    this.ConnectRooms(node.A);
+    this.ConnectRooms(node.B);
   }
 }
 
