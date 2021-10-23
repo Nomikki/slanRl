@@ -1,22 +1,17 @@
 import { game } from ".";
-import { Color } from "./destructible";
-
-const constants = {
-  SIZE_OF_LOG: 100,
-};
 
 class LogText {
-  color: Color;
+  color: string;
   text: string;
 
-  constructor(text: string, color: Color) {
+  constructor(text: string, color: string) {
     this.text = text;
     this.color = color;
   }
 }
 
 export default class Log {
-  constants: Readonly<typeof constants> = constants;
+  readonly SIZE_OF_LOG = 100;
   texts: LogText[] = [];
 
   render() {
@@ -34,9 +29,9 @@ export default class Log {
     }
   }
 
-  add(text: string, color: Color = "#AAA") {
+  add(text: string, color = "#AAA") {
     this.texts.push(new LogText(text, color));
-    if (this.texts.length > this.constants.SIZE_OF_LOG) {
+    if (this.texts.length > this.SIZE_OF_LOG) {
       this.texts.splice(0, 1);
     }
   }

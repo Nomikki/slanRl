@@ -1,3 +1,8 @@
+export class MenuItem {
+  code = 0;
+  label = "";
+}
+
 export enum MenuItemCode {
   NONE,
   NEW_GAME,
@@ -6,11 +11,6 @@ export enum MenuItemCode {
   CONSTITUTION,
   STRENGTH,
   AGILITY,
-}
-
-export class MenuItem {
-  code = 0;
-  label = "";
 }
 
 export class Menu {

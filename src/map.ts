@@ -4,20 +4,12 @@ import { MonsterAI } from "./ai";
 import Attacker from "./attacker";
 import bspGenerator from "./bsp_generator";
 import { MonsterDestructible } from "./destructible";
-import { Height, Width } from "./fov";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import Randomizer from "./random";
 import Rectangle from "./rectangle";
 import { ensure } from "./utils";
 
 export const random = new Randomizer();
-
-const constants = {
-  ROOM_MAX_SIZE: 10,
-  ROOM_MIN_SIZE: 4,
-  MAX_ROOM_MONSTERS: 3,
-  MAX_ROOM_ITEMS: 2,
-};
 
 class Tile {
   canWalk = false;
@@ -31,28 +23,27 @@ export default class Map {
   startY = 0;
   stairsX = 0;
   stairsY = 0;
-  constants: Readonly<typeof constants> = constants;
   root?: bspGenerator;
   levelSeed = 0;
   depth = 0;
   tiles?: Tile[];
 
-  constructor(width: Width, height: Height) {
+  readonly ROOM_MAX_SIZE: number = 10;
+  readonly ROOM_MIN_SIZE: number = 4;
+  readonly MAX_ROOM_MONSTERS: number = 3;
+  readonly MAX_ROOM_ITEMS: number = 2;
+
+  constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
   }
 
   save() {
-    //console.log("map save, wip");
     window.localStorage.setItem("seed", `${this.levelSeed}`);
     window.localStorage.setItem("depth", `${this.depth}`);
   }
 
-  load() {
-    //console.log("map load, wip");
-  }
-
-  isWall(x: number, y: number) {
+  isWall(x: number, y: number): boolean {
     const index = x + y * this.width;
     return !ensure(this.tiles)[index]?.canWalk;
   }
@@ -61,7 +52,7 @@ export default class Map {
     ensure(this.tiles)[x + y * this.width].canWalk = false;
   }
 
-  canWalk(x: number, y: number) {
+  canWalk(x: number, y: number): boolean {
     if (this.isWall(x, y)) return false;
     for (const actor of game.actors) {
       if (actor.x === x && actor.y === y && actor.blocks) {
@@ -150,7 +141,6 @@ export default class Map {
       scrollOfConfusion.pickable = new Confuser(10, 8);
       game.actors.push(scrollOfConfusion);
       game.sendToBack(scrollOfConfusion);
-      //console.log("conf!");
     }
   }
 
@@ -181,9 +171,8 @@ export default class Map {
   }
 
   addActors(room: Rectangle) {
-    let numberOfMonsters = random.getInt(0, this.constants.MAX_ROOM_MONSTERS);
-    let numberOfItems = random.getInt(0, this.constants.MAX_ROOM_ITEMS);
-    //console.log(room);
+    let numberOfMonsters = random.getInt(0, this.MAX_ROOM_MONSTERS);
+    let numberOfItems = random.getInt(0, this.MAX_ROOM_ITEMS);
     const x1 = room.x;
     const x2 = room.x + room.w;
     const y1 = room.y;
@@ -235,7 +224,6 @@ export default class Map {
     const monsterRooms = [];
 
     // const option = random.getInt(0, 2);
-    //console.log("option: " + option);
     const option = 2;
 
     for (let i = 0; i < this.width * this.height; i++) {
@@ -286,8 +274,8 @@ export default class Map {
 
       //option 2
       if (option === 2) {
-        w = random.getInt(this.constants.ROOM_MIN_SIZE, room.w - 2);
-        h = random.getInt(this.constants.ROOM_MIN_SIZE, room.h - 2);
+        w = random.getInt(this.ROOM_MIN_SIZE, room.w - 2);
+        h = random.getInt(this.ROOM_MIN_SIZE, room.h - 2);
         x = random.getInt(room.x, room.x + room.w - w - 0) + 1;
         y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
 
