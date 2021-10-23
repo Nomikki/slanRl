@@ -96,7 +96,6 @@ export class PlayerAI extends AI {
         dy++;
         break;
       default:
-        console.log("ch", ch);
         await this.handleActionKey(owner, ch);
         break;
     }
