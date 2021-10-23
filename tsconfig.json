@@ -10,9 +10,9 @@
       "*": ["types/*.d.ts"]
     },
     "suppressExcessPropertyErrors": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "noEmitOnError": true,
-    "strict": false,
+    "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "alwaysStrict": true,

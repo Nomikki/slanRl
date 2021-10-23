@@ -2,6 +2,10 @@ import { game } from ".";
 import { Character, Color, Name } from "./destructible";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 
+export type ActorTemplate = {
+  moi: string;
+};
+
 export type X = number;
 export type Y = number;
 
