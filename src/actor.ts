@@ -1,7 +1,13 @@
 "use strict";
 
 import { game } from ".";
-import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
+import Pickable, {
+  AiChangeEffect,
+  HealthEffect,
+  TargetSelector,
+} from "./pickable";
+import { ConfusedMonsterAi } from "./ai";
+//import Pickable, { HealthEffect, TargetSelector } from "./pickable";
 
 export default class Actor {
   x: number;
@@ -38,30 +44,33 @@ export default class Actor {
   }
 
   create(actorTemplate: Actor) {
-    if (actorTemplate.pickable.type === "lightingBolt")
-      this.pickable = new LightningBolt(
-        actorTemplate.pickable.range,
-        actorTemplate.pickable.damage
-      );
+    console.log(actorTemplate);
 
-    if (actorTemplate.pickable.type === "fireBall")
-      this.pickable = new Fireball(
-        actorTemplate.pickable.range,
-        actorTemplate.pickable.damage
+    let fx = undefined;
+    if (actorTemplate.pickable.effectName === "AiChangeEffect")
+      fx = new AiChangeEffect(
+        new ConfusedMonsterAi(actorTemplate.pickable.effect.newAi.nbTurns),
+        actorTemplate.pickable.effect.message
       );
+    if (actorTemplate.pickable.effectName === "HealthEffect")
+      fx = new HealthEffect(actorTemplate.pickable.effect.amount, undefined);
 
-    if (actorTemplate.pickable.type === "healer")
-      this.pickable = new Healer(actorTemplate.pickable.amount);
-
-    if (actorTemplate.pickable.type === "confuser")
-      this.pickable = new Confuser(
-        actorTemplate.pickable.nbTurns,
-        actorTemplate.pickable.range
+    if (actorTemplate.pickable.selectorName) {
+      console.log(actorTemplate.pickable.selectorName);
+      this.pickable = new Pickable(
+        new TargetSelector(
+          parseInt(actorTemplate.pickable.selector.type),
+          parseInt(actorTemplate.pickable.selector.range)
+        ),
+        fx
       );
+    } else {
+      this.pickable = new Pickable(undefined, fx);
+    }
   }
 
   render() {
-    const fovValue = game.player.fov.getMapped(this.x, this.y);
+    const fovValue = 2; //game.player.fov.getMapped(this.x, this.y);
     if (fovValue === 2 || (fovValue != 0 && !this.fovOnly)) {
       game.drawChar(this.ch, this.x, this.y, this.color);
     }

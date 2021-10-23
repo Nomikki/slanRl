@@ -148,7 +148,7 @@ class Game {
       const tempUsers = JSON.parse(
         window.localStorage.getItem("actors") || "[]"
       );
-      
+
       for (const actor of tempUsers) {
         const i =
           this.actors.push(

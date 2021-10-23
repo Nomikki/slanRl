@@ -40,10 +40,7 @@ export class PlayerAI extends AI {
 
       game.menu = new Menu();
       game.menu.clear();
-      game.menu.addItem(
-        MenuItemCode.CONSTITUTION,
-        "Constitution (+20 hp)"
-      );
+      game.menu.addItem(MenuItemCode.CONSTITUTION, "Constitution (+20 hp)");
       game.menu.addItem(MenuItemCode.STRENGTH, "Strenght (+1 attack)");
       game.menu.addItem(MenuItemCode.AGILITY, "Agility (+1 defense)");
 
@@ -323,5 +320,53 @@ export class ConfusedAI extends AI {
     if (this.nbTurns <= 0) {
       owner.ai = this.oldAi;
     }
+  }
+}
+
+export class TemporaryAI extends AI {
+  nbTurns: number;
+  oldAi: any;
+
+  constructor(nbTurns: number) {
+    super();
+    this.nbTurns = nbTurns;
+  }
+
+  update(owner: Actor) {
+    this.nbTurns--;
+    if (this.nbTurns === 0) {
+      owner.ai = this.oldAi;
+    }
+  }
+
+  applyTo(actor: Actor) {
+    this.oldAi = actor.ai;
+    actor.ai = this;
+  }
+}
+
+export class ConfusedMonsterAi extends TemporaryAI {
+  constructor(nbTurns: number) {
+    super(nbTurns);
+  }
+
+  update(owner: Actor) {
+    const dx = random.getInt(-1, 1);
+    const dy = random.getInt(-1, 1);
+    if (dx != 0 || dy != 0) {
+      const destx = owner.x + dx;
+      const desty = owner.y + dy;
+
+      if (game.map.canWalk(destx, desty)) {
+        owner.x = destx;
+        owner.y = desty;
+      } else {
+        const actor = game.getActor(destx, desty);
+        if (actor) {
+          owner.attacker.attack(owner, actor);
+        }
+      }
+    }
+    super.update(owner);
   }
 }

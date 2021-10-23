@@ -2,11 +2,16 @@
 
 import { game } from ".";
 import Actor from "./actor";
-import { MonsterAI } from "./ai";
+import { ConfusedMonsterAi, MonsterAI } from "./ai";
 import Attacker from "./attacker";
 import bspGenerator from "./bsp_generator";
 import { MonsterDestructible } from "./destructible";
-import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
+import Pickable, {
+  AiChangeEffect,
+  HealthEffect,
+  SelectorType,
+  TargetSelector,
+} from "./pickable";
 import Randomizer from "./random";
 import Rectangle from "./rectangle";
 
@@ -101,13 +106,19 @@ export default class Map {
       if (random.getInt(0, 100) < 95) {
         const healthPotion = new Actor(x, y, "!", "health potion", "#FF00FF");
         healthPotion.blocks = false;
-        healthPotion.pickable = new Healer(4);
+        healthPotion.pickable = new Pickable(
+          undefined,
+          new HealthEffect(4, undefined)
+        );
         game.actors.push(healthPotion);
         game.sendToBack(healthPotion);
       } else {
         const healthPotion = new Actor(x, y, "@", "Nutella bun", "#A80");
         healthPotion.blocks = false;
-        healthPotion.pickable = new Healer(30);
+        healthPotion.pickable = new Pickable(
+          undefined,
+          new HealthEffect(30, undefined)
+        );
         game.actors.push(healthPotion);
         game.sendToBack(healthPotion);
         console.log("Jossain haisoo nutella!");
@@ -121,7 +132,8 @@ export default class Map {
         "#0FF"
       );
       scrollOfLightingBolt.blocks = false;
-      scrollOfLightingBolt.pickable = new LightningBolt(5, 20);
+      //scrollOfLightingBolt.pickable = new LightningBolt(5, 20);
+      scrollOfLightingBolt.pickable = new Pickable(new TargetSelector(SelectorType.CLOSEST_MONSTER, 5), new HealthEffect(-20, "A lighting bolt strikes!"));
       game.actors.push(scrollOfLightingBolt);
       game.sendToBack(scrollOfLightingBolt);
     } else if (rng < 70 + 20) {
@@ -133,7 +145,8 @@ export default class Map {
         "#FA0"
       );
       scrollOfFireball.blocks = false;
-      scrollOfFireball.pickable = new Fireball(2, 5);
+      //scrollOfFireball.pickable = new Fireball(2, 5);
+      scrollOfFireball.pickable = new Pickable(new TargetSelector(SelectorType.SELECTED_RANGE, 3), new HealthEffect(-12, "hurdur"));
       game.actors.push(scrollOfFireball);
       game.sendToBack(scrollOfFireball);
     } else {
@@ -145,7 +158,8 @@ export default class Map {
         "#FFA"
       );
       scrollOfConfusion.blocks = false;
-      scrollOfConfusion.pickable = new Confuser(10, 8);
+      //scrollOfConfusion.pickable = new Confuser(10, 8);
+      scrollOfConfusion.pickable = new Pickable(new TargetSelector(SelectorType.SELECTED_MONSTER, 5), new AiChangeEffect(new ConfusedMonsterAi(10), "confused af"));
       game.actors.push(scrollOfConfusion);
       game.sendToBack(scrollOfConfusion);
       //console.log("conf!");

@@ -2,13 +2,172 @@
 
 import { game } from ".";
 import Actor from "./actor";
-import { ConfusedAI } from "./ai";
+import { TemporaryAI } from "./ai";
+
+export enum SelectorType {
+  NONE,
+  CLOSEST_MONSTER,
+  SELECTED_MONSTER,
+  WEARER_RANGE,
+  SELECTED_RANGE,
+}
+
+export class TargetSelector {
+  type: SelectorType;
+  range: number;
+
+  constructor(type: SelectorType, range: number) {
+    this.type = type;
+    this.range = range;
+  }
+
+  async selectTargets(wearer: Actor, listOfActors: Actor[]) {
+    switch (this.type) {
+      case SelectorType.CLOSEST_MONSTER:
+        {
+          const actor: any = game.getClosestMonster(
+            wearer.x,
+            wearer.y,
+            this.range
+          );
+          listOfActors.push(actor);
+        }
+        break;
+      case SelectorType.SELECTED_MONSTER:
+        {
+          const tilePick = await game.pickATile(wearer.x, wearer.y);
+          if (tilePick == null || tilePick[0] === false) {
+            return false;
+          }
+
+          const actor = game.getActor(
+            tilePick[1] as number,
+            tilePick[2] as number
+          );
+          if (actor) {
+            listOfActors.push(actor);
+          }
+        }
+        break;
+      case SelectorType.WEARER_RANGE:
+        for (const actor of game.actors) {
+          if (
+            actor != wearer &&
+            actor.destructible &&
+            !actor.destructible.isDead() &&
+            actor.getDistance(wearer.x, wearer.y) <= this.range
+          ) {
+            listOfActors.push(actor);
+          }
+        }
+        break;
+      case SelectorType.SELECTED_RANGE:
+        //console.log(this);
+        const tilePick = await game.pickATile(wearer.x, wearer.y);
+        if (tilePick == null || tilePick[0] === false) {
+          return false;
+        }
+
+        const actor = game.getActor(
+          tilePick[1] as number,
+          tilePick[2] as number
+        );
+
+        if (
+          actor &&
+          actor.destructible &&
+          !actor.destructible.isDead() &&
+          actor.getDistance(tilePick[1] as number, tilePick[2] as number) <=
+            this.range
+        ) {
+          listOfActors.push(actor);
+        }
+
+        break;
+      default:
+        console.error(`Error with selectorType: ${this.type}`);
+        break;
+    }
+    if (listOfActors.length === 0) {
+      game.log.add("No enemy is close enough");
+    }
+  }
+}
+
+export class Effect {
+  applyTo(_actor: Actor): boolean {
+    return false;
+  }
+}
+
+export class HealthEffect extends Effect {
+  amount: number = 0;
+  message: any = "";
+
+  constructor(amount: number, message: string | void) {
+    super();
+    this.amount = amount;
+    this.message = message;
+  }
+
+  applyTo(actor: Actor): boolean {
+    if (!actor || !actor.destructible) return false;
+
+    if (this.amount > 0) {
+      //healing part
+      const pointsHealed = actor.destructible.heal(this.amount);
+      if (pointsHealed > 0) {
+        if (this.message) {
+          game.log.add(this.message, "#AAA");
+        }
+        return true;
+      }
+    } else {
+      //hurting part
+      if (this.message && -this.amount - actor.destructible.defense > 0) {
+        game.log.add(this.message, "#AAA");
+      }
+      if (actor.destructible.takeDamage(actor, -this.amount) > 0) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}
+
+export class AiChangeEffect extends Effect {
+  message: string;
+  newAi: TemporaryAI;
+
+  constructor(newAi: TemporaryAI, message: string) {
+    super();
+    this.message = message;
+    this.newAi = newAi;
+  }
+
+  AiChangeEffect(actor: Actor): boolean {
+    this.newAi.applyTo(actor);
+    if (this.message) {
+      game.log.add(this.message);
+    }
+    return true;
+  }
+}
 
 export default class Pickable {
-  type: string;
-
-  constructor(type = "unknow") {
-    this.type = type;
+  selector: any;
+  effect: any;
+  selectorName: string = "";
+  effectName: string = "";
+  constructor(selector: TargetSelector | void, effect: any) {
+    this.selector = selector;
+    this.effect = effect;
+    if (this.selector !== undefined) 
+    {
+      this.selectorName = this.selector.constructor.name;
+    }
+    if (this.effect !== undefined) this.effectName = this.effect.constructor.name;
   }
 
   pick(owner: Actor, wearer: Actor): boolean {
@@ -21,11 +180,31 @@ export default class Pickable {
 
   async use(owner: Actor, wearer: Actor) {
     game.log.add(`You use a ${owner.name}`);
-    if (wearer.container) {
-      wearer.container.remove(owner);
-      return true;
+
+    const actorList = new Array();
+
+    if (this.selector) {
+      console.log("1");
+      await this.selector.selectTargets(wearer, actorList);
+    } else {
+      console.log("2");
+      actorList.push(wearer);
     }
-    return false;
+
+    let succeed: boolean = false;
+    for (const actor of actorList) {
+      if (this.effect.applyTo(actor)) {
+        succeed = true;
+      }
+    }
+
+    if (succeed) {
+      if (wearer.container) {
+        wearer.container.remove(owner);
+      }
+    }
+
+    return succeed;
   }
 
   drop(owner: Actor, wearer: Actor) {
@@ -37,136 +216,5 @@ export default class Pickable {
       owner.y = wearer.y;
       game.log.add(`${wearer.name} drops a ${owner.name}`);
     }
-  }
-}
-
-export class Healer extends Pickable {
-  amount: number;
-
-  constructor(amount: number) {
-    super("healer");
-    this.amount = amount;
-  }
-
-  async use(owner: Actor, wearer: Actor) {
-    if (wearer.destructible) {
-      const amountHealed = wearer.destructible.heal(this.amount);
-      if (amountHealed > 0) {
-        return super.use(owner, wearer);
-      }
-    }
-    return false;
-  }
-}
-
-export class LightningBolt extends Pickable {
-  range: number;
-  damage: number;
-
-  constructor(range: number, damage: number) {
-    super("lightingBolt");
-    this.range = range;
-    this.damage = damage;
-  }
-
-  async use(owner: Actor, wearer: Actor) {
-    const closestMonster = game.getClosestMonster(
-      wearer.x,
-      wearer.y,
-      this.range
-    );
-    if (!closestMonster) {
-      game.log.add("No enemy is close enough to strike.");
-      return false;
-    }
-
-    game.log.add(
-      `A lighting bolt strikes the ${closestMonster.name} with a loud thunder!`,
-      "#0FF"
-    );
-    game.log.add(`The damage is ${this.damage} hit points.`, "#0FF");
-
-    closestMonster.destructible.takeDamage(closestMonster, this.damage);
-    return super.use(owner, wearer);
-  }
-}
-
-export class Fireball extends Pickable {
-  range: number;
-  damage: number;
-
-  constructor(range: number, damage: number) {
-    super("fireBall");
-    this.range = range;
-    this.damage = damage;
-  }
-
-  async use(owner: Actor, wearer: Actor) {
-    game.log.add(
-      "Use arrow keys to target tile for fireball. Enter to select target. Esc to cancel."
-    );
-    const tilePick = await game.pickATile(wearer.x, wearer.y);
-
-    if (tilePick[0] == true) {
-      game.log.add(
-        `The fireball explodes, burning everything within ${this.range} tiles!`,
-        "#FA0"
-      );
-
-      //for (let i = 0; i < game.actors.length; i++) {
-      for (const actor of game.actors) {
-        if (
-          actor.destructible &&
-          !actor.destructible.isDead() &&
-          actor.getDistance(tilePick[1] as number, tilePick[2] as number) <
-            this.range
-        ) {
-          game.log.add(
-            `The ${actor.name} gets burned for ${this.damage} hit points.`,
-            "#FA0"
-          );
-          actor.destructible.takeDamage(actor, this.damage);
-        }
-      }
-
-      return super.use(owner, wearer);
-    }
-
-    return false;
-  }
-}
-
-export class Confuser extends Pickable {
-  nbTurns: number;
-  range: number;
-
-  constructor(nbTurns: number, range: number) {
-    super("confuser");
-    this.nbTurns = nbTurns;
-    this.range = range;
-  }
-
-  async use(owner: Actor, wearer: Actor) {
-    game.log.add(
-      "Arrow keys to select a creature. Enter to select target. Esc to cancel."
-    );
-    const tilePick = await game.pickATile(wearer.x, wearer.y);
-
-    if (tilePick == null || tilePick[0] === false) {
-      return false;
-    }
-
-    const actor = game.getActor(tilePick[1] as number, tilePick[2] as number);
-    if (!actor) {
-      return false;
-    }
-
-    const ai = new ConfusedAI(this.nbTurns, actor.ai);
-    actor.ai = ai;
-
-    game.log.add(`The eyes of the ${actor.name} look vacant`, "#AFD");
-    game.log.add("as he starts to stumble around!", "#AFD");
-
-    return super.use(owner, wearer);
   }
 }
