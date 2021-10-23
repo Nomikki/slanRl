@@ -1,9 +1,14 @@
-import { game } from ".";
-import { Color } from "./destructible";
+import { game } from '.';
+import { Color } from './destructible';
+
+const constants = {
+  SIZE_OF_LOG: 100,
+};
 
 class LogText {
-  text: string;
   color: Color;
+  text: string;
+
   constructor(text: string, color: Color) {
     this.text = text;
     this.color = color;
@@ -11,15 +16,8 @@ class LogText {
 }
 
 export default class Log {
-  constants: Readonly<{ SIZE_OF_LOG: number }>;
-  texts: any[];
-  constructor() {
-    this.constants = Object.freeze({
-      SIZE_OF_LOG: 100,
-    });
-
-    this.texts = new Array();
-  }
+  constants: Readonly<typeof constants> = constants;
+  texts: LogText[] = [];
 
   render() {
     let a = 0;
@@ -29,15 +27,14 @@ export default class Log {
           this.texts[i].text,
           1,
           game.height + 3 + a,
-          this.texts[i].color
+          this.texts[i].color,
         );
         a++;
       }
     }
   }
 
-  add(text: string, color: Color = "#AAA") {
-    //console.log(text);
+  add(text: string, color: Color = '#AAA') {
     this.texts.push(new LogText(text, color));
     if (this.texts.length > this.constants.SIZE_OF_LOG) {
       this.texts.splice(0, 1);

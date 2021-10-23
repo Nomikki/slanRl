@@ -1,5 +1,5 @@
-import { X, Y } from "./actor";
-import { Height, Width } from "./fov";
+import { X, Y } from './actor';
+import { Height, Width } from './fov';
 
 class Rectangle {
   x: X;

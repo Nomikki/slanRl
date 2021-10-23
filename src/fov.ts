@@ -1,14 +1,14 @@
-import { game } from ".";
-import { X, Y } from "./actor";
+import { game } from '.';
+import { X, Y } from './actor';
 
 export type Width = number;
 export type Height = number;
 export type Length = number;
 
 export default class Fov {
-  width: Width;
   height: Height;
-  mapped: any[];
+  mapped: number[];
+  width: Width;
 
   constructor(w: Width, h: Height) {
     this.width = w;
@@ -62,7 +62,7 @@ export default class Fov {
         const id = this.float2int(px) + this.float2int(py) * this.width;
         this.mapped[id] = 2;
 
-        if (game.map.isWall(this.float2int(px), this.float2int(py)) === true) {
+        if (game.map?.isWall(this.float2int(px), this.float2int(py)) === true) {
           break;
         }
       }
