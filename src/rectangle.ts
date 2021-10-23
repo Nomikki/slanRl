@@ -1,14 +1,14 @@
 class Rectangle {
+  h: number;
+  w: number;
   x: number;
   y: number;
-  w: number;
-  h: number;
 
   constructor(x: number, y: number, w: number, h: number) {
+    this.h = h;
+    this.w = w;
     this.x = x;
     this.y = y;
-    this.w = w;
-    this.h = h;
   }
 
   GetHalfDimensionX(): number {

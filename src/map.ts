@@ -18,16 +18,16 @@ class Tile {
 }
 
 export default class Map {
-  width: number;
+  depth = 0;
   height: number;
-  startX = 0;
-  startY = 0;
+  levelSeed = 0;
+  root?: bspGenerator;
   stairsX = 0;
   stairsY = 0;
-  root?: bspGenerator;
-  levelSeed = 0;
-  depth = 0;
+  startX = 0;
+  startY = 0;
   tiles?: Tile[];
+  width: number;
 
   readonly ROOM_MAX_SIZE: number = 10;
   readonly ROOM_MIN_SIZE: number = 4;

@@ -52,8 +52,8 @@ export default class Pickable implements PickableBase {
 }
 
 export class Healer extends Pickable {
-  type: "healer" = "healer";
   amount: number;
+  type: "healer" = "healer";
 
   constructor(amount: number) {
     super("healer");
@@ -72,9 +72,9 @@ export class Healer extends Pickable {
 }
 
 export class LightningBolt extends Pickable {
-  type: "lightingBolt" = "lightingBolt";
-  range: number;
   damage: number;
+  range: number;
+  type: "lightingBolt" = "lightingBolt";
 
   constructor(range: number, damage: number) {
     super("lightingBolt");
@@ -105,9 +105,9 @@ export class LightningBolt extends Pickable {
 }
 
 export class Fireball extends Pickable {
-  type: "fireBall" = "fireBall";
-  range: number;
   damage: number;
+  range: number;
+  type: "fireBall" = "fireBall";
 
   constructor(range: number, damage: number) {
     super("fireBall");
@@ -150,9 +150,9 @@ export class Fireball extends Pickable {
 }
 
 export class Confuser extends Pickable {
-  type: "confuser" = "confuser";
   nbTurns: number;
   range: number;
+  type: "confuser" = "confuser";
 
   constructor(nbTurns: number, range: number) {
     super("confuser");
