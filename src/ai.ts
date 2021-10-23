@@ -6,6 +6,10 @@ import Randomizer from './random';
 import { ensure } from './utils';
 export const random = new Randomizer();
 
+const monsterConstants = {
+  TRACKING_TURNS: 3,
+};
+
 export type AiType = 'player' | 'monster' | 'confused' | 'unknown';
 
 export interface AiBase {
@@ -268,17 +272,8 @@ export class PlayerAI extends AI {
 
 export class MonsterAI extends AI {
   type: 'monster' = 'monster';
-  moveCount: number;
-  Constants: Readonly<{ TRACKING_TURNS: number }>;
-
-  constructor() {
-    super();
-    this.moveCount = 0;
-
-    this.Constants = Object.freeze({
-      TRACKING_TURNS: 3,
-    });
-  }
+  moveCount = 0;
+  Constants: Readonly<typeof monsterConstants> = monsterConstants;
 
   async update(owner: Actor) {
     const player = game.player;
