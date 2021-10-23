@@ -14,13 +14,6 @@ import Map from './map';
 import { Menu } from './menu';
 import { debugInit, ensure } from './utils';
 
-enum Directions {
-  Up,
-  Right,
-  Down,
-  Left,
-}
-
 const gameStatuses = {
   STARTUP: 0,
   IDLE: 1,
@@ -68,8 +61,6 @@ class Game {
 
     this.actors = [];
     this.map = new Map(this.width, this.height);
-
-    console.log(`Direction up: ${Directions.Up}`);
   }
 
   async term() {
@@ -397,8 +388,10 @@ class Game {
   render() {
     this.clear();
 
-    ensure(this.map).render();
-    this.drawChar('@', ensure(this.playerX), ensure(this.playerY), '#AAA');
+    this.map?.render();
+    if (this.playerX && this.playerY) {
+      this.drawChar('@', this.playerX, this.playerY, '#AAA');
+    }
 
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
 
@@ -410,16 +403,16 @@ class Game {
       this.drawChar('-', x, this.height, '#888');
     }
 
-    const player = ensure(this.player);
-    const map = ensure(this.map);
+    const player = this.player;
+    const map = this.map;
 
-    const hp = player.destructible?.hp;
-    const maxHP = player.destructible?.maxHP;
-    const depth = map.depth;
+    const hp = player?.destructible?.hp;
+    const maxHP = player?.destructible?.maxHP;
+    const depth = map?.depth;
     this.drawText('HP: ' + hp + '/' + maxHP, 1, this.height + 1);
     this.drawText('Depth: ' + depth, this.width - 6, this.height + 1);
 
-    if (!player.ai?.type) {
+    if (!player?.ai?.type) {
       return;
     }
 
