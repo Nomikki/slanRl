@@ -332,7 +332,7 @@ export class TemporaryAI extends AI {
     this.nbTurns = nbTurns;
   }
 
-  update(owner: Actor) {
+  async update(owner: Actor) {
     this.nbTurns--;
     if (this.nbTurns === 0) {
       owner.ai = this.oldAi;
@@ -350,7 +350,7 @@ export class ConfusedMonsterAi extends TemporaryAI {
     super(nbTurns);
   }
 
-  update(owner: Actor) {
+  async update(owner: Actor) {
     const dx = random.getInt(-1, 1);
     const dy = random.getInt(-1, 1);
     if (dx != 0 || dy != 0) {

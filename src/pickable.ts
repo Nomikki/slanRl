@@ -146,7 +146,7 @@ export class AiChangeEffect extends Effect {
     this.newAi = newAi;
   }
 
-  AiChangeEffect(actor: Actor): boolean {
+  applyTo(actor: Actor): boolean {
     this.newAi.applyTo(actor);
     if (this.message) {
       game.log.add(this.message);

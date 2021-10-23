@@ -7,7 +7,6 @@ import Pickable, {
   TargetSelector,
 } from "./pickable";
 import { ConfusedMonsterAi } from "./ai";
-//import Pickable, { HealthEffect, TargetSelector } from "./pickable";
 
 export default class Actor {
   x: number;
@@ -47,11 +46,15 @@ export default class Actor {
     console.log(actorTemplate);
 
     let fx = undefined;
-    if (actorTemplate.pickable.effectName === "AiChangeEffect")
+    if (actorTemplate.pickable.effectName === "AiChangeEffect") {
+      console.log("!!!");
       fx = new AiChangeEffect(
-        new ConfusedMonsterAi(actorTemplate.pickable.effect.newAi.nbTurns),
+        new ConfusedMonsterAi(
+          parseInt(actorTemplate.pickable.effect.newAi.nbTurns)
+        ),
         actorTemplate.pickable.effect.message
       );
+    }
     if (actorTemplate.pickable.effectName === "HealthEffect")
       fx = new HealthEffect(actorTemplate.pickable.effect.amount, undefined);
 
@@ -67,10 +70,12 @@ export default class Actor {
     } else {
       this.pickable = new Pickable(undefined, fx);
     }
+
+    console.log(this.pickable);
   }
 
   render() {
-    const fovValue = 2; //game.player.fov.getMapped(this.x, this.y);
+    const fovValue = game.player.fov.getMapped(this.x, this.y);
     if (fovValue === 2 || (fovValue != 0 && !this.fovOnly)) {
       game.drawChar(this.ch, this.x, this.y, this.color);
     }
