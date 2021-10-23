@@ -27,7 +27,7 @@ export default class Destructible {
     this.xp = xp;
   }
 
-  isDead() {
+  isDead(): boolean {
     return this.hp <= 0;
   }
 
