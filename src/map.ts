@@ -20,13 +20,8 @@ const constants = {
 };
 
 class Tile {
-  canWalk: boolean;
-  explored: boolean;
-
-  constructor() {
-    this.canWalk = false;
-    this.explored = false;
-  }
+  canWalk = false;
+  explored = false;
 }
 
 export default class Map {
