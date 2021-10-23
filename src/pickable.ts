@@ -122,7 +122,8 @@ export class Fireball extends Pickable {
         if (
           actor.destructible &&
           !actor.destructible.isDead() &&
-          actor.getDistance(tilePick[1] as number, tilePick[2] as number) < this.range
+          actor.getDistance(tilePick[1] as number, tilePick[2] as number) <
+            this.range
         ) {
           game.log.add(
             "The " +
@@ -158,7 +159,6 @@ export class Confuser extends Pickable {
       "Arrow keys to select a creature. Enter to select target. Esc to cancel."
     );
     const tilePick = await game.pickATile(wearer.x, wearer.y);
-    console.log(tilePick);
 
     if (tilePick == null || tilePick[0] === false) {
       return false;

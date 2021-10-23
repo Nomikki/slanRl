@@ -38,7 +38,6 @@ export default class Actor {
   }
 
   create(actorTemplate: Actor) {
-    //console.log(actorTemplate);
     if (actorTemplate.pickable.type === "lightingBolt")
       this.pickable = new LightningBolt(
         actorTemplate.pickable.range,

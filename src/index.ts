@@ -3,10 +3,7 @@
 import Actor from "./actor";
 import Map from "./map";
 import Fov from "./fov";
-import {
-  MonsterDestructible,
-  PlayerDestructible,
-} from "./destructible";
+import { MonsterDestructible, PlayerDestructible } from "./destructible";
 import Attacker from "./attacker";
 import { MonsterAI, PlayerAI } from "./ai";
 import Log from "./log";
@@ -21,11 +18,9 @@ export enum GameStatus {
   NEW_TURN,
   VICTORY,
   DEFEAT,
-};
+}
 
 class Game {
-
- 
   gameStatus: number = 0;
   player: any;
   map: any;
@@ -34,7 +29,7 @@ class Game {
   ctx: any;
   fontSize: number;
   log: any;
-  
+
   lastKey: string;
   depth: number;
   width: number;
@@ -46,8 +41,6 @@ class Game {
   menu: any;
 
   constructor() {
-    
-
     this.player = null;
     this.map = null;
     this.stairs = null;
@@ -80,12 +73,10 @@ class Game {
 
   async init(withActors: boolean, createPlayer: boolean = true) {
     this.map.generate(withActors, this.masterSeed, this.depth);
-    
+
     if (withActors) {
-      
       let i = 0;
       if (createPlayer) {
-        
         i = this.actors.push(new Actor(2, 2, "@", "hero", "#CCC")) - 1;
         this.player = this.actors[i];
         this.player.destructible = new PlayerDestructible(
@@ -135,7 +126,6 @@ class Game {
   }
 
   async newGame() {
-    console.log("New game!");
     this.masterSeed = (Math.random() * 0x7ffffff) | 0;
 
     this.depth = 1;
@@ -145,8 +135,6 @@ class Game {
   }
 
   async continueGame() {
-    console.log("Continue");
-
     if (window.localStorage.getItem("seed") !== null) {
       const savedVersion = window.localStorage.getItem("version");
       if (savedVersion === null)
@@ -160,10 +148,7 @@ class Game {
       const tempUsers = JSON.parse(
         window.localStorage.getItem("actors") || "[]"
       );
-      //const playerID = window.localStorage.getItem("playerID");
-
-      //console.log("temps: " + tempUsers.length);
-
+      
       for (const actor of tempUsers) {
         const i =
           this.actors.push(
@@ -222,7 +207,8 @@ class Game {
             this.actors[i].destructible = new MonsterDestructible(
               1,
               1,
-              "monster corpse", 0
+              "monster corpse",
+              0
             );
 
             this.actors[i].destructible.hp = actor.destructible.hp;
@@ -235,8 +221,6 @@ class Game {
           }
         }
       }
-
-      //console.log(this.actors);
     }
   }
 
@@ -248,8 +232,6 @@ class Game {
     if (window.localStorage.getItem("depth"))
       this.menu.addItem(MenuItemCode.CONTINUE, "Continue");
     this.menu.addItem(MenuItemCode.NEW_GAME, "New Game");
-
-    //this.menu.addItem(this.menu.constants.EXIT, "Exit");
 
     let cursor = 0;
     let selectedItem = -1;
@@ -281,19 +263,19 @@ class Game {
         await this.continueGame();
       }
     }
-
   }
-
 
   async save() {
     if (this.player.destructible.isDead()) {
       window.localStorage.clear();
     } else {
       this.map.save();
-      window.localStorage.setItem("playerID", this.actors.indexOf(this.player).toString());
+      window.localStorage.setItem(
+        "playerID",
+        this.actors.indexOf(this.player).toString()
+      );
       window.localStorage.setItem("actors", JSON.stringify(this.actors));
       window.localStorage.setItem("version", VERSION);
-      //console.log(this.actors);
     }
   }
 
@@ -406,7 +388,14 @@ class Game {
     this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1);
     this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
 
-    this.drawText("EXP: " + this.player.destructible.xp + " / " + this.player.ai.getNextLevelXP(), 10, this.height+1);
+    this.drawText(
+      "EXP: " +
+        this.player.destructible.xp +
+        " / " +
+        this.player.ai.getNextLevelXP(),
+      10,
+      this.height + 1
+    );
 
     this.log.render();
   }
@@ -414,7 +403,6 @@ class Game {
   async gameloop() {
     while (true) {
       if (this.gameStatus === GameStatus.STARTUP) {
-        console.log(this.player);
         this.player.computeFov();
         this.render();
       }

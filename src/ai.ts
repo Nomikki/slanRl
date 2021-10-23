@@ -25,21 +25,25 @@ export class PlayerAI extends AI {
     const LEVEL_UP_BASE = 200;
     const LEVEL_UP_FACTOR = 150;
 
-    return LEVEL_UP_BASE + (this.xpLevel * LEVEL_UP_FACTOR);
+    return LEVEL_UP_BASE + this.xpLevel * LEVEL_UP_FACTOR;
   }
 
   async update(owner: Actor) {
-
     const levelUpXp = this.getNextLevelXP();
-    if (owner.destructible.xp >= levelUpXp)
-    {
+    if (owner.destructible.xp >= levelUpXp) {
       this.xpLevel++;
       owner.destructible.xp -= levelUpXp;
-      game.log.add("Your battle skills grow stronger! You reached level " + this.xpLevel, "#FFFF00");
+      game.log.add(
+        "Your battle skills grow stronger! You reached level " + this.xpLevel,
+        "#FFFF00"
+      );
 
       game.menu = new Menu();
       game.menu.clear();
-      game.menu.addItem(game.menu.constants.CONSTITUTION, "Constitution (+20 hp)");
+      game.menu.addItem(
+        game.menu.constants.CONSTITUTION,
+        "Constitution (+20 hp)"
+      );
       game.menu.addItem(game.menu.constants.STRENGTH, "Strenght (+1 attack)");
       game.menu.addItem(game.menu.constants.AGILITY, "Agility (+1 defense)");
 
@@ -52,7 +56,7 @@ export class PlayerAI extends AI {
         for (let i = 0; i < game.menu.items.length; i++) {
           game.drawText(game.menu.items[i].label, game.width / 2 - 10, 10 + i);
         }
-  
+
         const ch = await game.getch();
         if (ch === "ArrowDown") cursor++;
         if (ch === "ArrowUp") cursor--;
@@ -60,17 +64,17 @@ export class PlayerAI extends AI {
           selectedItem = game.menu.items[cursor].code;
           break;
         }
-  
+
         cursor = cursor % game.menu.items.length;
         if (cursor < 0) cursor = game.menu.items.length - 1;
       }
-  
+
       if (selectedItem != -1) {
         if (selectedItem === game.menu.constants.CONSTITUTION) {
           owner.destructible.hp += 20;
           owner.destructible.maxHP += 20;
         }
-  
+
         if (selectedItem === game.menu.constants.STRENGTH) {
           owner.attacker.power += 1;
         }
@@ -78,13 +82,9 @@ export class PlayerAI extends AI {
         if (selectedItem === game.menu.constants.AGILITY) {
           owner.destructible.defense += 1;
         }
-
       }
 
       game.render();
-      
-
-
     }
 
     if (owner.destructible && owner.destructible.isDead()) return;
@@ -92,7 +92,6 @@ export class PlayerAI extends AI {
     let dx = 0;
     let dy = 0;
     const ch = await game.getch();
-    //console.log(`ch: ${ch}`);
     switch (ch) {
       case "ArrowLeft":
         dx--;
@@ -112,7 +111,6 @@ export class PlayerAI extends AI {
     }
 
     if (dx !== 0 || dy !== 0) {
-
       game.gameStatus = GameStatus.NEW_TURN;
 
       if (this.moveOrAttack(owner, owner.x + dx, owner.y + dy)) {
@@ -122,8 +120,6 @@ export class PlayerAI extends AI {
   }
 
   async handleActionKey(owner: Actor, ascii: string) {
-    console.log(ascii);
-
     switch (ascii) {
       case "S": //save
         game.save();
@@ -131,8 +127,7 @@ export class PlayerAI extends AI {
         break;
 
       case ">": //go down
-        if (game.stairs.x === owner.x && game.stairs.y === owner.y)
-        {
+        if (game.stairs.x === owner.x && game.stairs.y === owner.y) {
           game.nextLevel();
         } else {
           game.log.add("There are no stairs here.");
@@ -254,7 +249,6 @@ export class MonsterAI extends AI {
   constructor() {
     super();
     this.moveCount = 0;
-
   }
 
   async update(owner: Actor) {

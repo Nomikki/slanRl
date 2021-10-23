@@ -45,14 +45,11 @@ export default class Map {
   }
 
   save() {
-    //console.log("map save, wip");
     window.localStorage.setItem("seed", this.levelSeed.toString());
     window.localStorage.setItem("depth", this.depth.toString());
   }
 
-  load() {
-    //console.log("map load, wip");
-  }
+  load() {}
 
   isWall(x: number, y: number): boolean {
     const index = x + y * this.width;

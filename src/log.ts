@@ -17,7 +17,6 @@ export default class Log {
   texts: LogText[];
 
   constructor() {
-  
     this.texts = new Array();
   }
 
@@ -37,7 +36,6 @@ export default class Log {
   }
 
   add(text: string, color: string = "#AAA") {
-    //console.log(text);
     this.texts.push(new LogText(text, color));
     if (this.texts.length > this.SIZE_OF_LOG) {
       this.texts.splice(0, 1);

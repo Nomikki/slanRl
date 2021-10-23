@@ -11,7 +11,13 @@ export default class Destructible {
   type: string;
   xp: number;
 
-  constructor(maxHP: number, defense: number, corpseName: string, type: string, xp: number) {
+  constructor(
+    maxHP: number,
+    defense: number,
+    corpseName: string,
+    type: string,
+    xp: number
+  ) {
     this.maxHP = maxHP;
     this.hp = this.maxHP;
     this.defense = defense;
@@ -78,6 +84,5 @@ export class PlayerDestructible extends Destructible {
     game.log.add("You died", "#A00");
     super.die(owner);
     game.gameStatus = GameStatus.DEFEAT;
-    
   }
 }

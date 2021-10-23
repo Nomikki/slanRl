@@ -33,7 +33,7 @@ class bspGenerator {
 
     this.map = [];
     this.doorPlaces = [];
-    this.tempRooms = []; 
+    this.tempRooms = [];
 
     for (let h = 0; h < this.rows; h++) {
       for (let w = 0; w < this.cols; w++) {
