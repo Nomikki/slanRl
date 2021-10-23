@@ -4,7 +4,11 @@ export const storage = {
   },
   get: (key: string) => {
     const value = window.localStorage.getItem(key);
-    return value ? JSON.parse(value) : null;
+    try {
+      return value !== null ? JSON.parse(value) : null;
+    } catch {
+      return value !== null ? value : null;
+    }
   },
   clear: () => {
     window.localStorage.clear();
