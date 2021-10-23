@@ -1,5 +1,5 @@
 import { game } from ".";
-import Actor, { X, Y } from "./actor";
+import Actor, { X, Y, ActorTemplate } from "./actor";
 import { XP } from "./destructible";
 import { Menu } from "./menu";
 import Randomizer from "./random";
