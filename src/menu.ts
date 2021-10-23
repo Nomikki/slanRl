@@ -1,5 +1,3 @@
-import { DeepReadonly } from './utils';
-
 const constants = {
   NONE: 0,
   NEW_GAME: 1,
@@ -21,7 +19,7 @@ export class MenuItem {
 }
 
 export class Menu {
-  constants: DeepReadonly<typeof constants> = constants;
+  constants: Readonly<typeof constants> = constants;
   items: MenuItem[] = [];
 
   clear() {
