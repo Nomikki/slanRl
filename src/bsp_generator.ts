@@ -127,46 +127,43 @@ class bspGenerator {
       return false;
     }
 
-    const x1 = ensure(node.A).leaf.GetCenterX() >> 0;
-    const y1 = ensure(node.A).leaf.GetCenterY() >> 0;
-
-    const x2 = ensure(node.B).leaf.GetCenterX() >> 0;
-    const y2 = ensure(node.B).leaf.GetCenterY() >> 0;
+    const [ax, ay] = ensure(node.A).leaf.GetCenter();
+    const [bx, by] = ensure(node.B).leaf.GetCenter();
 
     let doorsCreated = false;
     let lastWasInRoom = false;
 
-    for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
-      const index = this.cols * Math.max(y1, y2) + x;
+    for (let x = Math.min(ax, bx); x <= Math.max(ax, bx); x++) {
+      const index = this.cols * Math.max(ay, by) + x;
       this.map[index] = 0;
 
-      if (!doorsCreated && this.IsThereRoom(x, Math.max(y1, y2)) === true) {
+      if (!doorsCreated && this.IsThereRoom(x, Math.max(ay, by)) === true) {
         lastWasInRoom = true;
       } else if (
         !doorsCreated &&
-        this.IsThereRoom(x, Math.max(y1, y2)) === false
+        this.IsThereRoom(x, Math.max(ay, by)) === false
       ) {
         if (lastWasInRoom === true) {
           doorsCreated = true;
-          const re = new Rectangle(x, Math.max(y1, y2), 0, 0);
+          const re = new Rectangle(x, Math.max(ay, by), 0, 0);
           this.doorPlaces.push(re);
         }
       }
     }
     doorsCreated = false;
 
-    for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
-      const index = this.cols * y + Math.max(x1, x2);
+    for (let y = Math.min(ay, by); y <= Math.max(ay, by); y++) {
+      const index = this.cols * y + Math.max(ax, bx);
       this.map[index] = 0;
-      if (!doorsCreated && this.IsThereRoom(Math.max(x1, x2), y) === true) {
+      if (!doorsCreated && this.IsThereRoom(Math.max(ax, bx), y) === true) {
         lastWasInRoom = true;
       } else if (
         !doorsCreated &&
-        this.IsThereRoom(Math.max(x1, x2), y) === false
+        this.IsThereRoom(Math.max(ax, bx), y) === false
       ) {
         if (lastWasInRoom === true) {
           doorsCreated = true;
-          const re = new Rectangle(Math.max(x1, x2), y, 0, 0);
+          const re = new Rectangle(Math.max(ax, bx), y, 0, 0);
           this.doorPlaces.push(re);
         }
       }

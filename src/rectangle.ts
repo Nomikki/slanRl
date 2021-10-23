@@ -18,6 +18,14 @@ class Rectangle {
     return this.h / 2;
   }
 
+  GetHalfDimensions(): [number, number] {
+    return [this.GetHalfDimensionX(), this.GetHalfDimensionY()];
+  }
+
+  GetCenter(): [number, number] {
+    return [this.GetCenterX() >> 0, this.GetCenterY() >> 0];
+  }
+
   GetCenterX(): number {
     return this.x + this.GetHalfDimensionX();
   }
