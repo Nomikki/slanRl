@@ -31,7 +31,7 @@ export default class Destructible {
     return this.hp <= 0;
   }
 
-  heal(amount: number) {
+  heal(amount: number): number {
     this.hp += amount;
     if (this.hp > this.maxHP) {
       amount -= this.hp - this.maxHP;
@@ -40,7 +40,7 @@ export default class Destructible {
     return amount;
   }
 
-  takeDamage(owner: Actor, damage: number) {
+  takeDamage(owner: Actor, damage: number): number {
     damage -= this.defense;
 
     if (damage > 0) {
