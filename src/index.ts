@@ -346,7 +346,7 @@ class Game {
         if (e.keyCode !== 0) {
           document.removeEventListener("keydown", onKeyHandler);
           game.lastKey = e.key;
-          resolve("");
+          resolve();
         }
       }
     });
