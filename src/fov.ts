@@ -1,15 +1,11 @@
 import { game } from '.';
 
-export type Width = number;
-export type Height = number;
-export type Length = number;
-
 export default class Fov {
-  height: Height;
+  height: number;
   mapped: number[];
-  width: Width;
+  width: number;
 
-  constructor(w: Width, h: Height) {
+  constructor(w: number, h: number) {
     this.width = w;
     this.height = h;
 
@@ -28,7 +24,7 @@ export default class Fov {
     this.mapped = new Array(this.width * this.height).fill(0);
   }
 
-  float2int(value: number) {
+  float2int(value: number): number {
     return value | 0;
   }
 
@@ -68,13 +64,13 @@ export default class Fov {
     }
   }
 
-  getMapped(x: number, y: number) {
+  getMapped(x: number, y: number): number {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height)
       return this.mapped[x + y * this.width];
     else return 2;
   }
 
-  isInFov(x: number, y: number) {
+  isInFov(x: number, y: number): boolean {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
       return this.mapped[x + y * this.width] > 0;
     }

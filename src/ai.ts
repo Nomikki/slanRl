@@ -7,10 +7,6 @@ import { ensure } from './utils';
 
 const random = new Randomizer();
 
-const monsterConstants = {
-  TRACKING_TURNS: 3,
-};
-
 export type AiType = 'player' | 'monster' | 'confused' | 'unknown';
 
 export interface AiBase {
@@ -202,7 +198,7 @@ export class PlayerAI extends AI {
   }
 
   moveOrAttack(owner: Actor, targetX: number, targetY: number) {
-    if (game.map?.isWall(targetX, targetY)) return false;
+    if (game.map?.isWall(targetX, targetY)) return false; // move
 
     for (const actor of game.actors) {
       if (
@@ -212,7 +208,7 @@ export class PlayerAI extends AI {
         actor.y === targetY
       ) {
         owner.attacker?.attack(owner, actor);
-        return false;
+        return false; // attack
       }
     }
 
@@ -271,7 +267,7 @@ export class PlayerAI extends AI {
 export class MonsterAI extends AI {
   type: 'monster' = 'monster';
   moveCount = 0;
-  Constants: Readonly<typeof monsterConstants> = monsterConstants;
+  readonly TRACKING_TURNS: number = 3;
 
   async update(owner: Actor) {
     const player = game.player;
@@ -280,7 +276,7 @@ export class MonsterAI extends AI {
     }
 
     if (player.fov?.isInFov(owner.x, owner.y)) {
-      this.moveCount = this.Constants.TRACKING_TURNS;
+      this.moveCount = this.TRACKING_TURNS;
     } else {
       this.moveCount--;
     }

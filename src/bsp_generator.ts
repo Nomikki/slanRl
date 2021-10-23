@@ -82,7 +82,7 @@ class bspGenerator {
     return [r1, r2];
   }
 
-  Devide(container: Rectangle, level: number) {
+  Devide(container: Rectangle, level: number): bspNode {
     const root = new bspNode(container);
 
     if (level < this.maxLevel) {
@@ -113,7 +113,7 @@ class bspGenerator {
     }
   }
 
-  IsThereRoom(x: number, y: number) {
+  IsThereRoom(x: number, y: number): boolean {
     for (const room of this.tempRooms) {
       if (x >= room.x && y >= room.y && x <= room.w && y <= room.h) {
         return true;
@@ -122,7 +122,7 @@ class bspGenerator {
     return false;
   }
 
-  ConnectRooms(node: bspNode): false | void {
+  ConnectRooms(node: bspNode): boolean | void {
     if (!node.A || !node.B) {
       return false;
     }

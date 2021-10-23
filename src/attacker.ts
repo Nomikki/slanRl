@@ -1,8 +1,6 @@
 import { game } from '.';
 import Actor from './actor';
 
-export type Target = Actor;
-
 export default class Attacker {
   power: number;
 
@@ -10,7 +8,7 @@ export default class Attacker {
     this.power = power;
   }
 
-  attack(owner: Actor, target: Target) {
+  attack(owner: Actor, target: Actor) {
     if (target.destructible && !target.destructible.isDead()) {
       const damage = this.power - target.destructible.defense;
       if (damage > 0) {

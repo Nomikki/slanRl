@@ -2,11 +2,7 @@ import Actor from './actor';
 import { MonsterAI, PlayerAI } from './ai';
 import Attacker from './attacker';
 import Container from './container';
-import {
-  Character,
-  MonsterDestructible,
-  PlayerDestructible,
-} from './destructible';
+import { MonsterDestructible, PlayerDestructible } from './destructible';
 import Fov from './fov';
 import Log from './log';
 import Map from './map';
@@ -121,7 +117,6 @@ class Game {
   }
 
   async newGame() {
-    console.log('New game!');
     this.masterSeed = (Math.random() * 0x7ffffff) | 0;
 
     this.depth = 1;
@@ -131,8 +126,6 @@ class Game {
   }
 
   async continueGame() {
-    console.log('Continue');
-
     const seed = window.localStorage.getItem('seed');
     if (seed !== null) {
       const savedVersion = window.localStorage.getItem('version');
@@ -149,9 +142,6 @@ class Game {
       const tempUsers = JSON.parse(
         window.localStorage.getItem('actors') || '[]',
       );
-      // const playerID = window.localStorage.getItem("playerID");
-
-      //console.log("temps: " + tempUsers.length);
 
       for (const actor of tempUsers) {
         const i =
@@ -224,8 +214,6 @@ class Game {
           }
         }
       }
-
-      //console.log(this.actors);
     }
   }
 
@@ -282,7 +270,6 @@ class Game {
       window.localStorage.setItem('playerID', `${this.actors.indexOf(player)}`);
       window.localStorage.setItem('actors', JSON.stringify(this.actors));
       window.localStorage.setItem('version', VERSION);
-      //console.log(this.actors);
     }
   }
 
@@ -305,7 +292,7 @@ class Game {
     );
   }
 
-  drawChar(ch: Character, x: number, y: number, color = '#000') {
+  drawChar(ch: string, x: number, y: number, color = '#000') {
     this.ctx.textAlign = 'center';
     this.ctx.fillStyle = '#040414';
     this.ctx.fillRect(
@@ -352,7 +339,7 @@ class Game {
   }
 
   waitingKeypress() {
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       document.addEventListener('keydown', onKeyHandler);
       function onKeyHandler(e: KeyboardEvent) {
         e.preventDefault();
@@ -397,8 +384,8 @@ class Game {
     const hp = player?.destructible?.hp;
     const maxHP = player?.destructible?.maxHP;
     const depth = map?.depth;
-    this.drawText('HP: ' + hp + '/' + maxHP, 1, this.height + 1);
-    this.drawText('Depth: ' + depth, this.width - 6, this.height + 1);
+    this.drawText(`HP: ${hp}/${maxHP}`, 1, this.height + 1);
+    this.drawText(`Depth: ${depth}`, this.width - 6, this.height + 1);
 
     if (!player?.ai?.type) {
       return;

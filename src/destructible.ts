@@ -2,36 +2,22 @@ import { game, GameStatus } from '.';
 import Actor from './actor';
 import { ensure } from './utils';
 
-export type Name = string;
-
-export type CorpseName = string;
-export type Defense = number;
-export type MaxHP = number;
-export type HP = number;
 export type DestructibleType = 'player' | 'monster';
-export type XP = number;
-
-export type HealAmount = number;
-
-export type Character = string;
-export type Color = string;
-
-export type Damage = number;
 
 export default class Destructible {
-  corpseName: CorpseName;
-  defense: Defense;
-  hp: HP;
-  maxHP: MaxHP;
+  corpseName: string;
+  defense: number;
+  hp: number;
+  maxHP: number;
   type: DestructibleType;
-  xp: XP;
+  xp: number;
 
   constructor(
-    maxHP: MaxHP,
-    defense: Defense,
-    corpseName: CorpseName,
+    maxHP: number,
+    defense: number,
+    corpseName: string,
     type: DestructibleType,
-    xp: XP,
+    xp: number,
   ) {
     this.maxHP = maxHP;
     this.hp = this.maxHP;
@@ -45,7 +31,7 @@ export default class Destructible {
     return this.hp <= 0;
   }
 
-  heal(amount: HealAmount) {
+  heal(amount: number) {
     this.hp += amount;
     if (this.hp > this.maxHP) {
       amount -= this.hp - this.maxHP;
@@ -54,7 +40,7 @@ export default class Destructible {
     return amount;
   }
 
-  takeDamage(owner: Actor, damage: Damage) {
+  takeDamage(owner: Actor, damage: number) {
     damage -= this.defense;
 
     if (damage > 0) {
@@ -80,12 +66,7 @@ export default class Destructible {
 export class MonsterDestructible extends Destructible {
   xp: number;
 
-  constructor(
-    maxHP: MaxHP,
-    defense: Defense,
-    corpseName: CorpseName,
-    xp: XP = 0,
-  ) {
+  constructor(maxHP: number, defense: number, corpseName: string, xp = 0) {
     super(maxHP, defense, corpseName, 'monster', xp);
     this.xp = xp;
   }
@@ -98,7 +79,7 @@ export class MonsterDestructible extends Destructible {
 }
 
 export class PlayerDestructible extends Destructible {
-  constructor(maxHP: MaxHP, defense: Defense, corpseName: CorpseName) {
+  constructor(maxHP: number, defense: number, corpseName: string) {
     super(maxHP, defense, corpseName, 'player', 0);
   }
 
