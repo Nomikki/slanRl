@@ -1,7 +1,7 @@
 "use strict";
 
 import { game, GameStatus } from ".";
-import { Menu } from "./menu";
+import { Menu, MenuItemCode } from "./menu";
 import Randomizer from "./random";
 import Actor from "./actor";
 
@@ -41,11 +41,11 @@ export class PlayerAI extends AI {
       game.menu = new Menu();
       game.menu.clear();
       game.menu.addItem(
-        game.menu.constants.CONSTITUTION,
+        MenuItemCode.CONSTITUTION,
         "Constitution (+20 hp)"
       );
-      game.menu.addItem(game.menu.constants.STRENGTH, "Strenght (+1 attack)");
-      game.menu.addItem(game.menu.constants.AGILITY, "Agility (+1 defense)");
+      game.menu.addItem(MenuItemCode.STRENGTH, "Strenght (+1 attack)");
+      game.menu.addItem(MenuItemCode.AGILITY, "Agility (+1 defense)");
 
       let cursor = 0;
       let selectedItem = -1;
@@ -70,16 +70,16 @@ export class PlayerAI extends AI {
       }
 
       if (selectedItem != -1) {
-        if (selectedItem === game.menu.constants.CONSTITUTION) {
+        if (selectedItem === MenuItemCode.CONSTITUTION) {
           owner.destructible.hp += 20;
           owner.destructible.maxHP += 20;
         }
 
-        if (selectedItem === game.menu.constants.STRENGTH) {
+        if (selectedItem === MenuItemCode.STRENGTH) {
           owner.attacker.power += 1;
         }
 
-        if (selectedItem === game.menu.constants.AGILITY) {
+        if (selectedItem === MenuItemCode.AGILITY) {
           owner.destructible.defense += 1;
         }
       }
