@@ -1,28 +1,36 @@
-import { game } from ".";
-import { Character, Color, Name } from "./destructible";
-import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
+import { game } from '.';
+import { ConfusedAI, MonsterAI, PlayerAI } from './ai';
+import Attacker from './attacker';
+import Container from './container';
+import Destructible, { Character, Color, Name } from './destructible';
+import Fov from './fov';
+import {
+  Confuser,
+  Fireball,
+  Healer,
+  LightningBolt,
+  PickableType,
+} from './pickable';
 
-export type ActorTemplate = {
-  moi: string;
-};
+export type AiType = PlayerAI | MonsterAI | ConfusedAI;
 
 export type X = number;
 export type Y = number;
 
 export default class Actor {
-  x: X;
-  y: Y;
+  ai?: PlayerAI | MonsterAI | ConfusedAI;
+  attacker?: Attacker;
+  blocks = true;
   ch: Character;
   color: Color;
+  container?: Container;
+  destructible?: Destructible;
+  fov?: Fov;
+  fovOnly = true;
   name: Name;
-  fov: any = null;
-  fovOnly: boolean = true;
-  blocks: boolean = true;
-  destructible: any = null;
-  attacker: any = null;
-  ai: any = null;
-  pickable: any = null;
-  container: any = null;
+  pickable?: PickableType;
+  x: X;
+  y: Y;
 
   constructor(x: X, y: Y, ch: Character, name: Name, color: Color) {
     this.x = x;
@@ -33,31 +41,31 @@ export default class Actor {
   }
 
   create(actorTemplate: Actor) {
-    //console.log(actorTemplate);
-    if (actorTemplate.pickable.type === "lightingBolt")
-      this.pickable = new LightningBolt(
-        actorTemplate.pickable.range,
-        actorTemplate.pickable.damage
-      );
+    if (!actorTemplate.pickable?.type) {
+      return;
+    }
+    const { pickable } = actorTemplate;
 
-    if (actorTemplate.pickable.type === "fireBall")
-      this.pickable = new Fireball(
-        actorTemplate.pickable.range,
-        actorTemplate.pickable.damage
-      );
-
-    if (actorTemplate.pickable.type === "healer")
-      this.pickable = new Healer(actorTemplate.pickable.amount);
-
-    if (actorTemplate.pickable.type === "confuser")
-      this.pickable = new Confuser(
-        actorTemplate.pickable.nbTurns,
-        actorTemplate.pickable.range
-      );
+    switch (pickable.type) {
+      case 'lightingBolt':
+        this.pickable = new LightningBolt(pickable.range, pickable.damage);
+        break;
+      case 'fireBall':
+        this.pickable = new Fireball(pickable.range, pickable.damage);
+        break;
+      case 'healer':
+        this.pickable = new Healer(pickable.amount);
+        break;
+      case 'confuser':
+        this.pickable = new Confuser(pickable.nbTurns, pickable.range);
+        break;
+      default:
+        break;
+    }
   }
 
   render() {
-    const fovValue = game.player.fov.getMapped(this.x, this.y);
+    const fovValue = game.player?.fov?.getMapped(this.x, this.y);
     if (fovValue === 2 || (fovValue != 0 && !this.fovOnly)) {
       game.drawChar(this.ch, this.x, this.y, this.color);
     }

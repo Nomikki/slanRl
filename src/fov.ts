@@ -1,11 +1,16 @@
-import { game } from ".";
+import { game } from '.';
+import { X, Y } from './actor';
+
+export type Width = number;
+export type Height = number;
+export type Length = number;
 
 export default class Fov {
-  width: number;
-  height: number;
+  height: Height;
   mapped: number[];
+  width: Width;
 
-  constructor(w: number, h: number) {
+  constructor(w: Width, h: Height) {
     this.width = w;
     this.height = h;
 
@@ -24,12 +29,12 @@ export default class Fov {
     this.mapped = new Array(this.width * this.height).fill(0);
   }
 
-  float2int(value: number): number {
+  float2int(value: number) {
     return value | 0;
   }
 
   /* Just a placeholder */
-  compute(x: number, y: number, len: number) {
+  compute(x: X, y: Y, len: Length) {
     this.clear();
 
     let dx = 0;
@@ -57,20 +62,20 @@ export default class Fov {
         const id = this.float2int(px) + this.float2int(py) * this.width;
         this.mapped[id] = 2;
 
-        if (game.map.isWall(this.float2int(px), this.float2int(py)) === true) {
+        if (game.map?.isWall(this.float2int(px), this.float2int(py)) === true) {
           break;
         }
       }
     }
   }
 
-  getMapped(x: number, y: number): number {
+  getMapped(x: X, y: Y) {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height)
       return this.mapped[x + y * this.width];
     else return 2;
   }
 
-  isInFov(x: number, y: number): boolean {
+  isInFov(x: X, y: Y) {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
       return this.mapped[x + y * this.width] > 0;
     }

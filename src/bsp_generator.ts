@@ -1,26 +1,27 @@
-import Rectangle from "./rectangle";
-import bspNode from "./bsp_node";
-import Randomizer from "./random";
-import { Height, Width } from "./fov";
-import { X, Y } from "./actor";
+import { X, Y } from './actor';
+import bspNode from './bsp_node';
+import { Height, Width } from './fov';
+import Randomizer from './random';
+import Rectangle from './rectangle';
+import { ensure } from './utils';
 
 const random = new Randomizer();
 
 export interface NodeType {
-  A: any;
-  B: any;
+  A: NodeType;
+  B: NodeType;
 }
 
 class bspGenerator {
+  cols: number;
+  doorPlaces: Rectangle[];
+  map: number[];
   maxLevel: number;
+  rooms: Rectangle[] | bspNode[];
   rootContainer: Rectangle;
-  rows: any;
-  cols: any;
-  map: any[];
-  doorPlaces: any[];
-  tempRooms: any[];
+  rows: number;
+  tempRooms: Rectangle[];
   tree: bspNode;
-  rooms: any;
 
   constructor(x: X, y: Y, w: Width, h: Height, maxLevel = 5) {
     this.maxLevel = maxLevel;
@@ -67,7 +68,7 @@ class bspGenerator {
         container.x + w,
         container.y,
         container.w - w,
-        container.h
+        container.h,
       );
     } else {
       //horizontal
@@ -77,7 +78,7 @@ class bspGenerator {
         container.x,
         container.y + h,
         container.w,
-        container.h - h
+        container.h - h,
       );
     }
     return [r1, r2];
@@ -102,7 +103,7 @@ class bspGenerator {
       const x = random.getInt(room.x, room.x + room.w - w);
       const y = random.getInt(room.y, room.y + room.h - h);
 
-      let rect = new Rectangle(x, y, x + w, y + h);
+      const rect = new Rectangle(x, y, x + w, y + h);
       this.tempRooms.push(rect);
 
       for (let hi = y; hi < y + h; hi++) {
@@ -123,16 +124,16 @@ class bspGenerator {
     return false;
   }
 
-  ConnectRooms(node: NodeType): false | void {
+  ConnectRooms(node: bspNode): false | void {
     if (node.A === null || node.B === null) {
       return false;
     }
 
-    const x1 = node.A.leaf.GetCenterX() >> 0;
-    const y1 = node.A.leaf.GetCenterY() >> 0;
+    const x1 = ensure(node.A).leaf.GetCenterX() >> 0;
+    const y1 = ensure(node.A).leaf.GetCenterY() >> 0;
 
-    const x2 = node.B.leaf.GetCenterX() >> 0;
-    const y2 = node.B.leaf.GetCenterY() >> 0;
+    const x2 = ensure(node.B).leaf.GetCenterX() >> 0;
+    const y2 = ensure(node.B).leaf.GetCenterY() >> 0;
 
     let doorsCreated = false;
     let lastWasInRoom = false;
@@ -149,7 +150,7 @@ class bspGenerator {
       ) {
         if (lastWasInRoom === true) {
           doorsCreated = true;
-          let re = new Rectangle(x, Math.max(y1, y2), 0, 0);
+          const re = new Rectangle(x, Math.max(y1, y2), 0, 0);
           this.doorPlaces.push(re);
         }
       }
@@ -167,14 +168,14 @@ class bspGenerator {
       ) {
         if (lastWasInRoom === true) {
           doorsCreated = true;
-          let re = new Rectangle(Math.max(x1, x2), y, 0, 0);
+          const re = new Rectangle(Math.max(x1, x2), y, 0, 0);
           this.doorPlaces.push(re);
         }
       }
     }
 
-    this.ConnectRooms(node.A);
-    this.ConnectRooms(node.B);
+    this.ConnectRooms(ensure(node.A));
+    this.ConnectRooms(ensure(node.B));
   }
 }
 

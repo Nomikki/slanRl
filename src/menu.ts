@@ -1,36 +1,37 @@
+import { DeepReadonly } from './utils';
+
+const constants = {
+  NONE: 0,
+  NEW_GAME: 1,
+  CONTINUE: 2,
+  EXIT: 3,
+  CONSTITUTION: 4,
+  STRENGTH: 5,
+  AGILITY: 6,
+};
+
 export class MenuItem {
   code: number;
   label: string;
 
   constructor() {
     this.code = 0;
-    this.label = "";
+    this.label = '';
   }
-}
-
-export enum MenuItemCode {
-  NONE,
-  NEW_GAME,
-  CONTINUE,
-  EXIT,
-  CONSTITUTION,
-  STRENGTH,
-  AGILITY,
 }
 
 export class Menu {
-  items: MenuItem[];
-
-  constructor() {
-    this.items = new Array();
-  }
+  constants: DeepReadonly<typeof constants> = constants;
+  items: MenuItem[] = [];
 
   clear() {
-    if (this.items && this.items.length > 0) this.items = new Array();
+    if (this.items && this.items.length > 0) {
+      this.items = [];
+    }
   }
 
-  addItem(code: MenuItemCode, label: string) {
-    let item = new MenuItem();
+  addItem(code: number, label: string) {
+    const item = new MenuItem();
     item.code = code;
     item.label = label;
     this.items.push(item);

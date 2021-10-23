@@ -1,13 +1,23 @@
-import { game } from ".";
-import Actor, { X, Y, ActorTemplate } from "./actor";
-import { XP } from "./destructible";
-import { Menu } from "./menu";
-import Randomizer from "./random";
+import { game } from '.';
+import Actor, { X, Y } from './actor';
+import { XP } from './destructible';
+import { Menu } from './menu';
+import Randomizer from './random';
+import { ensure } from './utils';
 export const random = new Randomizer();
 
-export default class AI {}
+export type AiType = 'player' | 'monster' | 'confused' | 'unknown';
+
+export interface AiBase {
+  type: AiType;
+}
+
+export default class AI implements AiBase {
+  type: AiType = 'unknown';
+}
 
 export class PlayerAI extends AI {
+  type: 'player' = 'player';
   xpLevel: XP = 1;
 
   getNextLevelXP() {
@@ -19,37 +29,38 @@ export class PlayerAI extends AI {
 
   async update(owner: Actor) {
     const levelUpXp = this.getNextLevelXP();
-    if (owner.destructible.xp >= levelUpXp) {
+    const destructible = ensure(owner.destructible);
+    if (destructible.xp >= levelUpXp) {
       this.xpLevel++;
-      owner.destructible.xp -= levelUpXp;
+      destructible.xp -= levelUpXp;
       game.log.add(
         `Your battle skills grow stronger! You reached level ${this.xpLevel}`,
-        "#FFFF00"
+        '#FFFF00',
       );
 
       game.menu = new Menu();
       game.menu.clear();
       game.menu.addItem(
         game.menu.constants.CONSTITUTION,
-        "Constitution (+20 hp)"
+        'Constitution (+20 hp)',
       );
-      game.menu.addItem(game.menu.constants.STRENGTH, "Strenght (+1 attack)");
-      game.menu.addItem(game.menu.constants.AGILITY, "Agility (+1 defense)");
+      game.menu.addItem(game.menu.constants.STRENGTH, 'Strenght (+1 attack)');
+      game.menu.addItem(game.menu.constants.AGILITY, 'Agility (+1 defense)');
 
       let cursor = 0;
       let selectedItem = -1;
       while (true) {
         game.clear();
         game.renderUI();
-        game.drawChar(">", game.width / 2 - 12, 10 + cursor, "#FFF");
+        game.drawChar('>', game.width / 2 - 12, 10 + cursor, '#FFF');
         for (let i = 0; i < game.menu.items.length; i++) {
           game.drawText(game.menu.items[i].label, game.width / 2 - 10, 10 + i);
         }
 
         const ch = await game.getch();
-        if (ch === "ArrowDown") cursor++;
-        if (ch === "ArrowUp") cursor--;
-        if (ch === "Enter") {
+        if (ch === 'ArrowDown') cursor++;
+        if (ch === 'ArrowUp') cursor--;
+        if (ch === 'Enter') {
           selectedItem = game.menu.items[cursor].code;
           break;
         }
@@ -60,16 +71,16 @@ export class PlayerAI extends AI {
 
       if (selectedItem != -1) {
         if (selectedItem === game.menu.constants.CONSTITUTION) {
-          owner.destructible.hp += 20;
-          owner.destructible.maxHP += 20;
+          destructible.hp += 20;
+          destructible.maxHP += 20;
         }
 
         if (selectedItem === game.menu.constants.STRENGTH) {
-          owner.attacker.power += 1;
+          ensure(owner.attacker).power += 1;
         }
 
         if (selectedItem === game.menu.constants.AGILITY) {
-          owner.destructible.defense += 1;
+          destructible.defense += 1;
         }
       }
 
@@ -83,16 +94,16 @@ export class PlayerAI extends AI {
     const ch = await game.getch();
 
     switch (ch) {
-      case "ArrowLeft":
+      case 'ArrowLeft':
         dx--;
         break;
-      case "ArrowRight":
+      case 'ArrowRight':
         dx++;
         break;
-      case "ArrowUp":
+      case 'ArrowUp':
         dy--;
         break;
-      case "ArrowDown":
+      case 'ArrowDown':
         dy++;
         break;
       default:
@@ -104,7 +115,7 @@ export class PlayerAI extends AI {
       game.gameStatus = game.GameStatus.NEW_TURN;
 
       if (this.moveOrAttack(owner, owner.x + dx, owner.y + dy)) {
-        game.player.computeFov();
+        game.player?.computeFov();
       }
     }
   }
@@ -112,58 +123,78 @@ export class PlayerAI extends AI {
   async handleActionKey(owner: Actor, ascii: string) {
     console.log(ascii);
 
-    switch (ascii) {
-      case "S": //save
-        game.save();
-        game.log.add("Game saved...", "#0FA");
-        break;
+    const handleSave = () => {
+      game.save();
+      game.log.add('Game saved...', '#0FA');
+    };
 
-      case ">": //go down
-        if (game.stairs.x === owner.x && game.stairs.y === owner.y) {
-          game.nextLevel();
-        } else {
-          game.log.add("There are no stairs here.");
-        }
-        break;
-      case "g": //pickup item
-        game.gameStatus = game.GameStatus.NEW_TURN;
-        let found = false;
-        for (const actor of game.actors) {
-          if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
-            if (actor.pickable.pick(actor, owner)) {
-              found = true;
-              game.log.add(`You pick up the ${actor.name}`, "#AAA");
-              break;
-            } else if (!found) {
-              found = true;
-              game.log.add("Your inventory is full.", "#F00");
-            }
+    const handleNextLevel = () => {
+      if (game.stairs?.x === owner.x && game.stairs?.y === owner.y) {
+        game.nextLevel();
+      } else {
+        game.log.add('There are no stairs here.');
+      }
+    };
+
+    const handlePickup = () => {
+      game.gameStatus = game.GameStatus.NEW_TURN;
+      let found = false;
+      for (const actor of game.actors) {
+        if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
+          if (actor.pickable.pick(actor, owner)) {
+            found = true;
+            game.log.add(`You pick up the ${actor.name}`, '#AAA');
+            break;
+          } else if (!found) {
+            found = true;
+            game.log.add('Your inventory is full.', '#F00');
           }
         }
-        if (!found) {
-          game.log.add("There's nothing here that you can pick up.");
-        }
+      }
+      if (!found) {
+        game.log.add("There's nothing here that you can pick up.");
+      }
+    };
+
+    const handleUseItem = async () => {
+      game.log.add('Use item');
+      const useItem = await this.choseFromInventory(owner);
+      if (useItem) {
+        await useItem.pickable?.use(useItem, owner);
+        game.gameStatus = game.GameStatus.NEW_TURN;
+      } else {
+        game.log.add('Nevermind...');
+      }
+    };
+
+    const handleDropItem = async () => {
+      const dropItem = await this.choseFromInventory(owner);
+      if (dropItem) {
+        await dropItem.pickable?.drop(dropItem, owner);
+        game.gameStatus = game.GameStatus.NEW_TURN;
+      } else {
+        game.log.add('Nevermind...');
+      }
+    };
+
+    switch (ascii) {
+      case 'S': //save
+        handleSave();
         break;
 
-      case "i": //use item
-        game.log.add("Use item");
-        const useItem = await this.choseFromInventory(owner);
-        if (useItem) {
-          await useItem.pickable.use(useItem, owner);
-          game.gameStatus = game.GameStatus.NEW_TURN;
-        } else {
-          game.log.add("Nevermind...");
-        }
+      case '>': //go down
+        handleNextLevel();
+        break;
+      case 'g': //pickup item
+        handlePickup();
         break;
 
-      case "d": //drop item
-        const dropItem = await this.choseFromInventory(owner);
-        if (dropItem) {
-          await dropItem.pickable.drop(dropItem, owner);
-          game.gameStatus = game.GameStatus.NEW_TURN;
-        } else {
-          game.log.add("Nevermind...");
-        }
+      case 'i': //use item
+        await handleUseItem();
+        break;
+
+      case 'd': //drop item
+        await handleDropItem();
         break;
       default:
         break;
@@ -171,7 +202,7 @@ export class PlayerAI extends AI {
   }
 
   moveOrAttack(owner: Actor, targetX: X, targetY: Y) {
-    if (game.map.isWall(targetX, targetY)) return false;
+    if (game.map?.isWall(targetX, targetY)) return false;
 
     for (const actor of game.actors) {
       if (
@@ -180,7 +211,7 @@ export class PlayerAI extends AI {
         actor.x === targetX &&
         actor.y === targetY
       ) {
-        owner.attacker.attack(owner, actor);
+        owner.attacker?.attack(owner, actor);
         return false;
       }
     }
@@ -207,37 +238,41 @@ export class PlayerAI extends AI {
     for (let y = 0; y < 28; y++) {
       for (let x = 0; x < 40; x++) {
         if ((y === 0 || y === 27) && x > 0 && x < 39)
-          game.drawChar("-", x + 20, y, "#AAA");
+          game.drawChar('-', x + 20, y, '#AAA');
         else if ((x === 0 || x === 39) && y > 0 && y < 27)
-          game.drawChar("|", x + 20, y, "#AAA");
+          game.drawChar('|', x + 20, y, '#AAA');
         else if (y === 0 || x === 0 || y === 27 || x === 39)
-          game.drawChar("+", x + 20, y, "#AAA");
-        else game.drawChar(" ", x + 20, y);
+          game.drawChar('+', x + 20, y, '#AAA');
+        else game.drawChar(' ', x + 20, y);
       }
     }
-    game.drawText(" INVENTORY ", 34, 0);
+    game.drawText(' INVENTORY ', 34, 0);
     //game.renderUI();
 
-    let shortcut = "a";
+    const container = ensure(owner.container);
+
+    let shortcut = 'a';
     let i = 0;
-    for (const it of owner.container.inventory) {
-      game.drawText(shortcut + ") " + it.name, 22, 2 + i);
+    for (const it of container.inventory) {
+      game.drawText(shortcut + ') ' + it.name, 22, 2 + i);
       shortcut = String.fromCharCode(shortcut.charCodeAt(0) + 1);
       i++;
     }
 
-    let ch = await game.getch();
+    const ch = await game.getch();
     const actorIndex = ch.charCodeAt(0) - 97; //97 = a
-    if (actorIndex >= 0 && actorIndex < owner.container.inventory.length) {
-      return owner.container.inventory[actorIndex];
+    if (actorIndex >= 0 && actorIndex < container.inventory.length) {
+      return container.inventory[actorIndex];
     }
     return null;
   }
 }
 
 export class MonsterAI extends AI {
+  type: 'monster' = 'monster';
   moveCount: number;
   Constants: Readonly<{ TRACKING_TURNS: number }>;
+
   constructor() {
     super();
     this.moveCount = 0;
@@ -248,16 +283,19 @@ export class MonsterAI extends AI {
   }
 
   async update(owner: Actor) {
-    if (owner.destructible && owner.destructible.isDead()) return;
+    const player = game.player;
+    if ((owner.destructible && owner.destructible.isDead()) || !player) {
+      return;
+    }
 
-    if (game.player.fov.isInFov(owner.x, owner.y)) {
+    if (player.fov?.isInFov(owner.x, owner.y)) {
       this.moveCount = this.Constants.TRACKING_TURNS;
     } else {
       this.moveCount--;
     }
 
     if (this.moveCount > 0) {
-      this.moveOrAttack(owner, game.player.x, game.player.y);
+      this.moveOrAttack(owner, player.x, player.y);
     }
   }
 
@@ -268,30 +306,32 @@ export class MonsterAI extends AI {
     const stepdy = dy > 0 ? 1 : -1;
 
     const distance = Math.sqrt(dx * dx + dy * dy);
+    const player = ensure(game.player);
 
     if (distance >= 2) {
       dx = Math.round(dx / distance);
       dy = Math.round(dy / distance);
 
-      if (game.map.canWalk(owner.x + dx, owner.y + dy)) {
+      if (game.map?.canWalk(owner.x + dx, owner.y + dy)) {
         owner.x += dx | 0;
         owner.y += dy | 0;
-      } else if (game.map.canWalk(owner.x + stepdx, owner.y)) {
+      } else if (game.map?.canWalk(owner.x + stepdx, owner.y)) {
         owner.x += stepdx | 0;
-      } else if (game.map.canWalk(owner.x, owner.y + stepdy)) {
+      } else if (game.map?.canWalk(owner.x, owner.y + stepdy)) {
         owner.y += stepdy | 0;
       }
     } else {
-      owner.attacker.attack(owner, game.player);
+      owner.attacker?.attack(owner, player);
     }
   }
 }
 
 export class ConfusedAI extends AI {
+  type: 'confused' = 'confused';
   nbTurns: number;
-  oldAi: number;
+  oldAi: PlayerAI | MonsterAI | ConfusedAI;
 
-  constructor(nbTurns: number, oldAi: number) {
+  constructor(nbTurns: number, oldAi: PlayerAI | MonsterAI | ConfusedAI) {
     super();
     this.nbTurns = nbTurns;
     this.oldAi = oldAi;
@@ -305,13 +345,13 @@ export class ConfusedAI extends AI {
       const destx = owner.x + dx;
       const desty = owner.y + dy;
 
-      if (game.map.canWalk(destx, desty)) {
+      if (game.map?.canWalk(destx, desty)) {
         owner.x = destx;
         owner.y = desty;
       } else {
         const actor = game.getActor(destx, desty);
         if (actor) {
-          owner.attacker.attack(owner, actor);
+          owner.attacker?.attack(owner, actor);
         }
       }
     }

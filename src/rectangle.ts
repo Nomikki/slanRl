@@ -1,31 +1,31 @@
-"use strict";
+import { X, Y } from './actor';
+import { Height, Width } from './fov';
 
 class Rectangle {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
+  x: X;
+  y: Y;
+  w: Width;
+  h: Height;
 
-  constructor(x: number, y: number, w: number, h: number) {
+  constructor(x: X, y: Y, w: Width, h: Height) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
   }
 
-  GetHalfDimensionX(): number {
+  GetHalfDimensionX() {
     return this.w / 2;
   }
-
-  GetHalfDimensionY(): number {
+  GetHalfDimensionY() {
     return this.h / 2;
   }
 
-  GetCenterX(): number {
+  GetCenterX() {
     return this.x + this.GetHalfDimensionX();
   }
 
-  GetCenterY(): number {
+  GetCenterY() {
     return this.y + this.GetHalfDimensionY();
   }
 }

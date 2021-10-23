@@ -1,14 +1,14 @@
-import Actor from "./actor";
+import Actor from './actor';
 
 export type Size = number;
 
 export default class Container {
-  size: Size;
   inventory: Actor[];
+  size: Size;
 
   constructor(size: Size) {
     this.size = size; //maximum number of actors
-    this.inventory = new Array();
+    this.inventory = [];
   }
 
   add(actor: Actor) {

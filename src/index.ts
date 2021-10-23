@@ -1,18 +1,18 @@
-import Actor, { X, Y } from "./actor";
-import Map from "./map";
-import Fov from "./fov";
+import Actor, { X, Y } from './actor';
+import { MonsterAI, PlayerAI } from './ai';
+import Attacker from './attacker';
+import Container from './container';
 import {
   Character,
   Color,
   MonsterDestructible,
   PlayerDestructible,
-} from "./destructible";
-import Attacker from "./attacker";
-import { MonsterAI, PlayerAI } from "./ai";
-import Log from "./log";
-import Container from "./container";
-import { Menu } from "./menu";
-import { debugInit, ensure } from "./utils";
+} from './destructible';
+import Fov from './fov';
+import Log from './log';
+import Map from './map';
+import { Menu } from './menu';
+import { debugInit, ensure } from './utils';
 
 enum Directions {
   Up,
@@ -21,62 +21,52 @@ enum Directions {
   Left,
 }
 
+const gameStatuses = {
+  STARTUP: 0,
+  IDLE: 1,
+  NEW_TURN: 2,
+  VICTORY: 3,
+  DEFEAT: 4,
+};
+
 export type Tile = [boolean, number, number];
 
 class Game {
-  GameStatus: Readonly<{
-    STARTUP: number;
-    IDLE: number;
-    NEW_TURN: number;
-    VICTORY: number;
-    DEFEAT: number;
-  }>;
-  player: any;
-  map: any;
-  stairs: any;
-  canvas: HTMLElement;
-  ctx: any;
-  fontSize: number;
-  log: Log;
-  lastKey: string;
-  depth: number;
-  width: number;
-  height: number;
   actors: Actor[];
-  gameStatus: any;
-  menu: Menu;
-  masterSeed: number;
-  playerX: number;
-  playerY: number;
+  canvas: HTMLElement;
+  ctx: CanvasRenderingContext2D;
+  depth: number;
+  fontSize: number;
+  gameStatus = 0;
+  GameStatus: Readonly<typeof gameStatuses> = gameStatuses;
+  height: number;
+  lastKey: string;
+  log: Log;
+  map?: Map;
+  masterSeed = 0;
+  menu?: Menu;
+  player?: Actor;
+  playerX?: number;
+  playerY?: number;
+  stairs?: Actor;
+  width: number;
 
   constructor() {
-    this.GameStatus = Object.freeze({
-      STARTUP: 0,
-      IDLE: 1,
-      NEW_TURN: 2,
-      VICTORY: 3,
-      DEFEAT: 4,
-    });
-
-    this.player = null;
-    this.map = null;
-    this.stairs = null;
-
-    this.canvas = ensure(document.getElementById("screen"));
-    this.ctx = (this.canvas as HTMLCanvasElement).getContext("2d");
-    this.ctx.font = "12px Arial";
+    this.canvas = ensure(document.getElementById('screen'));
+    this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext('2d'));
+    this.ctx.font = '12px Arial';
     this.fontSize = 12;
-    this.ctx.textAlign = "center";
+    this.ctx.textAlign = 'center';
 
     this.log = new Log();
 
-    this.lastKey = "";
+    this.lastKey = '';
     this.depth = 0;
 
     this.width = 80;
     this.height = 40;
 
-    this.actors = new Array();
+    this.actors = [];
     this.map = new Map(this.width, this.height);
 
     console.log(`Direction up: ${Directions.Up}`);
@@ -84,23 +74,27 @@ class Game {
 
   async term() {
     this.log = new Log();
-    this.actors = new Array();
+    this.actors = [];
     this.map = new Map(this.width, this.height);
-    this.player = null;
+    this.player = undefined;
   }
 
   async init(withActors: boolean, createPlayer = true) {
+    if (!this.map) {
+      return;
+    }
+
     this.map.generate(withActors, this.masterSeed, this.depth);
 
     if (withActors) {
       let i = 0;
       if (createPlayer) {
-        i = this.actors.push(new Actor(2, 2, "@", "hero", "#CCC")) - 1;
+        i = this.actors.push(new Actor(2, 2, '@', 'hero', '#CCC')) - 1;
         this.player = this.actors[i];
         this.player.destructible = new PlayerDestructible(
           30,
           2,
-          "your cadaver"
+          'your cadaver',
         );
         this.player.attacker = new Attacker(5);
         this.player.ai = new PlayerAI();
@@ -108,20 +102,24 @@ class Game {
         this.player.fov = new Fov(this.width, this.height);
       }
 
+      if (!this.player) {
+        return;
+      }
+
       this.player.x = this.map.startX;
       this.player.y = this.map.startY;
-      this.player.fov.fullClear();
+      this.player.fov?.fullClear();
 
-      i = this.actors.push(new Actor(0, 0, ">", "stairs", "#FFF")) - 1;
+      i = this.actors.push(new Actor(0, 0, '>', 'stairs', '#FFF')) - 1;
       this.stairs = this.actors[i];
       this.stairs.blocks = false;
       this.stairs.fovOnly = false;
       this.stairs.x = this.map.stairsX;
       this.stairs.y = this.map.stairsY;
 
-      this.log.add("Welcome stranger!", "#FFF");
+      this.log.add('Welcome stranger!', '#FFF');
     } else {
-      this.log.add("Welcome back stranger!", "#FFF");
+      this.log.add('Welcome back stranger!', '#FFF');
     }
 
     this.gameStatus = this.GameStatus.STARTUP;
@@ -129,13 +127,13 @@ class Game {
 
   async nextLevel() {
     this.depth++;
-    this.log.add("You take steps down.");
+    this.log.add('You take steps down.');
 
-    this.map = null;
-    this.stairs = null;
+    this.map = undefined;
+    this.stairs = undefined;
 
-    const tempPlayer = this.player;
-    this.actors = new Array();
+    const tempPlayer = ensure(this.player);
+    this.actors = [];
     this.map = new Map(this.width, this.height);
     this.init(true, false);
     this.actors.push(tempPlayer);
@@ -144,7 +142,7 @@ class Game {
   }
 
   async newGame() {
-    console.log("New game!");
+    console.log('New game!');
     this.masterSeed = (Math.random() * 0x7ffffff) | 0;
 
     this.depth = 1;
@@ -154,15 +152,15 @@ class Game {
   }
 
   async continueGame() {
-    console.log("Continue");
+    console.log('Continue');
 
-    const seed = window.localStorage.getItem("seed");
+    const seed = window.localStorage.getItem('seed');
     if (seed !== null) {
-      const savedVersion = window.localStorage.getItem("version");
+      const savedVersion = window.localStorage.getItem('version');
       if (savedVersion === null)
-        window.localStorage.setItem("version", VERSION);
+        window.localStorage.setItem('version', VERSION);
 
-      const depth = window.localStorage.getItem("depth");
+      const depth = window.localStorage.getItem('depth');
 
       this.masterSeed = parseInt(seed, 10);
       this.depth = depth ? parseInt(depth, 10) : 0;
@@ -170,7 +168,7 @@ class Game {
       await this.init(false);
 
       const tempUsers = JSON.parse(
-        window.localStorage.getItem("actors") || "[]"
+        window.localStorage.getItem('actors') || '[]',
       );
       // const playerID = window.localStorage.getItem("playerID");
 
@@ -179,71 +177,71 @@ class Game {
       for (const actor of tempUsers) {
         const i =
           this.actors.push(
-            new Actor(actor.x, actor.y, actor.ch, actor.name, actor.color)
+            new Actor(actor.x, actor.y, actor.ch, actor.name, actor.color),
           ) - 1;
 
-        this.actors[i].ai = null;
+        const thisActor = this.actors[i];
+
+        thisActor.ai = undefined;
 
         if (actor.fov) {
-          this.actors[i].fov = new Fov(this.width, this.height);
-          this.actors[i].fov.mapped = actor.fov.mapped;
+          thisActor.fov = new Fov(this.width, this.height);
+          thisActor.fov.mapped = actor.fov.mapped;
         }
 
         if (actor.container) {
-          this.actors[i].container = await new Container(26);
+          thisActor.container = await new Container(26);
 
           for (const it of actor.container.inventory) {
             const k =
-              this.actors[i].container.inventory.push(
-                new Actor(it.x, it.y, it.ch, it.name, it.color)
+              thisActor.container.inventory.push(
+                new Actor(it.x, it.y, it.ch, it.name, it.color),
               ) - 1;
-            this.actors[i].container.inventory[k].create(it);
+            thisActor.container.inventory[k].create(it);
           }
         }
 
         if (actor.attacker) {
-          this.actors[i].attacker = new Attacker(actor.attacker.power);
+          thisActor.attacker = new Attacker(actor.attacker.power);
         }
 
         if (actor.pickable) {
-          this.actors[i].create(actor);
+          thisActor.create(actor);
         }
 
-        if (actor.name === "stairs") {
-          this.stairs = this.actors[i];
+        if (actor.name === 'stairs') {
+          this.stairs = thisActor;
         }
 
         if (actor.destructible) {
-          if (actor.destructible.type === "player") {
-            this.player = this.actors[i];
-            this.actors[i].destructible = new PlayerDestructible(
+          if (actor.destructible.type === 'player') {
+            this.player = thisActor;
+            thisActor.destructible = new PlayerDestructible(
               30,
               2,
-              "player corpse"
+              'player corpse',
             );
 
-            this.actors[i].ai = new PlayerAI();
+            thisActor.ai = new PlayerAI();
 
-            this.actors[i].destructible.hp = actor.destructible.hp;
-            this.actors[i].destructible.maxHP = actor.destructible.maxHP;
-            this.actors[i].destructible.defense = actor.destructible.defense;
-            this.actors[i].destructible.corpseName =
-              actor.destructible.corpseName;
+            thisActor.destructible.hp = actor.destructible.hp;
+            thisActor.destructible.maxHP = actor.destructible.maxHP;
+            thisActor.destructible.defense = actor.destructible.defense;
+            thisActor.destructible.corpseName = actor.destructible.corpseName;
           }
-          if (actor.destructible.type === "monster") {
-            this.actors[i].destructible = new MonsterDestructible(
+          if (actor.destructible.type === 'monster') {
+            thisActor.destructible = new MonsterDestructible(
               1,
               1,
-              "monster corpse"
+              'monster corpse',
             );
 
-            this.actors[i].destructible.hp = actor.destructible.hp;
-            this.actors[i].destructible.maxHP = actor.destructible.maxHP;
-            this.actors[i].destructible.defense = actor.destructible.defense;
-            this.actors[i].destructible.corpseName =
-              actor.destructible.corpseName;
+            thisActor.destructible.hp = actor.destructible.hp;
+            thisActor.destructible.maxHP = actor.destructible.maxHP;
+            thisActor.destructible.defense = actor.destructible.defense;
+            thisActor.destructible.corpseName = actor.destructible.corpseName;
 
-            this.actors[i].ai = new MonsterAI();
+            thisActor.ai = new MonsterAI();
           }
         }
       }
@@ -253,13 +251,13 @@ class Game {
   }
 
   async load() {
-    if (window.localStorage.getItem("version") !== VERSION)
+    if (window.localStorage.getItem('version') !== VERSION)
       window.localStorage.clear();
     this.menu = new Menu();
     this.menu.clear();
-    if (window.localStorage.getItem("depth"))
-      this.menu.addItem(this.menu.constants.CONTINUE, "Continue");
-    this.menu.addItem(this.menu.constants.NEW_GAME, "New Game");
+    if (window.localStorage.getItem('depth'))
+      this.menu.addItem(this.menu.constants.CONTINUE, 'Continue');
+    this.menu.addItem(this.menu.constants.NEW_GAME, 'New Game');
 
     //this.menu.addItem(this.menu.constants.EXIT, "Exit");
 
@@ -267,15 +265,15 @@ class Game {
     let selectedItem = -1;
     while (true) {
       this.clear();
-      this.drawChar(">", this.width / 2 - 12, 10 + cursor, "#FFF");
+      this.drawChar('>', this.width / 2 - 12, 10 + cursor, '#FFF');
       for (let i = 0; i < this.menu.items.length; i++) {
         this.drawText(this.menu.items[i].label, this.width / 2 - 10, 10 + i);
       }
 
       const ch = await this.getch();
-      if (ch === "ArrowDown") cursor++;
-      if (ch === "ArrowUp") cursor--;
-      if (ch === "Enter") {
+      if (ch === 'ArrowDown') cursor++;
+      if (ch === 'ArrowUp') cursor--;
+      if (ch === 'Enter') {
         selectedItem = this.menu.items[cursor].code;
         break;
       }
@@ -296,28 +294,27 @@ class Game {
   }
 
   async save() {
-    if (this.player.destructible.isDead()) {
+    const player = ensure(this.player);
+    const map = ensure(this.map);
+    if (player.destructible?.isDead()) {
       window.localStorage.clear();
     } else {
-      this.map.save();
-      window.localStorage.setItem(
-        "playerID",
-        `${this.actors.indexOf(this.player)}`
-      );
-      window.localStorage.setItem("actors", JSON.stringify(this.actors));
-      window.localStorage.setItem("version", VERSION);
+      map.save();
+      window.localStorage.setItem('playerID', `${this.actors.indexOf(player)}`);
+      window.localStorage.setItem('actors', JSON.stringify(this.actors));
+      window.localStorage.setItem('version', VERSION);
       //console.log(this.actors);
     }
   }
 
-  clear(color = "#000") {
+  clear(color = '#000') {
     //Game
     this.ctx.fillStyle = color;
     this.ctx.fillRect(
       0,
       0,
       this.width * this.fontSize,
-      this.height * this.fontSize
+      this.height * this.fontSize,
     );
 
     //"UI"
@@ -325,37 +322,37 @@ class Game {
       0,
       this.height * this.fontSize,
       this.width * this.fontSize,
-      (this.canvas as HTMLCanvasElement).height - this.height * this.fontSize
+      (this.canvas as HTMLCanvasElement).height - this.height * this.fontSize,
     );
   }
 
-  drawChar(ch: Character, x: X, y: Y, color: Color = "#000") {
-    this.ctx.textAlign = "center";
-    this.ctx.fillStyle = "#040414";
+  drawChar(ch: Character, x: X, y: Y, color: Color = '#000') {
+    this.ctx.textAlign = 'center';
+    this.ctx.fillStyle = '#040414';
     this.ctx.fillRect(
       x * this.fontSize - this.fontSize / 2,
       y * this.fontSize,
       this.fontSize,
-      this.fontSize
+      this.fontSize,
     );
 
     this.ctx.fillStyle = color;
     this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
 
-  drawText(text: string, x: X, y: Y, color: Color = "#AAA") {
-    this.ctx.textAlign = "left";
+  drawText(text: string, x: X, y: Y, color: Color = '#AAA') {
+    this.ctx.textAlign = 'left';
     /*
     for (let i = 0; i < text.length; i++) {
       this.drawChar(text.charAt(i), x + i, y, color);
     }
     */
-    this.ctx.fillStyle = "#040414";
+    this.ctx.fillStyle = '#040414';
     this.ctx.fillStyle = color;
     this.ctx.fillText(
       text,
       x * this.fontSize,
-      y * this.fontSize + this.fontSize
+      y * this.fontSize + this.fontSize,
     );
   }
 
@@ -366,24 +363,24 @@ class Game {
       await this.load();
       await this.gameloop();
       await this.save();
-      this.log.add("Press Esc to restart", "#FFF");
+      this.log.add('Press Esc to restart', '#FFF');
       this.render();
       while (true) {
         const ch = await this.getch();
-        if (ch === "Escape") break;
+        if (ch === 'Escape') break;
       }
     }
   }
 
   waitingKeypress() {
-    return new Promise((resolve) => {
-      document.addEventListener("keydown", onKeyHandler);
+    return new Promise(resolve => {
+      document.addEventListener('keydown', onKeyHandler);
       function onKeyHandler(e: KeyboardEvent) {
         e.preventDefault();
         if (e.keyCode !== 0) {
-          document.removeEventListener("keydown", onKeyHandler);
+          document.removeEventListener('keydown', onKeyHandler);
           game.lastKey = e.key;
-          resolve("");
+          resolve('');
         }
       }
     });
@@ -393,15 +390,15 @@ class Game {
   async getch() {
     await this.waitingKeypress();
     const tempKey = this.lastKey;
-    this.lastKey = "";
+    this.lastKey = '';
     return tempKey;
   }
 
   render() {
     this.clear();
 
-    this.map.render();
-    this.drawChar("@", this.playerX, this.playerY, "#AAA");
+    ensure(this.map).render();
+    this.drawChar('@', ensure(this.playerX), ensure(this.playerY), '#AAA');
 
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
 
@@ -410,40 +407,47 @@ class Game {
 
   renderUI() {
     for (let x = 0; x < this.width; x++) {
-      this.drawChar("-", x, this.height, "#888");
+      this.drawChar('-', x, this.height, '#888');
     }
 
-    const hp = this.player.destructible.hp;
-    const maxHP = this.player.destructible.maxHP;
-    const depth = this.map.depth;
-    this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1);
-    this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
+    const player = ensure(this.player);
+    const map = ensure(this.map);
 
-    this.drawText(
-      "EXP: " +
-        this.player.destructible.xp +
-        " / " +
-        this.player.ai.getNextLevelXP(),
-      10,
-      this.height + 1
-    );
+    const hp = player.destructible?.hp;
+    const maxHP = player.destructible?.maxHP;
+    const depth = map.depth;
+    this.drawText('HP: ' + hp + '/' + maxHP, 1, this.height + 1);
+    this.drawText('Depth: ' + depth, this.width - 6, this.height + 1);
+
+    if (!player.ai?.type) {
+      return;
+    }
+
+    if (player.ai?.type === 'player') {
+      this.drawText(
+        `EXP: ${player.destructible?.xp} / ${player.ai.getNextLevelXP()}`,
+        10,
+        this.height + 1,
+      );
+    }
 
     this.log.render();
   }
 
   async gameloop() {
+    const player = ensure(this.player);
     while (true) {
       if (this.gameStatus === this.GameStatus.STARTUP) {
-        this.player.computeFov();
+        player.computeFov();
         this.render();
       }
       this.gameStatus = this.GameStatus.IDLE;
 
-      await this.player.update();
+      await player.update();
 
       if (this.gameStatus === this.GameStatus.NEW_TURN) {
         for (const actor of this.actors) {
-          if (actor !== this.player) {
+          if (actor !== player) {
             await actor.update();
           }
         }
@@ -453,8 +457,8 @@ class Game {
       this.render();
 
       if (this.gameStatus === this.GameStatus.DEFEAT) {
-        this.drawText("DEFEAT!", this.width / 2 - 3, this.height / 2, "#A00");
-        this.log.add("DEFEAT", "#A00");
+        this.drawText('DEFEAT!', this.width / 2 - 3, this.height / 2, '#A00');
+        this.log.add('DEFEAT', '#A00');
         break;
       }
     }
@@ -516,23 +520,23 @@ class Game {
     while (true) {
       this.render();
       if (
-        this.player.fov.isInFov(px, py) &&
+        this.player?.fov?.isInFov(px, py) &&
         (range == 0 || this.player.getDistance(px, py) <= range)
       ) {
-        this.drawChar("+", px, py, "#FFF");
+        this.drawChar('+', px, py, '#FFF');
         inRange = true;
       } else {
-        this.drawChar("+", px, py, "#F88");
+        this.drawChar('+', px, py, '#F88');
         inRange = false;
       }
 
       const ch = await this.getch();
-      if (ch === "ArrowLeft") px--;
-      if (ch === "ArrowRight") px++;
-      if (ch === "ArrowUp") py--;
-      if (ch === "ArrowDown") py++;
-      if (ch === "Escape") break;
-      if (ch === "Enter") {
+      if (ch === 'ArrowLeft') px--;
+      if (ch === 'ArrowRight') px++;
+      if (ch === 'ArrowUp') py--;
+      if (ch === 'ArrowDown') py++;
+      if (ch === 'Escape') break;
+      if (ch === 'Enter') {
         if (inRange) {
           return [true, px, py];
         }

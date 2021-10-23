@@ -1,5 +1,6 @@
-import { game } from ".";
-import Actor from "./actor";
+import { game } from '.';
+import Actor from './actor';
+import { ensure } from './utils';
 
 export type Name = string;
 
@@ -7,7 +8,7 @@ export type CorpseName = string;
 export type Defense = number;
 export type MaxHP = number;
 export type HP = number;
-export type DestructibleType = "player" | "monster";
+export type DestructibleType = 'player' | 'monster';
 export type XP = number;
 
 export type HealAmount = number;
@@ -18,10 +19,10 @@ export type Color = string;
 export type Damage = number;
 
 export default class Destructible {
-  maxHP: MaxHP;
-  hp: HP;
-  defense: Defense;
   corpseName: CorpseName;
+  defense: Defense;
+  hp: HP;
+  maxHP: MaxHP;
   type: DestructibleType;
   xp: XP;
 
@@ -30,7 +31,7 @@ export default class Destructible {
     defense: Defense,
     corpseName: CorpseName,
     type: DestructibleType,
-    xp: XP
+    xp: XP,
   ) {
     this.maxHP = maxHP;
     this.hp = this.maxHP;
@@ -68,8 +69,8 @@ export default class Destructible {
   }
 
   die(owner: Actor) {
-    owner.ch = "%";
-    owner.color = "#AA0000";
+    owner.ch = '%';
+    owner.color = '#AA0000';
     owner.name = this.corpseName;
     owner.blocks = false;
     game.sendToBack(owner);
@@ -83,26 +84,26 @@ export class MonsterDestructible extends Destructible {
     maxHP: MaxHP,
     defense: Defense,
     corpseName: CorpseName,
-    xp: XP = 0
+    xp: XP = 0,
   ) {
-    super(maxHP, defense, corpseName, "monster", xp);
+    super(maxHP, defense, corpseName, 'monster', xp);
     this.xp = xp;
   }
 
   die(owner: Actor) {
     game.log.add(`${owner.name} is dead. You gain ${this.xp} xp`);
-    game.player.destructible.xp += this.xp;
+    ensure(game.player?.destructible).xp += this.xp;
     super.die(owner);
   }
 }
 
 export class PlayerDestructible extends Destructible {
   constructor(maxHP: MaxHP, defense: Defense, corpseName: CorpseName) {
-    super(maxHP, defense, corpseName, "player", 0);
+    super(maxHP, defense, corpseName, 'player', 0);
   }
 
   die(owner: Actor) {
-    game.log.add("You died", "#A00");
+    game.log.add('You died', '#A00');
     super.die(owner);
     game.gameStatus = game.GameStatus.DEFEAT;
   }
