@@ -196,7 +196,7 @@ export class PlayerAI extends AI {
     }
   }
 
-  moveOrAttack(owner: Actor, targetX: number, targetY: number) {
+  moveOrAttack(owner: Actor, targetX: number, targetY: number): boolean {
     if (game.map?.isWall(targetX, targetY)) return false; // move
 
     for (const actor of game.actors) {
@@ -270,7 +270,7 @@ export class MonsterAI extends AI {
 
   async update(owner: Actor) {
     const player = game.player;
-    if ((owner.destructible && owner.destructible.isDead()) || !player) {
+    if (owner.destructible?.isDead() || !player) {
       return;
     }
 
