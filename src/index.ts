@@ -306,7 +306,7 @@ class Game {
     );
   }
 
-  drawChar(ch: Character, x: number, y: number, color: string = '#000') {
+  drawChar(ch: Character, x: number, y: number, color = '#000') {
     this.ctx.textAlign = 'center';
     this.ctx.fillStyle = '#040414';
     this.ctx.fillRect(
@@ -320,7 +320,7 @@ class Game {
     this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
 
-  drawText(text: string, x: number, y: number, color: string = '#AAA') {
+  drawText(text: string, x: number, y: number, color = '#AAA') {
     this.ctx.textAlign = 'left';
     /*
     for (let i = 0; i < text.length; i++) {
