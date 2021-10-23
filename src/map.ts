@@ -7,6 +7,7 @@ import { MonsterDestructible } from "./destructible";
 import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import Randomizer from "./random";
 import Rectangle from "./rectangle";
+import { storage } from "./storage";
 import { ensure } from "./utils";
 
 export const random = new Randomizer();
@@ -39,8 +40,8 @@ export default class Map {
   }
 
   save() {
-    window.localStorage.setItem("seed", `${this.levelSeed}`);
-    window.localStorage.setItem("depth", `${this.depth}`);
+    storage.set("seed", this.levelSeed);
+    storage.set("depth", this.depth);
   }
 
   isWall(x: number, y: number): boolean {
