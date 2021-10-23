@@ -1,10 +1,7 @@
 let _seed = 0;
 
 class Randomizer {
-  rnd: number;
-  constructor() {
-    this.rnd = 0;
-  }
+  rnd = 0;
 
   setSeed(seed: number) {
     _seed = seed;

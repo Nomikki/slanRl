@@ -25,16 +25,18 @@ const gameStatuses = {
 export type Tile = [boolean, number, number];
 
 class Game {
-  actors: Actor[];
-  canvas: HTMLElement;
-  ctx: CanvasRenderingContext2D;
-  depth: number;
-  fontSize: number;
+  actors: Actor[] = [];
+  canvas: HTMLElement = ensure(document.getElementById('screen'));
+  ctx: CanvasRenderingContext2D = ensure(
+    (this.canvas as HTMLCanvasElement).getContext('2d'),
+  );
+  depth = 0;
+  fontSize = 12;
   gameStatus = 0;
   GameStatus: Readonly<typeof gameStatuses> = gameStatuses;
-  height: number;
-  lastKey: string;
-  log: Log;
+  height = 40;
+  lastKey = '';
+  log: Log = new Log();
   map?: Map;
   masterSeed = 0;
   menu?: Menu;
@@ -42,24 +44,12 @@ class Game {
   playerX?: number;
   playerY?: number;
   stairs?: Actor;
-  width: number;
+  width = 80;
 
   constructor() {
-    this.canvas = ensure(document.getElementById('screen'));
-    this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext('2d'));
     this.ctx.font = '12px Arial';
-    this.fontSize = 12;
     this.ctx.textAlign = 'center';
 
-    this.log = new Log();
-
-    this.lastKey = '';
-    this.depth = 0;
-
-    this.width = 80;
-    this.height = 40;
-
-    this.actors = [];
     this.map = new Map(this.width, this.height);
   }
 

@@ -9,13 +9,8 @@ const constants = {
 };
 
 export class MenuItem {
-  code: number;
-  label: string;
-
-  constructor() {
-    this.code = 0;
-    this.label = '';
-  }
+  code = 0;
+  label = '';
 }
 
 export class Menu {
