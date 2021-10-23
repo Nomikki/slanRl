@@ -119,9 +119,9 @@ export class Fireball extends Pickable {
     game.log.add(
       "Use arrow keys to target tile for fireball. Enter to select target. Esc to cancel.",
     );
-    const tilePick = await game.pickATile(wearer.x, wearer.y);
+    const [isOnRange, tileX, tileY] = await game.pickATile(wearer.x, wearer.y);
 
-    if (tilePick[0] == true) {
+    if (isOnRange) {
       game.log.add(
         `The fireball explodes, burning everything within ${this.range} tiles!`,
         "#FA0",
@@ -132,7 +132,7 @@ export class Fireball extends Pickable {
         if (
           actor.destructible &&
           !actor.destructible.isDead() &&
-          actor.getDistance(tilePick[1], tilePick[2]) < this.range
+          actor.getDistance(tileX, tileY) < this.range
         ) {
           game.log.add(
             `The ${actor.name} gets burned for ${this.damage} hit points.`,

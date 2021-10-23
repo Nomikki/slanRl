@@ -11,18 +11,18 @@ class Rectangle {
     this.h = h;
   }
 
-  GetHalfDimensionX() {
+  GetHalfDimensionX(): number {
     return this.w / 2;
   }
-  GetHalfDimensionY() {
+  GetHalfDimensionY(): number {
     return this.h / 2;
   }
 
-  GetCenterX() {
+  GetCenterX(): number {
     return this.x + this.GetHalfDimensionX();
   }
 
-  GetCenterY() {
+  GetCenterY(): number {
     return this.y + this.GetHalfDimensionY();
   }
 }

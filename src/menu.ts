@@ -22,7 +22,7 @@ export class Menu {
     }
   }
 
-  addItem(code: number, label: string) {
+  addItem(code: MenuItemCode, label: string) {
     const item = new MenuItem();
     item.code = code;
     item.label = label;

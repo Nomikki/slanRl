@@ -12,14 +12,14 @@ class Randomizer {
     this.rnd = _seed / 233280.0;
   }
 
-  getInt(min: number, max: number) {
+  getInt(min: number, max: number): number {
     max = max || 1;
     min = min || 0;
     this.calc();
     return Math.floor(min + this.rnd * (max - min));
   }
 
-  dice(dices: number, eyes: number, bonus = 0) {
+  dice(dices: number, eyes: number, bonus = 0): number {
     let v = 0;
     eyes++;
     for (let i = 0; i < dices; i++) {
