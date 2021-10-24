@@ -396,15 +396,8 @@ class Game {
 
   render() {
     this.clear();
-
     ensure(this.map).render();
-
-    const pl = ensure(this.player);
-
-    this.drawChar("@", pl.x, pl.y, "#AAA");
-
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
-
     this.renderUI();
   }
 
