@@ -88,10 +88,10 @@ export default class Map {
       actor.blocks = !actor.blocks;
       if (actor.blocks) {
         actor.ch = "D";
-        game.log.add("The door is closed");
+        game.log.add("a door is closed");
       } else {
         actor.ch = "+";
-        game.log.add("The door is opened");
+        game.log.add("a door is opened");
       }
       return true;
     }
@@ -221,7 +221,8 @@ export default class Map {
           lastWalkable === true &&
           (x1 === x2 || y1 === y2)
         ) {
-          if (withActors) this.addDoor(tilex, tiley, true);
+          if (withActors && tilex !== this.stairsX && tiley !== this.stairsY)
+            this.addDoor(tilex, tiley, true);
         }
         lastWalkable = this.tiles[index].canWalk;
 

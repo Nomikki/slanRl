@@ -125,6 +125,7 @@ class Game {
 
   async newGame() {
     this.masterSeed = float2int(Math.random() * 0x7ffffff);
+    //this.masterSeed = 125660641;
 
     this.depth = 1;
     await this.term();
