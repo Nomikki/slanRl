@@ -1,9 +1,8 @@
 import { game } from ".";
 import Actor from "./actor";
-import { ConfusedMonsterAi, MonsterAI } from "./ai";
-import Attacker from "./attacker";
+import { ConfusedMonsterAi } from "./ai";
 import bspGenerator from "./bsp_generator";
-import { MonsterDestructible } from "./destructible";
+import { createMonster } from "./monsterGenerator";
 import Pickable, {
   AiChangeEffect,
   HealthEffect,
@@ -73,24 +72,9 @@ export default class Map {
     const rng = random.getInt(0, 100);
 
     if (rng < 80) {
-      const orc = new Actor(x, y, "o", "lan orc", "#00AA00");
-
-      orc.destructible = new MonsterDestructible(10, 0, "wasted lan orc", 10);
-      orc.attacker = new Attacker(3);
-      orc.ai = new MonsterAI();
-      game.actors.push(orc);
+      game.actors.push(createMonster("orc", x, y));
     } else {
-      const troll = new Actor(x, y, "t", "lan troll", "#008800");
-
-      troll.destructible = new MonsterDestructible(
-        10,
-        0,
-        "wasted lan troll",
-        15,
-      );
-      troll.attacker = new Attacker(3);
-      troll.ai = new MonsterAI();
-      game.actors.push(troll);
+      game.actors.push(createMonster("troll", x, y));
     }
   }
 
