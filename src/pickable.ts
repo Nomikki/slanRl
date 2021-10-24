@@ -1,6 +1,7 @@
 import { game } from ".";
 import Actor from "./actor";
 import { TemporaryAI } from "./ai";
+import { ensure } from "./utils";
 
 export enum SelectorType {
   NONE,
@@ -102,6 +103,21 @@ export interface Effect {
   applyTo(actor: Actor): boolean;
 }
 
+export class MapClearEffect implements Effect {
+  message: any;
+
+  constructor(message: string | void) {
+    this.message = message;
+  }
+
+  applyTo(actor: Actor): boolean {
+    ensure(actor);
+    game.player?.fov?.showAll();
+    game.player?.computeFov();
+    return true;
+  }
+}
+
 export class HealthEffect implements Effect {
   amount = 0;
   message: any;
@@ -159,12 +175,18 @@ export class AiChangeEffect implements Effect {
 
 export default class Pickable {
   selector?: TargetSelector | any;
-  effect: Effect | HealthEffect | AiChangeEffect | TemporaryAI | any;
+  effect:
+    | Effect
+    | HealthEffect
+    | AiChangeEffect
+    | TemporaryAI
+    | MapClearEffect
+    | any;
   selectorName?: string;
   effectName?: string;
   constructor(
     selector: TargetSelector | void,
-    effect: HealthEffect | AiChangeEffect | void,
+    effect: HealthEffect | AiChangeEffect | MapClearEffect | void,
   ) {
     this.selector = selector;
     this.effect = effect;

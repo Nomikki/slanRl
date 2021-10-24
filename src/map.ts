@@ -7,6 +7,7 @@ import { createMonster } from "./monsterGenerator";
 import Pickable, {
   AiChangeEffect,
   HealthEffect,
+  MapClearEffect,
   SelectorType,
   TargetSelector,
 } from "./pickable";
@@ -159,7 +160,7 @@ export default class Map {
       );
       game.actors.push(scrollOfFireball);
       game.sendToBack(scrollOfFireball);
-    } else {
+    } else if (rng < 70 + 25) {
       const scrollOfConfusion = new Actor(
         x,
         y,
@@ -176,6 +177,18 @@ export default class Map {
       game.actors.push(scrollOfConfusion);
       game.sendToBack(scrollOfConfusion);
       //console.log("conf!");
+    } else {
+      const scrollOfConfusion = new Actor(x, y, "#", "scroll of Map", "#AA2");
+      scrollOfConfusion.blocks = false;
+      //scrollOfConfusion.pickable = new Confuser(10, 8);
+      scrollOfConfusion.pickable = new Pickable(
+        undefined,
+        new MapClearEffect("All is clear!"),
+      );
+
+      game.actors.push(scrollOfConfusion);
+      game.sendToBack(scrollOfConfusion);
+      console.log("uulu!");
     }
   }
 

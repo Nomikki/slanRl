@@ -25,6 +25,10 @@ export default class Fov {
     this.mapped = new Array(this.width * this.height).fill(0);
   }
 
+  showAll() {
+    this.mapped = new Array(this.width * this.height).fill(1);
+  }
+
   /* Just a placeholder */
   compute(x: number, y: number, len: number) {
     this.clear();
