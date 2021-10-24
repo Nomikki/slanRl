@@ -15,11 +15,12 @@ export default class Attacker {
 
         game.log.add(
           `${owner.name} attacks ${target.name} for ${dmg} hit points.`,
-          owner === game.player ? "#DDD" : "#AAA"
+          owner === game.player ? "#DDD" : "#AAA",
         );
       } else {
-        game.log.add(`
-          ${owner.name} attacks ${target.name} but it has no effect!`);
+        game.log.add(
+          `${owner.name} attacks ${target.name} but it has no effect!`,
+        );
       }
       target.destructible.takeDamage(target, this.power);
     } else {

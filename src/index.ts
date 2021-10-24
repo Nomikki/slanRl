@@ -1,3 +1,4 @@
+import { ABILITIES, Abilities } from "./abilities";
 import Actor from "./actor";
 import { MonsterAI, PlayerAI } from "./ai";
 import Attacker from "./attacker";
@@ -79,6 +80,7 @@ class Game {
         );
         this.player.attacker = new Attacker(5);
         this.player.ai = new PlayerAI();
+        this.player.abilities = new Abilities(18, 15, 10, 8, 12);
         this.player.container = new Container(26);
         this.player.fov = new Fov(this.width, this.height);
       }
@@ -388,17 +390,53 @@ class Game {
     const pl = ensure(this.player);
 
     const hp = pl.destructible?.hp;
+    const ac = pl.destructible?.defense;
     const maxHP = pl.destructible?.maxHP;
     const depth = ensure(this.map).depth;
     this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1);
+    this.drawText("AC: " + ac, 7, this.height + 1);
+
     this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
+
+    const padding = 8;
+    const offset = 14;
+
+    const abi = this.player?.abilities;
+
+    this.drawText(
+      `STR: ${abi?.str} (${abi?.getBonusWithSign(ABILITIES.STR)})`,
+      offset,
+      this.height + 1,
+    );
+
+    this.drawText(
+      `DEX: ${abi?.dex} (${abi?.getBonusWithSign(ABILITIES.DEX)})`,
+      offset + padding,
+      this.height + 1,
+    );
+
+    this.drawText(
+      `CON: ${abi?.con} (${abi?.getBonusWithSign(ABILITIES.CON)})`,
+      offset + padding * 2,
+      this.height + 1,
+    );
+    this.drawText(
+      `INT: ${abi?.int} (${abi?.getBonusWithSign(ABILITIES.INT)})`,
+      offset + padding * 3,
+      this.height + 1,
+    );
+    this.drawText(
+      `WIS: ${abi?.wis} (${abi?.getBonusWithSign(ABILITIES.WIS)})`,
+      offset + padding * 4,
+      this.height + 1,
+    );
 
     this.drawText(
       "EXP: " +
         pl.destructible?.xp +
         " / " +
         (pl.ai as PlayerAI)?.getNextLevelXP(),
-      10,
+      60,
       this.height + 1,
     );
 

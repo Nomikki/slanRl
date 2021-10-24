@@ -64,8 +64,14 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
     plants,
     undead,
   */
-
-  if (name === "ghoul") {
+  if (name === "rat") {
+    ch = "r";
+    color = "#999";
+    power = 2;
+    defense = 0;
+    hp = 5;
+    xp = 2;
+  } else if (name === "ghoul") {
     //medium, undead
     //ac: 12
     //hp: 22
@@ -124,7 +130,7 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   monster.destructible = new MonsterDestructible(
     hp,
     defense,
-    `death ${name} `,
+    `death ${name}`,
     xp,
   );
   monster.attacker = new Attacker(power);

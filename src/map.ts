@@ -71,10 +71,12 @@ export default class Map {
   addMonster(x: number, y: number) {
     const rng = random.getInt(0, 100);
 
-    if (rng < 80) {
+    if (rng < 60) {
       game.actors.push(createMonster("orc", x, y));
-    } else {
+    } else if (rng < 60 + 10) {
       game.actors.push(createMonster("troll", x, y));
+    } else {
+      game.actors.push(createMonster("rat", x, y));
     }
   }
 
