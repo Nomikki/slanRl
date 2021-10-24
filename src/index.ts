@@ -101,6 +101,7 @@ class Game {
       this.stairs.fovOnly = false;
       this.stairs.x = ensure(this.map).stairsX;
       this.stairs.y = ensure(this.map).stairsY;
+      this.sendToBack(this.stairs);
 
       this.log.add("Welcome stranger!", "#FFF");
     } else {
