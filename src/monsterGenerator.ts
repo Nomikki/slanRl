@@ -4,12 +4,49 @@ import Attacker from "./attacker";
 import { MonsterDestructible } from "./destructible";
 
 export const createMonster = (name: string, x: number, y: number): Actor => {
-  let power = 0;
+  let power = 1;
   let xp = 0;
-  let hp = 0;
+  let hp = 1;
   let defense = 0;
   let ch = "?";
   let color = "#F0F";
+
+  /*
+    List of enemies (candidates)
+    very Easy:    
+      name,       depth:(1 - 5)
+      rat, 
+      kobold, 
+      dog, 
+      cat, 
+      roach, 
+      turtle, 
+      jackal 
+    easy:         depth: (3 - 10)
+      hobgoblin, 
+      imp, 
+      jelly, 
+      ooze, 
+      lich, 
+      lizard, 
+      bat, 
+      goblin 
+    Medium:       depth: (8 - 15)
+      bear, 
+      wolf, 
+      golem,
+      insect,
+      mummy,
+      scorpion,
+      orc,
+      troll 
+    Hard:         depth: (12 - 20)
+      elemental,
+      skeleton,
+      zombie,
+      lizardman,
+      demon 
+  */
 
   /*
     Size of enemies:
@@ -36,15 +73,37 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
     //13,  15,  10,  7,   10
     //Immunities: poison
     //challenge: 1, 200xp
-
     //actions:
-      //bite: melee, +2 hit, reach 5ft, 2d6+2 pierc
-      //claws: melee, +4, reach 5ft, 2d+2, slash
+    //bite: melee, +2 hit, reach 5ft, 2d6+2 pierc
+    //claws: melee, +4, reach 5ft, 2d+2, slash
   } else if (name === "giant rat") {
     //small, beast
-    //ac: 15
-    //hp: 13
-    } else if (name === "orc") {
+    //ac: 12
+    //hp: 7
+    //str, dex, con, int, wis
+    //7,   15,  11,   2,  10
+    //challenge: 1 / 8: 25xp
+    //actions:
+    //bite: melee, +4, reach 5ft, 1d4+2, pierc
+  } else if (name === "ogre") {
+    //large, giant
+    //ac: 11
+    //hp:59
+    //str, dex, con, int, wis
+    //19,   8,  16,   5,  7
+    //challenge: 2: 450xp
+    //actions:
+    //creatclub: +6, reach 5ft, 2d8+4, bludg
+  } else if (name === "orc") {
+    //medium humanoid
+    //ac: 13
+    //hp:15
+    //str, dex, con, int, wis
+    //16,   12,  16,  7,  11
+    //challenge: 1 / 2: 100xp
+    //actions:
+    //greataxe: +5, reach 5ft, 1d12+3, slash
+
     power = 3;
     xp = 10;
     hp = 10;
