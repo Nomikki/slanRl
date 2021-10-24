@@ -11,7 +11,40 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   let ch = "?";
   let color = "#F0F";
 
-  if (name === "orc") {
+  /*
+    Size of enemies:
+    tiny, small, medium, lardge, huge
+  */
+  //enemytypes:
+  /*
+    beasts,
+    dragons,
+    elementals,
+    giants,
+    humanoids,
+    monstrosities,
+    oozes,
+    plants,
+    undead,
+  */
+
+  if (name === "ghoul") {
+    //medium, undead
+    //ac: 12
+    //hp: 22
+    //str, dex, con, int, wis
+    //13,  15,  10,  7,   10
+    //Immunities: poison
+    //challenge: 1, 200xp
+
+    //actions:
+      //bite: melee, +2 hit, reach 5ft, 2d6+2 pierc
+      //claws: melee, +4, reach 5ft, 2d+2, slash
+  } else if (name === "giant rat") {
+    //small, beast
+    //ac: 15
+    //hp: 13
+    } else if (name === "orc") {
     power = 3;
     xp = 10;
     hp = 10;

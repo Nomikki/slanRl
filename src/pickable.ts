@@ -1,7 +1,6 @@
 import { game } from ".";
 import Actor from "./actor";
 import { TemporaryAI } from "./ai";
-import { ensure } from "./utils";
 
 export enum SelectorType {
   NONE,
@@ -99,20 +98,16 @@ export class TargetSelector {
   }
 }
 
-export class Effect {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  applyTo(actor: Actor): boolean {
-    ensure(actor);
-    return false;
-  }
+export interface Effect {
+  applyTo(actor: Actor): boolean;
 }
 
-export class HealthEffect extends Effect {
+export class HealthEffect implements Effect {
   amount = 0;
   message: any;
 
   constructor(amount: number, message: string | void) {
-    super();
+    //super();
     this.amount = amount;
     this.message = message;
   }
@@ -143,12 +138,12 @@ export class HealthEffect extends Effect {
   }
 }
 
-export class AiChangeEffect extends Effect {
+export class AiChangeEffect implements Effect {
   message: string;
   newAi: TemporaryAI;
 
   constructor(newAi: TemporaryAI, message: string) {
-    super();
+    //super();
     this.message = message;
     this.newAi = newAi;
   }
