@@ -173,6 +173,17 @@ class Game {
           }
         }
 
+        if (actor.abilities) {
+          const abi = actor.abilities;
+          this.actors[i].abilities = new Abilities(
+            abi.str,
+            abi.dex,
+            abi.con,
+            abi.int,
+            abi.wis,
+          );
+        }
+
         if (actor.attacker) {
           this.actors[i].attacker = new Attacker(actor.attacker.power);
         }
