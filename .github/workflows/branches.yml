@@ -19,6 +19,14 @@ jobs:
         run: |
           yarn
       -
+        name: Lint
+        run: |
+          yarn lint
+      -
+        name: Verify
+        run: |
+          yarn verify
+      -
         name: Build
         run: |
           VERSION=v$(node -p "require('./package').version") COMMIT_HASH=$(git rev-parse --short HEAD) yarn build

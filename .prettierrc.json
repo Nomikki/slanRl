@@ -1,0 +1,7 @@
+{
+  "arrowParens": "avoid",
+  "printWidth": 80,
+  "proseWrap": "never",
+  "semi": true,
+  "trailingComma": "all"
+}
