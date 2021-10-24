@@ -3,7 +3,10 @@ import Actor from "./actor";
 import { MonsterAI, PlayerAI } from "./ai";
 import Attacker from "./attacker";
 import Container from "./container";
-import { MonsterDestructible, PlayerDestructible } from "./destructible";
+import Destructible, {
+  MonsterDestructible,
+  PlayerDestructible,
+} from "./destructible";
 import Fov from "./fov";
 import Log from "./log";
 import Map from "./map";
@@ -179,6 +182,17 @@ class Game {
 
         if (actor.name === "stairs") {
           this.stairs = this.actors[i];
+        }
+
+        if (actor.name === "door") {
+          this.actors[i].destructible = new Destructible(
+            100,
+            0,
+            "broken door",
+            "door",
+            0,
+          );
+          this.actors[i].blocks = actor.blocks;
         }
 
         if (actor.destructible) {

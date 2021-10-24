@@ -54,7 +54,7 @@ export default class Fov {
         const id = float2int(px) + float2int(py) * this.width;
         this.mapped[id] = 2;
 
-        if (game.map?.isWall(float2int(px), float2int(py)) === true) {
+        if (!game.map?.canWalk(float2int(px), float2int(py))) {
           break;
         }
       }

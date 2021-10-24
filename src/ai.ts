@@ -113,6 +113,32 @@ export class PlayerAI extends AI {
   }
 
   async handleActionKey(owner: Actor, ascii: string) {
+    const handleOpen = async () => {
+      game.log.add("Which direction?");
+      game.renderUI();
+      const ch = await game.getch();
+      console.log(ch);
+      let dx = 0;
+      let dy = 0;
+      if (ch === "ArrowLeft") {
+        dx = -1;
+      }
+      if (ch === "ArrowRight") {
+        dx = 1;
+      }
+      if (ch === "ArrowUp") {
+        dy = -1;
+      }
+      if (ch === "ArrowDown") {
+        dy = 1;
+      }
+
+      if (!game?.map?.openCloseDoor(owner.x + dx, owner.y + dy)) {
+        game.log.add("There is no any door.");
+      }
+      game.player?.computeFov();
+    };
+
     const handleSave = async () => {
       game.save();
       game.log.add("Game saved...", "#0FA");
@@ -185,6 +211,10 @@ export class PlayerAI extends AI {
       case "d": //drop item
         await handleDropItem();
         break;
+
+      case "o": //open
+        await handleOpen();
+        break;
       default:
         break;
     }
@@ -200,7 +230,12 @@ export class PlayerAI extends AI {
         actor.x === targetX &&
         actor.y === targetY
       ) {
-        ensure(owner.attacker).attack(owner, actor);
+        if (actor.name === "door") {
+          if (actor.blocks) game.log.add("There is a door!");
+          else break;
+        } else {
+          ensure(owner.attacker).attack(owner, actor);
+        }
         return false; //attack
       }
     }

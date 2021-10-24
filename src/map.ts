@@ -2,6 +2,7 @@ import { game } from ".";
 import Actor from "./actor";
 import { ConfusedMonsterAi } from "./ai";
 import bspGenerator from "./bsp_generator";
+import Destructible from "./destructible";
 import { createMonster } from "./monsterGenerator";
 import Pickable, {
   AiChangeEffect,
@@ -80,6 +81,29 @@ export default class Map {
     }
   }
 
+  openCloseDoor(x: number, y: number): boolean {
+    const actor = game.getActor(x, y);
+    if (actor && actor.name === "door") {
+      actor.blocks = !actor.blocks;
+      if (actor.blocks) {
+        actor.ch = "D";
+        game.log.add("The door is closed");
+      } else {
+        actor.ch = "+";
+        game.log.add("The door is opened");
+      }
+      return true;
+    }
+    return false;
+  }
+
+  addDoor(x: number, y: number, closed: boolean) {
+    const door = new Actor(x, y, closed ? "D" : "+", "door", "#AA0");
+    door.blocks = true;
+    door.destructible = new Destructible(100, 0, "broken door", "door", 0);
+    game.actors.push(door);
+  }
+
   additem(x: number, y: number) {
     const rng = random.getInt(0, 100);
     if (rng < 70) {
@@ -155,7 +179,7 @@ export default class Map {
     }
   }
 
-  dig(x1: number, y1: number, x2: number, y2: number) {
+  dig(x1: number, y1: number, x2: number, y2: number, withActors: boolean) {
     x1 = float2int(x1);
     x2 = float2int(x2);
     y1 = float2int(y1);
@@ -173,9 +197,21 @@ export default class Map {
       y1 = tmp;
     }
 
+    let lastWalkable = false;
+
     for (let tilex = x1; tilex <= x2; tilex++) {
       for (let tiley = y1; tiley <= y2; tiley++) {
         const index = tilex + tiley * this.width;
+
+        if (
+          this.tiles[index].canWalk == false &&
+          lastWalkable === true &&
+          (x1 === x2 || y1 === y2)
+        ) {
+          if (withActors) this.addDoor(tilex, tiley, true);
+        }
+        lastWalkable = this.tiles[index].canWalk;
+
         this.tiles[index].canWalk = true;
       }
     }
@@ -209,8 +245,14 @@ export default class Map {
     }
   }
 
-  createRoom(x1: number, y1: number, x2: number, y2: number) {
-    this.dig(x1, y1, x2, y2);
+  createRoom(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    withActors: boolean,
+  ) {
+    this.dig(x1, y1, x2, y2, withActors);
 
     /*
     this.stairsX = ((x1 + x2) / 2) | 0;
@@ -279,13 +321,14 @@ export default class Map {
       */
 
       //option 2
+
       if (option === 2) {
         w = random.getInt(this.ROOM_MIN_SIZE, room.w - 2);
         h = random.getInt(this.ROOM_MIN_SIZE, room.h - 2);
         x = random.getInt(room.x, room.x + room.w - w - 0) + 1;
         y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
 
-        this.createRoom(x, y, x + w - 2, y + h - 2);
+        this.createRoom(x, y, x + w - 2, y + h - 2, withActors);
         if (!spawnRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
       }
 
@@ -300,8 +343,8 @@ export default class Map {
 
       if (/*option === 1 ||*/ option === 2) {
         if (i > 0) {
-          this.dig(lastx, lasty, x + w / 2, lasty);
-          this.dig(x + w / 2, lasty, x + w / 2, y + h / 2);
+          this.dig(lastx, lasty, x + w / 2, lasty, withActors);
+          this.dig(x + w / 2, lasty, x + w / 2, y + h / 2, withActors);
         }
         lastx = x + w / 2;
         lasty = y + h / 2;
