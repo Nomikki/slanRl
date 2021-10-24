@@ -1,4 +1,5 @@
 import { game } from ".";
+import { dimmerColor } from "./utils";
 
 class LogText {
   text: string;
@@ -20,15 +21,19 @@ export default class Log {
 
   render() {
     let a = 0;
+    let l = this.texts.length;
+    if (l > 10) l = 10;
+
     for (let i = this.texts.length - 16; i < this.texts.length; i++) {
       if (i >= 0) {
         game.drawText(
           this.texts[i].text,
           1,
           game.height + 3 + a,
-          this.texts[i].color,
+          dimmerColor(this.texts[i].color, (20 - l) * 0.05),
         );
         a++;
+        l--;
       }
     }
   }

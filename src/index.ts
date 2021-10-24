@@ -413,20 +413,38 @@ class Game {
 
     const pl = ensure(this.player);
 
-    const hp = pl.destructible?.hp;
+    const hp = ensure(pl.destructible?.hp);
     const ac = pl.destructible?.defense;
-    const maxHP = pl.destructible?.maxHP;
+    const power = pl.attacker?.power;
+    const maxHP = ensure(pl.destructible?.maxHP);
     const depth = ensure(this.map).depth;
     const turn = ensure(this.turns);
+    const xp = pl.destructible?.xp;
 
-    this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1);
-    this.drawText("AC: " + ac, 7, this.height + 1);
+    const getHpColor = (): string => {
+      if (hp < (maxHP / 100) * 10) return "#F44";
+      else if (hp < (maxHP / 100) * 25) return "#F88";
+      else if (hp < (maxHP / 100) * 50) return "#FAA";
+      else if (hp < (maxHP / 100) * 95) return "#AAA";
+
+      return "#AFA";
+    };
+
+    this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1, getHpColor());
+    this.drawText("ATT: " + power, 7, this.height + 1);
+    this.drawText("AC: " + ac, 11, this.height + 1);
 
     this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
     this.drawText("Turn: " + turn, this.width - 6, this.height + 2);
 
+    this.drawText(
+      "EXP: " + xp + " / " + (pl.ai as PlayerAI)?.getNextLevelXP(),
+      1,
+      this.height + 2,
+    );
+
     const padding = 8;
-    const offset = 14;
+    const offset = 17;
 
     const abi = this.player?.abilities;
 
@@ -455,15 +473,6 @@ class Game {
     this.drawText(
       `WIS: ${abi?.wis} (${abi?.getBonusWithSign(ABILITIES.WIS)})`,
       offset + padding * 4,
-      this.height + 1,
-    );
-
-    this.drawText(
-      "EXP: " +
-        pl.destructible?.xp +
-        " / " +
-        (pl.ai as PlayerAI)?.getNextLevelXP(),
-      60,
       this.height + 1,
     );
 
