@@ -6,7 +6,6 @@ import { MonsterDestructible, PlayerDestructible } from "./destructible";
 import Fov from "./fov";
 import Log from "./log";
 import Map from "./map";
-//import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import { Menu, MenuItemCode } from "./menu";
 import { debugInit, ensure, float2int } from "./utils";
 
@@ -86,7 +85,7 @@ class Game {
 
       ensure(this.player).x = ensure(this.map).startX;
       ensure(this.player).y = ensure(this.map).startY;
-      ensure(this.player).fov.fullClear();
+      ensure(this.player).fov?.fullClear();
 
       i = this.actors.push(new Actor(0, 0, ">", "stairs", "#FFF")) - 1;
       this.stairs = this.actors[i];
@@ -153,7 +152,7 @@ class Game {
 
         if (actor.fov) {
           this.actors[i].fov = new Fov(this.width, this.height);
-          this.actors[i].fov.mapped = actor.fov.mapped;
+          ensure(this.actors[i].fov).mapped = actor.fov.mapped;
         }
 
         if (actor.container) {
@@ -161,10 +160,10 @@ class Game {
 
           for (const it of actor.container.inventory) {
             const k =
-              this.actors[i].container.inventory.push(
+              ensure(this.actors[i].container).inventory.push(
                 new Actor(it.x, it.y, it.ch, it.name, it.color),
               ) - 1;
-            this.actors[i].container.inventory[k].create(it);
+            ensure(this.actors[i].container).inventory[k].create(it);
           }
         }
 
@@ -190,11 +189,13 @@ class Game {
             );
 
             this.actors[i].ai = new PlayerAI();
-            this.actors[i].destructible.xp = actor.destructible.xp;
-            this.actors[i].destructible.hp = actor.destructible.hp;
-            this.actors[i].destructible.maxHP = actor.destructible.maxHP;
-            this.actors[i].destructible.defense = actor.destructible.defense;
-            this.actors[i].destructible.corpseName =
+            ensure(this.actors[i].destructible).xp = actor.destructible.xp;
+            ensure(this.actors[i].destructible).hp = actor.destructible.hp;
+            ensure(this.actors[i].destructible).maxHP =
+              actor.destructible.maxHP;
+            ensure(this.actors[i].destructible).defense =
+              actor.destructible.defense;
+            ensure(this.actors[i].destructible).corpseName =
               actor.destructible.corpseName;
           }
           if (actor.destructible.type === "monster") {
@@ -205,11 +206,13 @@ class Game {
               0,
             );
 
-            this.actors[i].destructible.xp = actor.destructible.xp;
-            this.actors[i].destructible.hp = actor.destructible.hp;
-            this.actors[i].destructible.maxHP = actor.destructible.maxHP;
-            this.actors[i].destructible.defense = actor.destructible.defense;
-            this.actors[i].destructible.corpseName =
+            ensure(this.actors[i].destructible).xp = actor.destructible.xp;
+            ensure(this.actors[i].destructible).hp = actor.destructible.hp;
+            ensure(this.actors[i].destructible).maxHP =
+              actor.destructible.maxHP;
+            ensure(this.actors[i].destructible).defense =
+              actor.destructible.defense;
+            ensure(this.actors[i].destructible).corpseName =
               actor.destructible.corpseName;
 
             this.actors[i].ai = new MonsterAI();
@@ -263,7 +266,7 @@ class Game {
   async save() {
     const pl = ensure(this.player);
 
-    if (pl.destructible.isDead()) {
+    if (ensure(pl.destructible).isDead()) {
       window.localStorage.clear();
     } else {
       ensure(this.map).save();
@@ -344,7 +347,7 @@ class Game {
   waitingKeypress() {
     return new Promise<void>(resolve => {
       document.addEventListener("keydown", onKeyHandler);
-      function onKeyHandler(e: any) {
+      function onKeyHandler(e: KeyboardEvent) {
         e.preventDefault();
         if (e.keyCode !== 0) {
           document.removeEventListener("keydown", onKeyHandler);
@@ -384,15 +387,15 @@ class Game {
 
     const pl = ensure(this.player);
 
-    const hp = pl.destructible.hp;
-    const maxHP = pl.destructible.maxHP;
+    const hp = pl.destructible?.hp;
+    const maxHP = pl.destructible?.maxHP;
     const depth = ensure(this.map).depth;
     this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1);
     this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
 
     this.drawText(
       "EXP: " +
-        pl.destructible.xp +
+        pl.destructible?.xp +
         " / " +
         (pl.ai as PlayerAI)?.getNextLevelXP(),
       10,
@@ -487,7 +490,7 @@ class Game {
     while (true) {
       this.render();
       if (
-        this.player?.fov.isInFov(px, py) &&
+        this.player?.fov?.isInFov(px, py) &&
         (range == 0 || this.player.getDistance(px, py) <= range)
       ) {
         this.drawChar("+", px, py, "#FFF");

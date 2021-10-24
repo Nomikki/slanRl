@@ -22,20 +22,22 @@ export class TargetSelector {
 
   async selectTargets(wearer: Actor, listOfActors: Actor[]) {
     const handleSelectRange = async () => {
-      const tilePick = await game.pickATile(wearer.x, wearer.y);
+      const [isOnRange, tileX, tileY] = await game.pickATile(
+        wearer.x,
+        wearer.y,
+      );
 
-      if (tilePick == null || tilePick[0] === false) {
-        return false;
+      if (isOnRange === undefined || isOnRange === false) {
+        return;
       }
 
-      const actor = game.getActor(tilePick[1] as number, tilePick[2] as number);
+      const actor = game.getActor(tileX as number, tileY as number);
 
       if (
         actor &&
         actor.destructible &&
         !actor.destructible.isDead() &&
-        actor.getDistance(tilePick[1] as number, tilePick[2] as number) <=
-          this.range
+        actor.getDistance(tileX as number, tileY as number) <= this.range
       ) {
         listOfActors.push(actor);
       }
@@ -52,7 +54,7 @@ export class TargetSelector {
         wearer.y,
       );
       if (isOnRange === false) {
-        return false;
+        return;
       }
 
       const actor = game.getActor(tileX as number, tileY as number);
@@ -161,11 +163,14 @@ export class AiChangeEffect extends Effect {
 }
 
 export default class Pickable {
-  selector: TargetSelector | void;
-  effect: Effect | HealthEffect | AiChangeEffect;
-  selectorName: any;
-  effectName: any;
-  constructor(selector: TargetSelector | void, effect: any) {
+  selector?: TargetSelector | any;
+  effect: Effect | HealthEffect | AiChangeEffect | TemporaryAI | any;
+  selectorName?: string;
+  effectName?: string;
+  constructor(
+    selector: TargetSelector | void,
+    effect: HealthEffect | AiChangeEffect | void,
+  ) {
     this.selector = selector;
     this.effect = effect;
     if (this.selector !== undefined) {
@@ -198,7 +203,7 @@ export default class Pickable {
 
     let succeed = false;
     for (const actor of actorList) {
-      if (this.effect.applyTo(actor)) {
+      if (this.effect?.applyTo(actor)) {
         succeed = true;
       }
     }

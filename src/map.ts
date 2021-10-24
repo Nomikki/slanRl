@@ -334,7 +334,7 @@ export default class Map {
 
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        const fovValue = game.player?.fov.getMapped(x, y);
+        const fovValue = game.player?.fov?.getMapped(x, y);
         if (fovValue === 2 || fovValue === 1) {
           if (fovValue === 2) {
             game.drawChar(

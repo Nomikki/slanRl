@@ -116,8 +116,8 @@ class bspGenerator {
     return false;
   }
 
-  ConnectRooms(node: bspNode) {
-    if (node.A === null || node.B === null) return false;
+  ConnectRooms(node: bspNode): void {
+    if (node.A === null || node.B === null) return;
 
     const x1 = float2int(node.A.leaf.GetCenterX());
     const y1 = float2int(node.A.leaf.GetCenterY());

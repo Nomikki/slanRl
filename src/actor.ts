@@ -1,11 +1,15 @@
 import { game } from ".";
 import { ConfusedAI, ConfusedMonsterAi, MonsterAI, PlayerAI } from "./ai";
+import Attacker from "./attacker";
+import Container from "./container";
+import Destructible from "./destructible";
+import Fov from "./fov";
 import Pickable, {
   AiChangeEffect,
   HealthEffect,
-  TargetSelector
+  TargetSelector,
 } from "./pickable";
-import { float2int } from "./utils";
+import { ensure, float2int } from "./utils";
 
 export default class Actor {
   x: number;
@@ -14,24 +18,24 @@ export default class Actor {
   name: string;
   color: string;
 
-  fov: any = null;
+  fov?: Fov;
   fovOnly = true;
   blocks = true; //can we walk on this actor?
 
   // Destructible: Something that can take damage and potentially break or die
-  destructible: any = null;
+  destructible?: Destructible;
 
   // Attacker: Something that can deal damage to a Destructible
-  attacker: any = null;
+  attacker?: Attacker;
 
   // Ai: Something that is self-updating
   ai?: PlayerAI | MonsterAI | ConfusedAI;
 
   // Pickable: Something that can be picked and used
-  pickable: any = null;
+  pickable?: Pickable;
 
   // Container: Something that can contain actors
-  container: any = null;
+  container?: Container;
 
   constructor(x: number, y: number, ch: string, name: string, color: string) {
     this.x = float2int(x);
@@ -44,8 +48,8 @@ export default class Actor {
   create(actorTemplate: Actor) {
     //console.log(actorTemplate);
 
-    let fx = undefined;
-    if (actorTemplate.pickable.effectName === "AiChangeEffect") {
+    let fx: AiChangeEffect | HealthEffect | void = undefined;
+    if (actorTemplate.pickable?.effectName === "AiChangeEffect") {
       fx = new AiChangeEffect(
         new ConfusedMonsterAi(
           parseInt(actorTemplate.pickable.effect.newAi.nbTurns),
@@ -53,15 +57,15 @@ export default class Actor {
         actorTemplate.pickable.effect.message,
       );
     }
-    if (actorTemplate.pickable.effectName === "HealthEffect")
-      fx = new HealthEffect(actorTemplate.pickable.effect.amount, undefined);
+    if (actorTemplate?.pickable?.effectName === "HealthEffect")
+      fx = new HealthEffect(actorTemplate.pickable?.effect.amount, undefined);
 
-    if (actorTemplate.pickable.selectorName) {
+    if (actorTemplate?.pickable?.selectorName) {
       console.log(actorTemplate.pickable.selectorName);
       this.pickable = new Pickable(
         new TargetSelector(
-          parseInt(actorTemplate.pickable.selector.type),
-          parseInt(actorTemplate.pickable.selector.range),
+          ensure(actorTemplate.pickable.selector).type,
+          ensure(actorTemplate.pickable.selector).range,
         ),
         fx,
       );

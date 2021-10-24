@@ -2,7 +2,7 @@ import { game, GameStatus } from ".";
 import Actor from "./actor";
 import { Menu, MenuItemCode } from "./menu";
 import Randomizer from "./random";
-import { float2int } from "./utils";
+import { ensure, float2int } from "./utils";
 
 export const random = new Randomizer();
 
@@ -25,9 +25,10 @@ export class PlayerAI extends AI {
 
   async update(owner: Actor) {
     const levelUpXp = this.getNextLevelXP();
-    if (owner.destructible.xp >= levelUpXp) {
+
+    if (ensure(owner.destructible).xp >= levelUpXp) {
       this.xpLevel++;
-      owner.destructible.xp -= levelUpXp;
+      ensure(owner.destructible).xp -= levelUpXp;
       game.log.add(
         `Your battle skills grow stronger! You reached level ${this.xpLevel}`,
         "#FFFF00",
@@ -63,16 +64,16 @@ export class PlayerAI extends AI {
 
       if (selectedItem != -1) {
         if (selectedItem === MenuItemCode.CONSTITUTION) {
-          owner.destructible.hp += 20;
-          owner.destructible.maxHP += 20;
+          ensure(owner.destructible).hp += 20;
+          ensure(owner.destructible).maxHP += 20;
         }
 
         if (selectedItem === MenuItemCode.STRENGTH) {
-          owner.attacker.power += 1;
+          ensure(owner.attacker).power += 1;
         }
 
         if (selectedItem === MenuItemCode.AGILITY) {
-          owner.destructible.defense += 1;
+          ensure(owner.destructible).defense += 1;
         }
       }
 
@@ -149,7 +150,7 @@ export class PlayerAI extends AI {
       game.log.add("Use item");
       const useItem = await this.choseFromInventory(owner);
       if (useItem) {
-        await useItem.pickable.use(useItem, owner);
+        await ensure(useItem.pickable).use(useItem, owner);
         game.gameStatus = GameStatus.NEW_TURN;
       } else {
         game.log.add("Nevermind...");
@@ -159,7 +160,7 @@ export class PlayerAI extends AI {
     const handleDropItem = async () => {
       const dropItem = await this.choseFromInventory(owner);
       if (dropItem) {
-        await dropItem.pickable.drop(dropItem, owner);
+        await ensure(dropItem.pickable).drop(dropItem, owner);
         game.gameStatus = GameStatus.NEW_TURN;
       } else {
         game.log.add("Nevermind...");
@@ -199,7 +200,7 @@ export class PlayerAI extends AI {
         actor.x === targetX &&
         actor.y === targetY
       ) {
-        owner.attacker.attack(owner, actor);
+        ensure(owner.attacker).attack(owner, actor);
         return false; //attack
       }
     }
@@ -238,7 +239,7 @@ export class PlayerAI extends AI {
 
     let shortcut = "a";
     let i = 0;
-    for (const it of owner.container.inventory) {
+    for (const it of ensure(owner.container).inventory) {
       game.drawText(shortcut + ") " + it.name, 22, 2 + i);
       shortcut = String.fromCharCode(shortcut.charCodeAt(0) + 1);
       i++;
@@ -246,8 +247,11 @@ export class PlayerAI extends AI {
 
     const ch = await game.getch();
     const actorIndex = ch.charCodeAt(0) - 97; //97 = a
-    if (actorIndex >= 0 && actorIndex < owner.container.inventory.length) {
-      return owner.container.inventory[actorIndex];
+    if (
+      actorIndex >= 0 &&
+      actorIndex < ensure(owner.container).inventory.length
+    ) {
+      return ensure(owner.container).inventory[actorIndex];
     }
     return null;
   }
@@ -267,7 +271,7 @@ export class MonsterAI extends AI {
 
     if ((owner.destructible && owner.destructible.isDead()) || !player) return;
 
-    if (game.player?.fov.isInFov(owner.x, owner.y)) {
+    if (game.player?.fov?.isInFov(owner.x, owner.y)) {
       this.moveCount = this.TRACKING_TURNS;
     } else {
       this.moveCount--;
@@ -299,7 +303,7 @@ export class MonsterAI extends AI {
         owner.y += float2int(stepdy);
       }
     } else {
-      owner.attacker.attack(owner, game.player);
+      owner?.attacker?.attack(owner, ensure(game.player));
     }
   }
 }
@@ -328,7 +332,7 @@ export class ConfusedAI extends AI {
       } else {
         const actor = game.getActor(destx, desty);
         if (actor) {
-          owner.attacker.attack(owner, actor);
+          owner?.attacker?.attack(owner, actor);
         }
       }
     }
@@ -379,7 +383,7 @@ export class ConfusedMonsterAi extends TemporaryAI {
       } else {
         const actor = game.getActor(destx, desty);
         if (actor) {
-          owner.attacker.attack(owner, actor);
+          owner?.attacker?.attack(owner, actor);
         }
       }
     }
