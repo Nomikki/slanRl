@@ -115,7 +115,7 @@ export class PlayerAI extends AI {
   async handleActionKey(owner: Actor, ascii: string) {
     const handleOpen = async () => {
       game.log.add("Which direction?");
-      game.renderUI();
+      game.render();
       const ch = await game.getch();
       console.log(ch);
       let dx = 0;
@@ -137,6 +137,7 @@ export class PlayerAI extends AI {
         game.log.add("There is no any door.");
       }
       game.player?.computeFov();
+      game.gameStatus = GameStatus.NEW_TURN;
     };
 
     const handleSave = async () => {

@@ -41,6 +41,8 @@ class Game {
 
   menu?: Menu;
 
+  turns: number;
+
   constructor() {
     this.canvas = document.getElementById("screen")!;
 
@@ -53,6 +55,7 @@ class Game {
 
     this.lastKey = "";
     this.depth = 0;
+    this.turns = 0;
 
     this.width = 80;
     this.height = 40;
@@ -126,7 +129,7 @@ class Game {
   async newGame() {
     this.masterSeed = float2int(Math.random() * 0x7ffffff);
     //this.masterSeed = 125660641;
-
+    this.turns = 0;
     this.depth = 1;
     await this.term();
     await this.init(true, true);
@@ -141,7 +144,7 @@ class Game {
 
       this.masterSeed = parseInt(window.localStorage.getItem("seed")!);
       this.depth = parseInt(window.localStorage.getItem("depth")!);
-
+      this.turns = parseInt(window.localStorage.getItem("turns")!);
       await this.init(false);
 
       const tempUsers = JSON.parse(
@@ -302,6 +305,7 @@ class Game {
         "playerID",
         this.actors.indexOf(pl).toString(),
       );
+      window.localStorage.setItem("turns", this.turns.toString());
       window.localStorage.setItem("actors", JSON.stringify(this.actors));
       window.localStorage.setItem("version", VERSION);
     }
@@ -412,10 +416,13 @@ class Game {
     const ac = pl.destructible?.defense;
     const maxHP = pl.destructible?.maxHP;
     const depth = ensure(this.map).depth;
+    const turn = ensure(this.turns);
+
     this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1);
     this.drawText("AC: " + ac, 7, this.height + 1);
 
     this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
+    this.drawText("Turn: " + turn, this.width - 6, this.height + 2);
 
     const padding = 8;
     const offset = 14;
@@ -478,9 +485,11 @@ class Game {
             await actor.update();
           }
         }
+        this.turns++;
       }
 
       //finally draw screen
+
       this.render();
 
       if (this.gameStatus === GameStatus.DEFEAT) {
