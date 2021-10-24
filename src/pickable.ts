@@ -1,8 +1,7 @@
-"use strict";
-
 import { game } from ".";
 import Actor from "./actor";
 import { TemporaryAI } from "./ai";
+import { ensure } from "./utils";
 
 export enum SelectorType {
   NONE,
@@ -22,67 +21,71 @@ export class TargetSelector {
   }
 
   async selectTargets(wearer: Actor, listOfActors: Actor[]) {
-    switch (this.type) {
-      case SelectorType.CLOSEST_MONSTER:
-        {
-          const actor: any = game.getClosestMonster(
-            wearer.x,
-            wearer.y,
-            this.range
-          );
-          listOfActors.push(actor);
-        }
-        break;
-      case SelectorType.SELECTED_MONSTER:
-        {
-          const tilePick = await game.pickATile(wearer.x, wearer.y);
-          if (tilePick == null || tilePick[0] === false) {
-            return false;
-          }
+    const handleSelectRange = async () => {
+      const tilePick = await game.pickATile(wearer.x, wearer.y);
 
-          const actor = game.getActor(
-            tilePick[1] as number,
-            tilePick[2] as number
-          );
-          if (actor) {
-            listOfActors.push(actor);
-          }
-        }
-        break;
-      case SelectorType.WEARER_RANGE:
-        for (const actor of game.actors) {
-          if (
-            actor != wearer &&
-            actor.destructible &&
-            !actor.destructible.isDead() &&
-            actor.getDistance(wearer.x, wearer.y) <= this.range
-          ) {
-            listOfActors.push(actor);
-          }
-        }
-        break;
-      case SelectorType.SELECTED_RANGE:
-        //console.log(this);
-        const tilePick = await game.pickATile(wearer.x, wearer.y);
-        if (tilePick == null || tilePick[0] === false) {
-          return false;
-        }
+      if (tilePick == null || tilePick[0] === false) {
+        return false;
+      }
 
-        const actor = game.getActor(
-          tilePick[1] as number,
-          tilePick[2] as number
-        );
+      const actor = game.getActor(tilePick[1] as number, tilePick[2] as number);
 
+      if (
+        actor &&
+        actor.destructible &&
+        !actor.destructible.isDead() &&
+        actor.getDistance(tilePick[1] as number, tilePick[2] as number) <=
+          this.range
+      ) {
+        listOfActors.push(actor);
+      }
+    };
+
+    const handleSelectClosestMonster = () => {
+      const actor: any = game.getClosestMonster(wearer.x, wearer.y, this.range);
+      listOfActors.push(actor);
+    };
+
+    const handleSelectedMonster = async () => {
+      const [isOnRange, tileX, tileY] = await game.pickATile(
+        wearer.x,
+        wearer.y,
+      );
+      if (isOnRange === false) {
+        return false;
+      }
+
+      const actor = game.getActor(tileX as number, tileY as number);
+      if (actor) {
+        listOfActors.push(actor);
+      }
+    };
+
+    const handleWearerRange = () => {
+      for (const actor of game.actors) {
         if (
-          actor &&
+          actor != wearer &&
           actor.destructible &&
           !actor.destructible.isDead() &&
-          actor.getDistance(tilePick[1] as number, tilePick[2] as number) <=
-            this.range
+          actor.getDistance(wearer.x, wearer.y) <= this.range
         ) {
           listOfActors.push(actor);
         }
+      }
+    };
 
+    switch (this.type) {
+      case SelectorType.CLOSEST_MONSTER:
+        handleSelectClosestMonster();
+        break;
+      case SelectorType.SELECTED_MONSTER:
+        await handleSelectedMonster();
+        break;
+      case SelectorType.WEARER_RANGE:
+        handleWearerRange();
+        break;
+      case SelectorType.SELECTED_RANGE:
+        await handleSelectRange();
         break;
       default:
         console.error(`Error with selectorType: ${this.type}`);
@@ -95,14 +98,16 @@ export class TargetSelector {
 }
 
 export class Effect {
-  applyTo(_actor: Actor): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  applyTo(actor: Actor): boolean {
+    ensure(actor);
     return false;
   }
 }
 
 export class HealthEffect extends Effect {
-  amount: number = 0;
-  message: any = "";
+  amount = 0;
+  message: any;
 
   constructor(amount: number, message: string | void) {
     super();
@@ -156,18 +161,18 @@ export class AiChangeEffect extends Effect {
 }
 
 export default class Pickable {
-  selector: any;
-  effect: any;
-  selectorName: string = "";
-  effectName: string = "";
+  selector: TargetSelector | void;
+  effect: Effect | HealthEffect | AiChangeEffect;
+  selectorName: any;
+  effectName: any;
   constructor(selector: TargetSelector | void, effect: any) {
     this.selector = selector;
     this.effect = effect;
-    if (this.selector !== undefined) 
-    {
+    if (this.selector !== undefined) {
       this.selectorName = this.selector.constructor.name;
     }
-    if (this.effect !== undefined) this.effectName = this.effect.constructor.name;
+    if (this.effect !== undefined)
+      this.effectName = this.effect.constructor.name;
   }
 
   pick(owner: Actor, wearer: Actor): boolean {
@@ -181,17 +186,17 @@ export default class Pickable {
   async use(owner: Actor, wearer: Actor) {
     game.log.add(`You use a ${owner.name}`);
 
-    const actorList = new Array();
+    const actorList = Array<Actor>();
 
     if (this.selector) {
-      console.log("1");
+      //console.log("1");
       await this.selector.selectTargets(wearer, actorList);
     } else {
-      console.log("2");
+      //console.log("2");
       actorList.push(wearer);
     }
 
-    let succeed: boolean = false;
+    let succeed = false;
     for (const actor of actorList) {
       if (this.effect.applyTo(actor)) {
         succeed = true;

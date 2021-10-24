@@ -1,5 +1,3 @@
-"use strict";
-
 import { game } from ".";
 import Actor from "./actor";
 

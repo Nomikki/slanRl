@@ -1,7 +1,6 @@
-"use strict";
-
 import { game, GameStatus } from ".";
 import Actor from "./actor";
+import { ensure } from "./utils";
 
 export default class Destructible {
   maxHP: number;
@@ -16,7 +15,7 @@ export default class Destructible {
     defense: number,
     corpseName: string,
     type: string,
-    xp: number
+    xp: number,
   ) {
     this.maxHP = maxHP;
     this.hp = this.maxHP;
@@ -70,7 +69,7 @@ export class MonsterDestructible extends Destructible {
 
   die(owner: Actor) {
     game.log.add(`${owner.name} is dead. You gain ${this.xp} xp`);
-    game.player.destructible.xp += this.xp;
+    ensure(game.player?.destructible).xp += this.xp;
     super.die(owner);
   }
 }

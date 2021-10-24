@@ -4,13 +4,13 @@ export const paddedLogObject = (object: { [k in string]: string }) => {
       currentValue.length + 3 > previousValue
         ? currentValue.length + 3
         : previousValue,
-    0
+    0,
   );
 
   console.log(
     Object.keys(object)
-      .map((key) => `${key.padEnd(maxKeyLength, " ")}: ${object[key]}`)
-      .join("\n")
+      .map(key => `${key.padEnd(maxKeyLength, " ")}: ${object[key]}`)
+      .join("\n"),
   );
 };
 
@@ -33,4 +33,19 @@ export const debugInit = () => {
     COMMIT_HASH: COMMIT_HASH,
     VERSION: VERSION,
   });
+};
+
+export const float2int = (value: number): number => {
+  return value >> 0;
+};
+
+export const ensure = <T>(
+  argument: T | undefined | null,
+  message = "This value was promised to be there.",
+): T => {
+  if (argument === undefined || argument === null) {
+    throw new TypeError(message);
+  }
+
+  return argument;
 };

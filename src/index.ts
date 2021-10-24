@@ -1,16 +1,14 @@
-"use strict";
-
 import Actor from "./actor";
-import Map from "./map";
-import Fov from "./fov";
-import { MonsterDestructible, PlayerDestructible } from "./destructible";
-import Attacker from "./attacker";
 import { MonsterAI, PlayerAI } from "./ai";
-import Log from "./log";
+import Attacker from "./attacker";
 import Container from "./container";
+import { MonsterDestructible, PlayerDestructible } from "./destructible";
+import Fov from "./fov";
+import Log from "./log";
+import Map from "./map";
 //import { Confuser, Fireball, Healer, LightningBolt } from "./pickable";
 import { Menu, MenuItemCode } from "./menu";
-import { debugInit } from "./utils";
+import { debugInit, ensure, float2int } from "./utils";
 
 export enum GameStatus {
   STARTUP,
@@ -21,14 +19,14 @@ export enum GameStatus {
 }
 
 class Game {
-  gameStatus: number = 0;
-  player: any;
-  map: any;
-  stairs: any;
+  gameStatus: number = GameStatus.STARTUP;
+  player?: Actor;
+  map?: Map;
+  stairs?: Actor;
   canvas: HTMLElement;
   ctx: any;
   fontSize: number;
-  log: any;
+  log: Log;
 
   lastKey: string;
   depth: number;
@@ -36,15 +34,11 @@ class Game {
   height: number;
 
   actors: Actor[];
-  masterSeed: number = 0;
+  masterSeed = 0;
 
-  menu: any;
+  menu?: Menu;
 
   constructor() {
-    this.player = null;
-    this.map = null;
-    this.stairs = null;
-
     this.canvas = document.getElementById("screen")!;
 
     this.ctx = (this.canvas as HTMLCanvasElement).getContext("2d");
@@ -60,19 +54,19 @@ class Game {
     this.width = 80;
     this.height = 40;
 
-    this.actors = new Array();
+    this.actors = [];
     this.map = new Map(this.width, this.height);
   }
 
   async term() {
     this.log = new Log();
-    this.actors = new Array();
+    this.actors = [];
     this.map = new Map(this.width, this.height);
-    this.player = null;
+    this.player = undefined;
   }
 
-  async init(withActors: boolean, createPlayer: boolean = true) {
-    this.map.generate(withActors, this.masterSeed, this.depth);
+  async init(withActors: boolean, createPlayer = true) {
+    ensure(this.map).generate(withActors, this.masterSeed, this.depth);
 
     if (withActors) {
       let i = 0;
@@ -82,7 +76,7 @@ class Game {
         this.player.destructible = new PlayerDestructible(
           30,
           2,
-          "your cadaver"
+          "your cadaver",
         );
         this.player.attacker = new Attacker(5);
         this.player.ai = new PlayerAI();
@@ -90,16 +84,16 @@ class Game {
         this.player.fov = new Fov(this.width, this.height);
       }
 
-      this.player.x = this.map.startX;
-      this.player.y = this.map.startY;
-      this.player.fov.fullClear();
+      ensure(this.player).x = ensure(this.map).startX;
+      ensure(this.player).y = ensure(this.map).startY;
+      ensure(this.player).fov.fullClear();
 
       i = this.actors.push(new Actor(0, 0, ">", "stairs", "#FFF")) - 1;
       this.stairs = this.actors[i];
       this.stairs.blocks = false;
       this.stairs.fovOnly = false;
-      this.stairs.x = this.map.stairsX;
-      this.stairs.y = this.map.stairsY;
+      this.stairs.x = ensure(this.map).stairsX;
+      this.stairs.y = ensure(this.map).stairsY;
 
       this.log.add("Welcome stranger!", "#FFF");
     } else {
@@ -113,11 +107,11 @@ class Game {
     this.depth++;
     this.log.add("You take steps down.");
 
-    this.map = null;
-    this.stairs = null;
+    this.map = undefined;
+    this.stairs = undefined;
 
-    const tempPlayer = this.player;
-    this.actors = new Array();
+    const tempPlayer = this.player as Actor;
+    this.actors = Array<Actor>();
     this.map = new Map(this.width, this.height);
     this.init(true, false);
     this.actors.push(tempPlayer);
@@ -126,7 +120,7 @@ class Game {
   }
 
   async newGame() {
-    this.masterSeed = (Math.random() * 0x7ffffff) | 0;
+    this.masterSeed = float2int(Math.random() * 0x7ffffff);
 
     this.depth = 1;
     await this.term();
@@ -141,21 +135,21 @@ class Game {
         window.localStorage.setItem("version", VERSION);
 
       this.masterSeed = parseInt(window.localStorage.getItem("seed")!);
-      this.depth = parseInt(window.localStorage.getItem("depth")!) | 0;
+      this.depth = parseInt(window.localStorage.getItem("depth")!);
 
       await this.init(false);
 
       const tempUsers = JSON.parse(
-        window.localStorage.getItem("actors") || "[]"
+        window.localStorage.getItem("actors") || "[]",
       );
 
       for (const actor of tempUsers) {
         const i =
           this.actors.push(
-            new Actor(actor.x, actor.y, actor.ch, actor.name, actor.color)
+            new Actor(actor.x, actor.y, actor.ch, actor.name, actor.color),
           ) - 1;
 
-        this.actors[i].ai = null;
+        //this.actors[i].ai = undefined;
 
         if (actor.fov) {
           this.actors[i].fov = new Fov(this.width, this.height);
@@ -168,7 +162,7 @@ class Game {
           for (const it of actor.container.inventory) {
             const k =
               this.actors[i].container.inventory.push(
-                new Actor(it.x, it.y, it.ch, it.name, it.color)
+                new Actor(it.x, it.y, it.ch, it.name, it.color),
               ) - 1;
             this.actors[i].container.inventory[k].create(it);
           }
@@ -192,7 +186,7 @@ class Game {
             this.actors[i].destructible = new PlayerDestructible(
               30,
               2,
-              "player corpse"
+              "player corpse",
             );
 
             this.actors[i].ai = new PlayerAI();
@@ -208,7 +202,7 @@ class Game {
               1,
               1,
               "monster corpse",
-              0
+              0,
             );
 
             this.actors[i].destructible.xp = actor.destructible.xp;
@@ -267,13 +261,15 @@ class Game {
   }
 
   async save() {
-    if (this.player.destructible.isDead()) {
+    const pl = ensure(this.player);
+
+    if (pl.destructible.isDead()) {
       window.localStorage.clear();
     } else {
-      this.map.save();
+      ensure(this.map).save();
       window.localStorage.setItem(
         "playerID",
-        this.actors.indexOf(this.player).toString()
+        this.actors.indexOf(pl).toString(),
       );
       window.localStorage.setItem("actors", JSON.stringify(this.actors));
       window.localStorage.setItem("version", VERSION);
@@ -287,7 +283,7 @@ class Game {
       0,
       0,
       this.width * this.fontSize,
-      this.height * this.fontSize
+      this.height * this.fontSize,
     );
 
     //"UI"
@@ -295,25 +291,25 @@ class Game {
       0,
       this.height * this.fontSize,
       this.width * this.fontSize,
-      (this.canvas as HTMLCanvasElement).height - this.height * this.fontSize
+      (this.canvas as HTMLCanvasElement).height - this.height * this.fontSize,
     );
   }
 
-  drawChar(ch: string, x: number, y: number, color: string = "#000") {
+  drawChar(ch: string, x: number, y: number, color = "#000") {
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = "#040414";
     this.ctx.fillRect(
       x * this.fontSize - this.fontSize / 2,
       y * this.fontSize,
       this.fontSize,
-      this.fontSize
+      this.fontSize,
     );
 
     this.ctx.fillStyle = color;
     this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
 
-  drawText(text: string, x: number, y: number, color: string = "#AAA") {
+  drawText(text: string, x: number, y: number, color = "#AAA") {
     this.ctx.textAlign = "left";
     /*
     for (let i = 0; i < text.length; i++) {
@@ -325,7 +321,7 @@ class Game {
     this.ctx.fillText(
       text,
       x * this.fontSize,
-      y * this.fontSize + this.fontSize
+      y * this.fontSize + this.fontSize,
     );
   }
 
@@ -346,7 +342,7 @@ class Game {
   }
 
   waitingKeypress() {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>(resolve => {
       document.addEventListener("keydown", onKeyHandler);
       function onKeyHandler(e: any) {
         e.preventDefault();
@@ -370,8 +366,11 @@ class Game {
   render() {
     this.clear();
 
-    this.map.render();
-    this.drawChar("@", this.player.x, this.player.y, "#AAA");
+    ensure(this.map).render();
+
+    const pl = ensure(this.player);
+
+    this.drawChar("@", pl.x, pl.y, "#AAA");
 
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
 
@@ -383,19 +382,21 @@ class Game {
       this.drawChar("-", x, this.height, "#888");
     }
 
-    const hp = this.player.destructible.hp;
-    const maxHP = this.player.destructible.maxHP;
-    const depth = this.map.depth;
+    const pl = ensure(this.player);
+
+    const hp = pl.destructible.hp;
+    const maxHP = pl.destructible.maxHP;
+    const depth = ensure(this.map).depth;
     this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1);
     this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
 
     this.drawText(
       "EXP: " +
-        this.player.destructible.xp +
+        pl.destructible.xp +
         " / " +
-        this.player.ai.getNextLevelXP(),
+        (pl.ai as PlayerAI)?.getNextLevelXP(),
       10,
-      this.height + 1
+      this.height + 1,
     );
 
     this.log.render();
@@ -404,12 +405,12 @@ class Game {
   async gameloop() {
     while (true) {
       if (this.gameStatus === GameStatus.STARTUP) {
-        this.player.computeFov();
+        this.player?.computeFov();
         this.render();
       }
       this.gameStatus = GameStatus.IDLE;
 
-      await this.player.update();
+      await this.player?.update();
 
       if (this.gameStatus === GameStatus.NEW_TURN) {
         for (const actor of this.actors) {
@@ -478,7 +479,7 @@ class Game {
     return null;
   }
 
-  async pickATile(x: number, y: number, range: number = 0.0) {
+  async pickATile(x: number, y: number, range = 0.0) {
     let px = x;
     let py = y;
     let inRange = false;
@@ -486,7 +487,7 @@ class Game {
     while (true) {
       this.render();
       if (
-        this.player.fov.isInFov(px, py) &&
+        this.player?.fov.isInFov(px, py) &&
         (range == 0 || this.player.getDistance(px, py) <= range)
       ) {
         this.drawChar("+", px, py, "#FFF");

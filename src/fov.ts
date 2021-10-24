@@ -1,6 +1,5 @@
-"use strict";
-
 import { game } from ".";
+import { float2int } from "./utils";
 
 export default class Fov {
   width: number;
@@ -24,10 +23,6 @@ export default class Fov {
 
   fullClear() {
     this.mapped = new Array(this.width * this.height).fill(0);
-  }
-
-  float2int(value: number): number {
-    return value | 0;
   }
 
   /* Just a placeholder */
@@ -56,10 +51,10 @@ export default class Fov {
           break;
         }
 
-        const id = this.float2int(px) + this.float2int(py) * this.width;
+        const id = float2int(px) + float2int(py) * this.width;
         this.mapped[id] = 2;
 
-        if (game.map.isWall(this.float2int(px), this.float2int(py)) === true) {
+        if (game.map?.isWall(float2int(px), float2int(py)) === true) {
           break;
         }
       }

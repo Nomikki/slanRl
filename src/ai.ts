@@ -1,17 +1,12 @@
-"use strict";
-
 import { game, GameStatus } from ".";
+import Actor from "./actor";
 import { Menu, MenuItemCode } from "./menu";
 import Randomizer from "./random";
-import Actor from "./actor";
+import { float2int } from "./utils";
 
 export const random = new Randomizer();
 
-export default class AI {
-  constructor() {}
-
-  update(_owner: Actor) {}
-}
+export default class AI {}
 
 export class PlayerAI extends AI {
   xpLevel: number;
@@ -35,7 +30,7 @@ export class PlayerAI extends AI {
       owner.destructible.xp -= levelUpXp;
       game.log.add(
         `Your battle skills grow stronger! You reached level ${this.xpLevel}`,
-        "#FFFF00"
+        "#FFFF00",
       );
 
       game.menu = new Menu();
@@ -111,64 +106,83 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
 
       if (this.moveOrAttack(owner, owner.x + dx, owner.y + dy)) {
-        game.player.computeFov();
+        game.player?.computeFov();
       }
     }
   }
 
   async handleActionKey(owner: Actor, ascii: string) {
-    switch (ascii) {
-      case "S": //save
-        game.save();
-        game.log.add("Game saved...", "#0FA");
-        break;
+    const handleSave = async () => {
+      game.save();
+      game.log.add("Game saved...", "#0FA");
+    };
 
-      case ">": //go down
-        if (game.stairs.x === owner.x && game.stairs.y === owner.y) {
-          game.nextLevel();
-        } else {
-          game.log.add("There are no stairs here.");
-        }
-        break;
-      case "g": //pickup item
-        game.gameStatus = GameStatus.NEW_TURN;
-        let found = false;
-        for (const actor of game.actors) {
-          if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
-            if (actor.pickable.pick(actor, owner)) {
-              found = true;
-              game.log.add(`You pick up the ${actor.name}`, "#AAA");
-              break;
-            } else if (!found) {
-              found = true;
-              game.log.add("Your inventory is full.", "#F00");
-            }
+    const handleNextLevel = () => {
+      if (game.stairs?.x === owner.x && game.stairs?.y === owner.y) {
+        game.nextLevel();
+      } else {
+        game.log.add("There are no stairs here.");
+      }
+    };
+
+    const handlePickup = () => {
+      game.gameStatus = GameStatus.NEW_TURN;
+      let found = false;
+      for (const actor of game.actors) {
+        if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
+          if (actor.pickable.pick(actor, owner)) {
+            found = true;
+            game.log.add(`You pick up the ${actor.name}`, "#AAA");
+            break;
+          } else if (!found) {
+            found = true;
+            game.log.add("Your inventory is full.", "#F00");
           }
         }
-        if (!found) {
-          game.log.add("There's nothing here that you can pick up.");
-        }
+      }
+      if (!found) {
+        game.log.add("There's nothing here that you can pick up.");
+      }
+    };
+
+    const handleUseItem = async () => {
+      game.log.add("Use item");
+      const useItem = await this.choseFromInventory(owner);
+      if (useItem) {
+        await useItem.pickable.use(useItem, owner);
+        game.gameStatus = GameStatus.NEW_TURN;
+      } else {
+        game.log.add("Nevermind...");
+      }
+    };
+
+    const handleDropItem = async () => {
+      const dropItem = await this.choseFromInventory(owner);
+      if (dropItem) {
+        await dropItem.pickable.drop(dropItem, owner);
+        game.gameStatus = GameStatus.NEW_TURN;
+      } else {
+        game.log.add("Nevermind...");
+      }
+    };
+
+    switch (ascii) {
+      case "S": //save
+        handleSave();
+        break;
+      case ">": //go down
+        handleNextLevel();
+        break;
+      case "g": //pickup item
+        handlePickup();
         break;
 
       case "i": //use item
-        game.log.add("Use item");
-        const useItem = await this.choseFromInventory(owner);
-        if (useItem) {
-          await useItem.pickable.use(useItem, owner);
-          game.gameStatus = GameStatus.NEW_TURN;
-        } else {
-          game.log.add("Nevermind...");
-        }
+        await handleUseItem();
         break;
 
       case "d": //drop item
-        const dropItem = await this.choseFromInventory(owner);
-        if (dropItem) {
-          await dropItem.pickable.drop(dropItem, owner);
-          game.gameStatus = GameStatus.NEW_TURN;
-        } else {
-          game.log.add("Nevermind...");
-        }
+        await handleDropItem();
         break;
       default:
         break;
@@ -176,7 +190,7 @@ export class PlayerAI extends AI {
   }
 
   moveOrAttack(owner: Actor, targetX: number, targetY: number): boolean {
-    if (game.map.isWall(targetX, targetY)) return false; //move
+    if (game.map?.isWall(targetX, targetY)) return false; //move
 
     for (const actor of game.actors) {
       if (
@@ -230,7 +244,7 @@ export class PlayerAI extends AI {
       i++;
     }
 
-    let ch = await game.getch();
+    const ch = await game.getch();
     const actorIndex = ch.charCodeAt(0) - 97; //97 = a
     if (actorIndex >= 0 && actorIndex < owner.container.inventory.length) {
       return owner.container.inventory[actorIndex];
@@ -249,16 +263,18 @@ export class MonsterAI extends AI {
   }
 
   async update(owner: Actor) {
-    if (owner.destructible && owner.destructible.isDead()) return;
+    const player = game.player;
 
-    if (game.player.fov.isInFov(owner.x, owner.y)) {
+    if ((owner.destructible && owner.destructible.isDead()) || !player) return;
+
+    if (game.player?.fov.isInFov(owner.x, owner.y)) {
       this.moveCount = this.TRACKING_TURNS;
     } else {
       this.moveCount--;
     }
 
     if (this.moveCount > 0) {
-      this.moveOrAttack(owner, game.player.x, game.player.y);
+      this.moveOrAttack(owner, player.x, player.y);
     }
   }
 
@@ -274,13 +290,13 @@ export class MonsterAI extends AI {
       dx = Math.round(dx / distance);
       dy = Math.round(dy / distance);
 
-      if (game.map.canWalk(owner.x + dx, owner.y + dy)) {
-        owner.x += dx | 0;
-        owner.y += dy | 0;
-      } else if (game.map.canWalk(owner.x + stepdx, owner.y)) {
-        owner.x += stepdx | 0;
-      } else if (game.map.canWalk(owner.x, owner.y + stepdy)) {
-        owner.y += stepdy | 0;
+      if (game.map?.canWalk(owner.x + dx, owner.y + dy)) {
+        owner.x += float2int(dx);
+        owner.y += float2int(dy);
+      } else if (game.map?.canWalk(owner.x + stepdx, owner.y)) {
+        owner.x += float2int(stepdx);
+      } else if (game.map?.canWalk(owner.x, owner.y + stepdy)) {
+        owner.y += float2int(stepdy);
       }
     } else {
       owner.attacker.attack(owner, game.player);
@@ -290,9 +306,9 @@ export class MonsterAI extends AI {
 
 export class ConfusedAI extends AI {
   nbTurns: number;
-  oldAi: AI;
+  oldAi: any;
 
-  constructor(nbTurns: number, oldAi: AI) {
+  constructor(nbTurns: number, oldAi: any) {
     super();
     this.nbTurns = nbTurns;
     this.oldAi = oldAi;
@@ -306,7 +322,7 @@ export class ConfusedAI extends AI {
       const destx = owner.x + dx;
       const desty = owner.y + dy;
 
-      if (game.map.canWalk(destx, desty)) {
+      if (game.map?.canWalk(destx, desty)) {
         owner.x = destx;
         owner.y = desty;
       } else {
@@ -357,7 +373,7 @@ export class ConfusedMonsterAi extends TemporaryAI {
       const destx = owner.x + dx;
       const desty = owner.y + dy;
 
-      if (game.map.canWalk(destx, desty)) {
+      if (game.map?.canWalk(destx, desty)) {
         owner.x = destx;
         owner.y = desty;
       } else {

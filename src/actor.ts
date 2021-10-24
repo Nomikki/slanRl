@@ -1,12 +1,11 @@
-"use strict";
-
 import { game } from ".";
+import { ConfusedAI, ConfusedMonsterAi, MonsterAI, PlayerAI } from "./ai";
 import Pickable, {
   AiChangeEffect,
   HealthEffect,
-  TargetSelector,
+  TargetSelector
 } from "./pickable";
-import { ConfusedMonsterAi } from "./ai";
+import { float2int } from "./utils";
 
 export default class Actor {
   x: number;
@@ -16,8 +15,8 @@ export default class Actor {
   color: string;
 
   fov: any = null;
-  fovOnly: boolean = true;
-  blocks: boolean = true; //can we walk on this actor?
+  fovOnly = true;
+  blocks = true; //can we walk on this actor?
 
   // Destructible: Something that can take damage and potentially break or die
   destructible: any = null;
@@ -26,7 +25,7 @@ export default class Actor {
   attacker: any = null;
 
   // Ai: Something that is self-updating
-  ai: any = null;
+  ai?: PlayerAI | MonsterAI | ConfusedAI;
 
   // Pickable: Something that can be picked and used
   pickable: any = null;
@@ -35,24 +34,23 @@ export default class Actor {
   container: any = null;
 
   constructor(x: number, y: number, ch: string, name: string, color: string) {
-    this.x = x | 0;
-    this.y = y | 0;
+    this.x = float2int(x);
+    this.y = float2int(y);
     this.ch = ch;
     this.color = color;
     this.name = name;
   }
 
   create(actorTemplate: Actor) {
-    console.log(actorTemplate);
+    //console.log(actorTemplate);
 
     let fx = undefined;
     if (actorTemplate.pickable.effectName === "AiChangeEffect") {
-      console.log("!!!");
       fx = new AiChangeEffect(
         new ConfusedMonsterAi(
-          parseInt(actorTemplate.pickable.effect.newAi.nbTurns)
+          parseInt(actorTemplate.pickable.effect.newAi.nbTurns),
         ),
-        actorTemplate.pickable.effect.message
+        actorTemplate.pickable.effect.message,
       );
     }
     if (actorTemplate.pickable.effectName === "HealthEffect")
@@ -63,19 +61,17 @@ export default class Actor {
       this.pickable = new Pickable(
         new TargetSelector(
           parseInt(actorTemplate.pickable.selector.type),
-          parseInt(actorTemplate.pickable.selector.range)
+          parseInt(actorTemplate.pickable.selector.range),
         ),
-        fx
+        fx,
       );
     } else {
       this.pickable = new Pickable(undefined, fx);
     }
-
-    console.log(this.pickable);
   }
 
   render() {
-    const fovValue = game.player.fov.getMapped(this.x, this.y);
+    const fovValue = game.player?.fov?.getMapped(this.x, this.y);
     if (fovValue === 2 || (fovValue != 0 && !this.fovOnly)) {
       game.drawChar(this.ch, this.x, this.y, this.color);
     }

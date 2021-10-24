@@ -1,6 +1,4 @@
-"use strict";
-
-let _seed: number = 0;
+let _seed = 0;
 
 class Randomizer {
   rnd: number;
@@ -25,8 +23,8 @@ class Randomizer {
     return Math.floor(min + this.rnd * (max - min));
   }
 
-  dice(dices: number, eyes: number, bonus: number = 0): number {
-    let v: number = 0;
+  dice(dices: number, eyes: number, bonus: 0): number {
+    let v = 0;
     eyes++;
     for (let i = 0; i < dices; i++) {
       v += Number(this.getInt(1, eyes));

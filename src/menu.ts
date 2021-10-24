@@ -1,5 +1,3 @@
-"use strict";
-
 export class MenuItem {
   code: number;
   label: string;
@@ -24,15 +22,15 @@ export class Menu {
   items: MenuItem[];
 
   constructor() {
-    this.items = new Array();
+    this.items = [];
   }
 
   clear() {
-    if (this.items && this.items.length > 0) this.items = new Array();
+    if (this.items && this.items.length > 0) this.items = [];
   }
 
   addItem(code: MenuItemCode, label: string) {
-    let item = new MenuItem();
+    const item = new MenuItem();
     item.code = code;
     item.label = label;
     this.items.push(item);

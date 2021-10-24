@@ -1,5 +1,3 @@
-"use strict";
-
 import Rectangle from "./rectangle";
 
 class bspNode extends Rectangle {

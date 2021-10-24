@@ -1,5 +1,3 @@
-"use strict";
-
 import { game } from ".";
 
 class LogText {
@@ -13,11 +11,11 @@ class LogText {
 }
 
 export default class Log {
-  SIZE_OF_LOG: number = 100;
+  SIZE_OF_LOG = 100;
   texts: LogText[];
 
   constructor() {
-    this.texts = new Array();
+    this.texts = [];
   }
 
   render() {
@@ -28,14 +26,14 @@ export default class Log {
           this.texts[i].text,
           1,
           game.height + 3 + a,
-          this.texts[i].color
+          this.texts[i].color,
         );
         a++;
       }
     }
   }
 
-  add(text: string, color: string = "#AAA") {
+  add(text: string, color = "#AAA") {
     this.texts.push(new LogText(text, color));
     if (this.texts.length > this.SIZE_OF_LOG) {
       this.texts.splice(0, 1);

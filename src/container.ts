@@ -1,5 +1,3 @@
-"use strict";
-
 import Actor from "./actor";
 
 export default class Container {
@@ -8,7 +6,7 @@ export default class Container {
 
   constructor(size: number) {
     this.size = size; //maximum number of actors
-    this.inventory = new Array();
+    this.inventory = [];
   }
 
   add(actor: Actor): boolean {

@@ -1,5 +1,3 @@
-"use strict";
-
 import { game } from ".";
 import Actor from "./actor";
 import { ConfusedMonsterAi, MonsterAI } from "./ai";
@@ -14,28 +12,26 @@ import Pickable, {
 } from "./pickable";
 import Randomizer from "./random";
 import Rectangle from "./rectangle";
+import { float2int } from "./utils";
 
 export const random = new Randomizer();
 
 class Tile {
-  canWalk: boolean = false;
-  explored: boolean = false;
-
-  constructor() {}
+  canWalk = false;
+  explored = false;
 }
 
 export default class Map {
   width: number;
   height: number;
 
-  startX: number = 0;
-  startY: number = 0;
-  stairsX: number = 0;
-  stairsY: number = 0;
+  startX = 0;
+  startY = 0;
+  stairsX = 0;
+  stairsY = 0;
 
-  root: any;
-  levelSeed: number = 0;
-  depth: number = 0;
+  levelSeed = 0;
+  depth = 0;
 
   readonly ROOM_MAX_SIZE: number = 10;
   readonly ROOM_MIN_SIZE: number = 4;
@@ -53,8 +49,6 @@ export default class Map {
     window.localStorage.setItem("seed", this.levelSeed.toString());
     window.localStorage.setItem("depth", this.depth.toString());
   }
-
-  load() {}
 
   isWall(x: number, y: number): boolean {
     const index = x + y * this.width;
@@ -79,20 +73,20 @@ export default class Map {
     const rng = random.getInt(0, 100);
 
     if (rng < 80) {
-      let orc = new Actor(x, y, "o", "lan orc", "#00AA00");
+      const orc = new Actor(x, y, "o", "lan orc", "#00AA00");
 
       orc.destructible = new MonsterDestructible(10, 0, "wasted lan orc", 10);
       orc.attacker = new Attacker(3);
       orc.ai = new MonsterAI();
       game.actors.push(orc);
     } else {
-      let troll = new Actor(x, y, "t", "lan troll", "#008800");
+      const troll = new Actor(x, y, "t", "lan troll", "#008800");
 
       troll.destructible = new MonsterDestructible(
         10,
         0,
         "wasted lan troll",
-        15
+        15,
       );
       troll.attacker = new Attacker(3);
       troll.ai = new MonsterAI();
@@ -108,7 +102,7 @@ export default class Map {
         healthPotion.blocks = false;
         healthPotion.pickable = new Pickable(
           undefined,
-          new HealthEffect(4, undefined)
+          new HealthEffect(4, undefined),
         );
         game.actors.push(healthPotion);
         game.sendToBack(healthPotion);
@@ -117,7 +111,7 @@ export default class Map {
         healthPotion.blocks = false;
         healthPotion.pickable = new Pickable(
           undefined,
-          new HealthEffect(30, undefined)
+          new HealthEffect(30, undefined),
         );
         game.actors.push(healthPotion);
         game.sendToBack(healthPotion);
@@ -129,11 +123,14 @@ export default class Map {
         y,
         "#",
         "scroll of lighting bolt",
-        "#0FF"
+        "#0FF",
       );
       scrollOfLightingBolt.blocks = false;
       //scrollOfLightingBolt.pickable = new LightningBolt(5, 20);
-      scrollOfLightingBolt.pickable = new Pickable(new TargetSelector(SelectorType.CLOSEST_MONSTER, 5), new HealthEffect(-20, "A lighting bolt strikes!"));
+      scrollOfLightingBolt.pickable = new Pickable(
+        new TargetSelector(SelectorType.CLOSEST_MONSTER, 5),
+        new HealthEffect(-20, "A lighting bolt strikes!"),
+      );
       game.actors.push(scrollOfLightingBolt);
       game.sendToBack(scrollOfLightingBolt);
     } else if (rng < 70 + 20) {
@@ -142,11 +139,14 @@ export default class Map {
         y,
         "#",
         "scroll of Fireball",
-        "#FA0"
+        "#FA0",
       );
       scrollOfFireball.blocks = false;
       //scrollOfFireball.pickable = new Fireball(2, 5);
-      scrollOfFireball.pickable = new Pickable(new TargetSelector(SelectorType.SELECTED_RANGE, 3), new HealthEffect(-12, "hurdur"));
+      scrollOfFireball.pickable = new Pickable(
+        new TargetSelector(SelectorType.SELECTED_RANGE, 3),
+        new HealthEffect(-12, "hurdur"),
+      );
       game.actors.push(scrollOfFireball);
       game.sendToBack(scrollOfFireball);
     } else {
@@ -155,11 +155,14 @@ export default class Map {
         y,
         "#",
         "scroll of Confusion",
-        "#FFA"
+        "#FFA",
       );
       scrollOfConfusion.blocks = false;
       //scrollOfConfusion.pickable = new Confuser(10, 8);
-      scrollOfConfusion.pickable = new Pickable(new TargetSelector(SelectorType.SELECTED_MONSTER, 5), new AiChangeEffect(new ConfusedMonsterAi(10), "confused af"));
+      scrollOfConfusion.pickable = new Pickable(
+        new TargetSelector(SelectorType.SELECTED_MONSTER, 5),
+        new AiChangeEffect(new ConfusedMonsterAi(10), "confused af"),
+      );
       game.actors.push(scrollOfConfusion);
       game.sendToBack(scrollOfConfusion);
       //console.log("conf!");
@@ -167,10 +170,10 @@ export default class Map {
   }
 
   dig(x1: number, y1: number, x2: number, y2: number) {
-    x1 = x1 | 0;
-    x2 = x2 | 0;
-    y1 = y1 | 0;
-    y2 = y2 | 0;
+    x1 = float2int(x1);
+    x2 = float2int(x2);
+    y1 = float2int(y1);
+    y2 = float2int(y2);
 
     if (x2 < x1) {
       const tmp = x2;
@@ -241,20 +244,20 @@ export default class Map {
     console.log("seed: " + this.levelSeed);
     console.log("depth: " + this.depth);
 
-    this.root = new bspGenerator(0, 0, this.width, this.height, 5);
+    const root = new bspGenerator(0, 0, this.width, this.height, 5);
     this.tiles = new Array(this.width * this.height).fill(false);
 
-    let monsterRooms = new Array();
+    const monsterRooms = [];
 
     //const option = random.getInt(0, 2);
     //console.log("option: " + option);
-    const option: number = 2;
+    const option = 2;
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
 
       //we can use path/room data directly from bsp if we want.
-      if (option === 0) this.tiles[i].canWalk = !this.root.map[i];
+      //if (option === 0) this.tiles[i].canWalk = !this.root.map[i];
     }
 
     //lets create every room one by one
@@ -266,20 +269,18 @@ export default class Map {
     let h = 0;
 
     //take one room and make it spawn room
-    const spawnRoomIndex = random.getInt(0, this.root.rooms.length - 1);
-    const stairsRoomIndex = random.getInt(0, this.root.rooms.length - 1);
+    const spawnRoomIndex = random.getInt(0, root.rooms.length - 1);
+    const stairsRoomIndex = random.getInt(0, root.rooms.length - 1);
 
     console.log(
-      "spwanroom index: " +
-        spawnRoomIndex +
-        " / " +
-        (this.root.rooms.length - 1)
+      "spwanroom index: " + spawnRoomIndex + " / " + (root.rooms.length - 1),
     );
-    for (let i = 0; i < this.root.rooms.length; i++) {
-      const room = this.root.rooms[i];
+    for (let i = 0; i < root.rooms.length; i++) {
+      const room = root.rooms[i];
       const spawnRoom = i === spawnRoomIndex ? true : false;
 
       //option 1
+      /*
       if (option === 1) {
         w = room.w;
         h = room.h;
@@ -289,6 +290,7 @@ export default class Map {
         this.createRoom(x, y, x + w - 2, y + h - 2);
         if (!spawnRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
       }
+      */
 
       //option 2
       if (option === 2) {
@@ -302,15 +304,15 @@ export default class Map {
       }
 
       if (i === spawnRoomIndex) {
-        this.startX = (x + ((w / 2) | 0)) | 0;
-        this.startY = (y + ((h / 2) | 0)) | 0;
+        this.startX = x + float2int(w / 2);
+        this.startY = y + float2int(h / 2);
       }
       if (i === stairsRoomIndex) {
-        this.stairsX = (x + w / 2) | 0;
-        this.stairsY = (y + h / 2) | 0;
+        this.stairsX = float2int(x + w / 2);
+        this.stairsY = float2int(y + h / 2);
       }
 
-      if (option === 1 || option === 2) {
+      if (/*option === 1 ||*/ option === 2) {
         if (i > 0) {
           this.dig(lastx, lasty, x + w / 2, lasty);
           this.dig(x + w / 2, lasty, x + w / 2, y + h / 2);
@@ -332,24 +334,23 @@ export default class Map {
 
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        const fovValue = game.player.fov.getMapped(x, y);
+        const fovValue = game.player?.fov.getMapped(x, y);
         if (fovValue === 2 || fovValue === 1) {
           if (fovValue === 2) {
             game.drawChar(
               this.isWall(x, y) ? darkWall : darkGround,
               x,
               y,
-              "#AAA"
+              "#AAA",
             );
           } else {
             game.drawChar(
               this.isWall(x, y) ? darkWall : darkGround,
               x,
               y,
-              "#444"
+              "#444",
             );
           }
-        } else {
         }
       }
     }
