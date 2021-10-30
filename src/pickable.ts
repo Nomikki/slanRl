@@ -1,6 +1,7 @@
 import { game } from ".";
 import Actor from "./actor";
 import { TemporaryAI } from "./ai";
+import { Colors } from "./colors";
 import { ensure } from "./utils";
 
 export enum SelectorType {
@@ -136,14 +137,14 @@ export class HealthEffect implements Effect {
       const pointsHealed = actor.destructible.heal(this.amount);
       if (pointsHealed > 0) {
         if (this.message) {
-          game.log.add(this.message, "#AAA");
+          game.log.add(this.message, Colors.HEALED);
         }
         return true;
       }
     } else {
       //hurting part
       if (this.message && -this.amount - actor.destructible.defense > 0) {
-        game.log.add(this.message, "#AAA");
+        game.log.add(this.message);
       }
       if (actor.destructible.takeDamage(actor, -this.amount) > 0) {
         return true;

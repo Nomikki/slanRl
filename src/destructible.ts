@@ -1,5 +1,6 @@
 import { game, GameStatus } from ".";
 import Actor from "./actor";
+import { Colors } from "./colors";
 import { ensure } from "./utils";
 
 export default class Destructible {
@@ -53,8 +54,8 @@ export default class Destructible {
   }
 
   die(owner: Actor) {
-    owner.ch = "%";
-    owner.color = "#AA0000";
+    //owner.ch = owner;
+    owner.color = Colors.DEAD_BODY;
     owner.name = this.corpseName;
     owner.blocks = false;
     game.sendToBack(owner);
@@ -80,7 +81,7 @@ export class PlayerDestructible extends Destructible {
   }
 
   die(owner: Actor) {
-    game.log.add("You died", "#A00");
+    game.log.add("You died", Colors.DEFEAT);
     super.die(owner);
     game.gameStatus = GameStatus.DEFEAT;
   }

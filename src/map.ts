@@ -2,6 +2,7 @@ import { game } from ".";
 import Actor from "./actor";
 import { ConfusedMonsterAi } from "./ai";
 import bspGenerator from "./bsp_generator";
+import { Colors } from "./colors";
 import { createMonster } from "./monsterGenerator";
 import Pickable, {
   AiChangeEffect,
@@ -98,7 +99,7 @@ export default class Map {
   }
 
   addDoor(x: number, y: number, closed: boolean) {
-    const door = new Actor(x, y, closed ? "D" : "+", "door", "#AA0");
+    const door = new Actor(x, y, closed ? "D" : "+", "door", Colors.DOOR);
     door.blocks = true;
     //door.destructible = new Destructible(100, 0, "broken door", "door", 0);
     game.actors.push(door);
@@ -108,7 +109,13 @@ export default class Map {
     const rng = random.getInt(0, 100);
     if (rng < 70) {
       if (random.getInt(0, 100) < 95) {
-        const healthPotion = new Actor(x, y, "!", "health potion", "#FF00FF");
+        const healthPotion = new Actor(
+          x,
+          y,
+          "!",
+          "health potion",
+          Colors.HEALTHPOTION,
+        );
         healthPotion.blocks = false;
         healthPotion.pickable = new Pickable(
           undefined,
@@ -117,7 +124,13 @@ export default class Map {
         game.actors.push(healthPotion);
         game.sendToBack(healthPotion);
       } else {
-        const healthPotion = new Actor(x, y, "@", "Nutella bun", "#A80");
+        const healthPotion = new Actor(
+          x,
+          y,
+          "@",
+          "Nutella bun",
+          Colors.NUTELLABUN,
+        );
         healthPotion.blocks = false;
         healthPotion.pickable = new Pickable(
           undefined,
@@ -133,7 +146,7 @@ export default class Map {
         y,
         "#",
         "scroll of lighting bolt",
-        "#0FF",
+        Colors.SCROLL_OF_LIGHTING,
       );
       scrollOfLightingBolt.blocks = false;
       //scrollOfLightingBolt.pickable = new LightningBolt(5, 20);
@@ -149,7 +162,7 @@ export default class Map {
         y,
         "#",
         "scroll of Fireball",
-        "#FA0",
+        Colors.SCROLL_OF_FIREBALL,
       );
       scrollOfFireball.blocks = false;
       //scrollOfFireball.pickable = new Fireball(2, 5);
@@ -165,7 +178,7 @@ export default class Map {
         y,
         "#",
         "scroll of Confusion",
-        "#FFA",
+        Colors.SCROLL_OF_CONFUSION,
       );
       scrollOfConfusion.blocks = false;
       //scrollOfConfusion.pickable = new Confuser(10, 8);
@@ -177,7 +190,13 @@ export default class Map {
       game.sendToBack(scrollOfConfusion);
       //console.log("conf!");
     } else {
-      const scrollOfConfusion = new Actor(x, y, "#", "scroll of Map", "#AA2");
+      const scrollOfConfusion = new Actor(
+        x,
+        y,
+        "#",
+        "scroll of Map",
+        Colors.SCROLL_OF_MAP,
+      );
       scrollOfConfusion.blocks = false;
       //scrollOfConfusion.pickable = new Confuser(10, 8);
       scrollOfConfusion.pickable = new Pickable(
@@ -383,14 +402,14 @@ export default class Map {
               this.isWall(x, y) ? darkWall : darkGround,
               x,
               y,
-              "#AAA",
+              Colors.WALL,
             );
           } else {
             game.drawChar(
               this.isWall(x, y) ? darkWall : darkGround,
               x,
               y,
-              "#444",
+              Colors.WALL_DARK,
             );
           }
         }

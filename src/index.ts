@@ -2,6 +2,7 @@ import { ABILITIES, Abilities } from "./abilities";
 import Actor from "./actor";
 import { MonsterAI, PlayerAI } from "./ai";
 import Attacker from "./attacker";
+import { Colors } from "./colors";
 import Container from "./container";
 import { MonsterDestructible, PlayerDestructible } from "./destructible";
 import Fov from "./fov";
@@ -44,7 +45,7 @@ class Game {
     this.canvas = document.getElementById("screen")!;
 
     this.ctx = (this.canvas as HTMLCanvasElement).getContext("2d");
-    this.ctx.font = "12px Arial";
+    this.ctx.font = "12px system-ui";
     this.fontSize = 12;
     this.ctx.textAlign = "center";
 
@@ -74,7 +75,7 @@ class Game {
     if (withActors) {
       let i = 0;
       if (createPlayer) {
-        i = this.actors.push(new Actor(2, 2, "@", "hero", "#CCC")) - 1;
+        i = this.actors.push(new Actor(2, 2, "@", "hero", Colors.HERO)) - 1;
         this.player = this.actors[i];
         this.player.destructible = new PlayerDestructible(
           30,
@@ -92,7 +93,7 @@ class Game {
       ensure(this.player).y = ensure(this.map).startY;
       ensure(this.player).fov?.fullClear();
 
-      i = this.actors.push(new Actor(0, 0, ">", "stairs", "#FFF")) - 1;
+      i = this.actors.push(new Actor(0, 0, ">", "stairs", Colors.STAIRS)) - 1;
       this.stairs = this.actors[i];
       this.stairs.blocks = false;
       this.stairs.fovOnly = false;
@@ -100,9 +101,9 @@ class Game {
       this.stairs.y = ensure(this.map).stairsY;
       this.sendToBack(this.stairs);
 
-      this.log.add("Welcome stranger!", "#FFF");
+      this.log.add("Welcome stranger!");
     } else {
-      this.log.add("Welcome back stranger!", "#FFF");
+      this.log.add("Welcome back stranger!");
     }
 
     this.gameStatus = GameStatus.STARTUP;
@@ -266,7 +267,7 @@ class Game {
     let selectedItem = -1;
     while (true) {
       this.clear();
-      this.drawChar(">", this.width / 2 - 12, 10 + cursor, "#FFF");
+      this.drawChar(">", this.width / 2 - 12, 10 + cursor, Colors.MENU_CURSOR);
       for (let i = 0; i < this.menu.items.length; i++) {
         this.drawText(this.menu.items[i].label, this.width / 2 - 10, 10 + i);
       }
@@ -311,7 +312,7 @@ class Game {
     }
   }
 
-  clear(color = "#000") {
+  clear(color = Colors.BACKGROUND) {
     //Game
     this.ctx.fillStyle = color;
     this.ctx.fillRect(
@@ -330,9 +331,9 @@ class Game {
     );
   }
 
-  drawChar(ch: string, x: number, y: number, color = "#000") {
+  drawChar(ch: string, x: number, y: number, color = Colors.BACKGROUND) {
     this.ctx.textAlign = "center";
-    this.ctx.fillStyle = "#040414";
+    this.ctx.fillStyle = Colors.BACKGROUND;
     this.ctx.fillRect(
       x * this.fontSize - this.fontSize / 2,
       y * this.fontSize,
@@ -344,14 +345,10 @@ class Game {
     this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
   }
 
-  drawText(text: string, x: number, y: number, color = "#AAA") {
+  drawText(text: string, x: number, y: number, color = Colors.DEFAULT_TEXT) {
     this.ctx.textAlign = "left";
-    /*
-    for (let i = 0; i < text.length; i++) {
-      this.drawChar(text.charAt(i), x + i, y, color);
-    }
-    */
-    this.ctx.fillStyle = "#040414";
+
+    this.ctx.fillStyle = Colors.BACKGROUND;
     this.ctx.fillStyle = color;
     this.ctx.fillText(
       text,
@@ -367,7 +364,7 @@ class Game {
       await this.load();
       await this.gameloop();
       await this.save();
-      this.log.add("Press Esc to restart", "#FFF");
+      this.log.add("Press Esc to restart");
       this.render();
       while (true) {
         const ch = await this.getch();
@@ -407,7 +404,7 @@ class Game {
 
   renderUI() {
     for (let x = 0; x < this.width; x++) {
-      this.drawChar("-", x, this.height, "#888");
+      this.drawChar("-", x, this.height, Colors.MENU_BORDER);
     }
 
     const pl = ensure(this.player);
@@ -421,12 +418,12 @@ class Game {
     const xp = pl.destructible?.xp;
 
     const getHpColor = (): string => {
-      if (hp < (maxHP / 100) * 10) return "#F44";
-      else if (hp < (maxHP / 100) * 25) return "#F88";
-      else if (hp < (maxHP / 100) * 50) return "#FAA";
-      else if (hp < (maxHP / 100) * 95) return "#AAA";
+      if (hp < (maxHP / 100) * 10) return Colors.HP_10_PERCENT;
+      else if (hp < (maxHP / 100) * 25) return Colors.HP_25_PERCENT;
+      else if (hp < (maxHP / 100) * 50) return Colors.HP_50_PERCENT;
+      else if (hp < (maxHP / 100) * 95) return Colors.HP_95_PERENT;
 
-      return "#AFA";
+      return Colors.HP_MAX;
     };
 
     this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1, getHpColor());
@@ -502,8 +499,13 @@ class Game {
       this.render();
 
       if (this.gameStatus === GameStatus.DEFEAT) {
-        this.drawText("DEFEAT!", this.width / 2 - 3, this.height / 2, "#A00");
-        this.log.add("DEFEAT", "#A00");
+        this.drawText(
+          "DEFEAT!",
+          this.width / 2 - 3,
+          this.height / 2,
+          Colors.DEFEAT,
+        );
+        this.log.add("DEFEAT", Colors.DEFEAT);
         break;
       }
     }
@@ -577,10 +579,10 @@ class Game {
         this.player?.fov?.isInFov(px, py) &&
         (range == 0 || this.player.getDistance(px, py) <= range)
       ) {
-        this.drawChar("+", px, py, "#FFF");
+        this.drawChar("+", px, py, Colors.ALLOWED);
         inRange = true;
       } else {
-        this.drawChar("+", px, py, "#F88");
+        this.drawChar("+", px, py, Colors.DISALLOWED);
         inRange = false;
       }
 

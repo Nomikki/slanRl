@@ -1,5 +1,6 @@
 import { game } from ".";
 import Actor from "./actor";
+import { Colors } from "./colors";
 
 export default class Attacker {
   power: number;
@@ -15,7 +16,7 @@ export default class Attacker {
 
         game.log.add(
           `${owner.name} attacks ${target.name} for ${dmg} hit points.`,
-          owner === game.player ? "#DDD" : "#AAA",
+          owner === game.player ? Colors.PLAYER_ATTACK : Colors.ENEMY_ATTACK,
         );
       } else {
         game.log.add(

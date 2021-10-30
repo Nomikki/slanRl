@@ -1,5 +1,6 @@
 import { game, GameStatus } from ".";
 import Actor from "./actor";
+import { Colors } from "./colors";
 import { Menu, MenuItemCode } from "./menu";
 import Randomizer from "./random";
 import { ensure, float2int } from "./utils";
@@ -52,7 +53,7 @@ export class PlayerAI extends AI {
       ensure(owner.destructible).xp -= levelUpXp;
       game.log.add(
         `Your battle skills grow stronger! You reached level ${this.xpLevel}`,
-        "#FFFF00",
+        Colors.LEVEL_UP,
       );
 
       game.menu = new Menu();
@@ -66,7 +67,12 @@ export class PlayerAI extends AI {
       while (true) {
         game.clear();
         game.renderUI();
-        game.drawChar(">", game.width / 2 - 12, 10 + cursor, "#FFF");
+        game.drawChar(
+          ">",
+          game.width / 2 - 12,
+          10 + cursor,
+          Colors.MENU_CURSOR,
+        );
         for (let i = 0; i < game.menu.items.length; i++) {
           game.drawText(game.menu.items[i].label, game.width / 2 - 10, 10 + i);
         }
@@ -149,7 +155,7 @@ export class PlayerAI extends AI {
 
     const handleSave = async () => {
       game.save();
-      game.log.add("Game saved...", "#0FA");
+      game.log.add("Game saved...", Colors.GAME_SAVED);
     };
 
     const handleNextLevel = () => {
@@ -167,11 +173,11 @@ export class PlayerAI extends AI {
         if (actor.pickable && actor.x === owner.x && actor.y === owner.y) {
           if (actor.pickable.pick(actor, owner)) {
             found = true;
-            game.log.add(`You pick up the ${actor.name}`, "#AAA");
+            game.log.add(`You pick up the ${actor.name}`, Colors.PICKED_UP);
             break;
           } else if (!found) {
             found = true;
-            game.log.add("Your inventory is full.", "#F00");
+            game.log.add("Your inventory is full.", Colors.INVENTORY_FULL);
           }
         }
       }
@@ -287,11 +293,11 @@ export class PlayerAI extends AI {
     for (let y = 0; y < 28; y++) {
       for (let x = 0; x < 40; x++) {
         if ((y === 0 || y === 27) && x > 0 && x < 39)
-          game.drawChar("-", x + 20, y, "#AAA");
+          game.drawChar("-", x + 20, y, Colors.MENU_BORDER);
         else if ((x === 0 || x === 39) && y > 0 && y < 27)
-          game.drawChar("|", x + 20, y, "#AAA");
+          game.drawChar("|", x + 20, y, Colors.MENU_BORDER);
         else if (y === 0 || x === 0 || y === 27 || x === 39)
-          game.drawChar("+", x + 20, y, "#AAA");
+          game.drawChar("+", x + 20, y, Colors.MENU_BORDER);
         else game.drawChar(" ", x + 20, y);
       }
     }
