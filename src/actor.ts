@@ -80,7 +80,12 @@ export default class Actor {
   render() {
     const fovValue = game.player?.fov?.getMapped(this.x, this.y);
     if (fovValue === 2 || (fovValue != 0 && !this.fovOnly)) {
-      game.drawChar(this.ch, this.x, this.y, this.color);
+      game.drawChar(
+        this.ch,
+        this.x + game.camera.x,
+        this.y + game.camera.y,
+        this.color,
+      );
     }
   }
 

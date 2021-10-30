@@ -2,6 +2,7 @@ import { ABILITIES, Abilities } from "./abilities";
 import Actor from "./actor";
 import { MonsterAI, PlayerAI } from "./ai";
 import Attacker from "./attacker";
+import { Camera } from "./camera";
 import { Colors } from "./colors";
 import Container from "./container";
 import { MonsterDestructible, PlayerDestructible } from "./destructible";
@@ -41,6 +42,8 @@ class Game {
 
   turns = 0;
 
+  camera: Camera;
+
   constructor() {
     this.canvas = document.getElementById("screen")!;
 
@@ -60,6 +63,9 @@ class Game {
 
     this.actors = [];
     this.map = new Map(this.width, this.height);
+
+    this.camera = new Camera();
+    this.camera.setCenter(this.width, this.height);
   }
 
   async term() {
@@ -196,6 +202,7 @@ class Game {
 
         if (actor.name === "stairs") {
           this.stairs = this.actors[i];
+          this.stairs.fovOnly = false;
         }
 
         if (actor.name === "door") {
@@ -332,6 +339,10 @@ class Game {
   }
 
   drawChar(ch: string, x: number, y: number, color = Colors.BACKGROUND) {
+    if (x < 0 || y < 0 || x > this.width || y > this.height) {
+      return;
+    }
+
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = Colors.BACKGROUND;
     this.ctx.fillRect(
@@ -479,6 +490,7 @@ class Game {
     while (true) {
       if (this.gameStatus === GameStatus.STARTUP) {
         this.player?.computeFov();
+        this.camera.compute(ensure(this.player?.x), ensure(this.player?.y));
         this.render();
       }
       this.gameStatus = GameStatus.IDLE;
@@ -579,10 +591,20 @@ class Game {
         this.player?.fov?.isInFov(px, py) &&
         (range == 0 || this.player.getDistance(px, py) <= range)
       ) {
-        this.drawChar("+", px, py, Colors.ALLOWED);
+        this.drawChar(
+          "+",
+          px + this.camera.x,
+          py + this.camera.y,
+          Colors.ALLOWED,
+        );
         inRange = true;
       } else {
-        this.drawChar("+", px, py, Colors.DISALLOWED);
+        this.drawChar(
+          "+",
+          px + this.camera.x,
+          py + this.camera.y,
+          Colors.DISALLOWED,
+        );
         inRange = false;
       }
 

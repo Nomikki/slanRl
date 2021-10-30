@@ -135,6 +135,7 @@ export class PlayerAI extends AI {
 
       if (this.moveOrAttack(owner, owner.x + dx, owner.y + dy)) {
         game.player?.computeFov();
+        game.camera.compute(ensure(game.player?.x), ensure(game.player?.y));
       }
     }
   }
