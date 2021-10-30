@@ -153,7 +153,7 @@ class Game {
 
   async newGame() {
     this.masterSeed = float2int(Math.random() * 0x7ffffff);
-    this.masterSeed = 117290053;
+    //this.masterSeed = 117290053;
     this.turns = 0;
     this.depth = 1;
     await this.term();

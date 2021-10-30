@@ -312,12 +312,17 @@ export class PlayerAI extends AI {
       }
     }
     game.drawText(" INVENTORY ", 34, 0);
+    game.drawText("name", 22, 1);
+    game.drawText("weight", 54, 1);
+
     //game.renderUI();
 
     let shortcut = "a";
     let i = 0;
     for (const it of ensure(owner.container).inventory) {
       game.drawText(shortcut + ") " + it.name, 22, 2 + i);
+      const weight = ensure(it.pickable).weight;
+      game.drawText(`${weight} lb`, 54, 2 + i);
       shortcut = String.fromCharCode(shortcut.charCodeAt(0) + 1);
       i++;
     }
