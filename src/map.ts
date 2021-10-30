@@ -1,16 +1,9 @@
 import { game } from ".";
 import Actor from "./actor";
-import { ConfusedMonsterAi } from "./ai";
 import bspGenerator from "./bsp_generator";
 import { Colors } from "./colors";
+import { createItem } from "./itemGenerator";
 import { createMonster } from "./monsterGenerator";
-import Pickable, {
-  AiChangeEffect,
-  HealthEffect,
-  MapClearEffect,
-  SelectorType,
-  TargetSelector,
-} from "./pickable";
 import Randomizer from "./random";
 import Rectangle from "./rectangle";
 import { float2int } from "./utils";
@@ -107,106 +100,28 @@ export default class Map {
 
   additem(x: number, y: number) {
     const rng = random.getInt(0, 100);
+    let item: Actor;
+
     if (rng < 70) {
       if (random.getInt(0, 100) < 95) {
-        const healthPotion = new Actor(
-          x,
-          y,
-          "!",
-          "health potion",
-          Colors.HEALTHPOTION,
-        );
-        healthPotion.blocks = false;
-        healthPotion.pickable = new Pickable(
-          undefined,
-          new HealthEffect(4, undefined),
-        );
-        game.actors.push(healthPotion);
-        game.sendToBack(healthPotion);
+        item = createItem("health potion", x, y);
       } else {
-        const healthPotion = new Actor(
-          x,
-          y,
-          "@",
-          "Nutella bun",
-          Colors.NUTELLABUN,
-        );
-        healthPotion.blocks = false;
-        healthPotion.pickable = new Pickable(
-          undefined,
-          new HealthEffect(30, undefined),
-        );
-        game.actors.push(healthPotion);
-        game.sendToBack(healthPotion);
+        item = createItem("nutella bun", x, y);
         console.log("Jossain haisoo nutella!");
       }
     } else if (rng < 70 + 10) {
-      const scrollOfLightingBolt = new Actor(
-        x,
-        y,
-        "#",
-        "scroll of lighting bolt",
-        Colors.SCROLL_OF_LIGHTING,
-      );
-      scrollOfLightingBolt.blocks = false;
-      //scrollOfLightingBolt.pickable = new LightningBolt(5, 20);
-      scrollOfLightingBolt.pickable = new Pickable(
-        new TargetSelector(SelectorType.CLOSEST_MONSTER, 5),
-        new HealthEffect(-20, "A lighting bolt strikes!"),
-      );
-      game.actors.push(scrollOfLightingBolt);
-      game.sendToBack(scrollOfLightingBolt);
+      item = createItem("scroll of lighting bolt", x, y);
     } else if (rng < 70 + 20) {
-      const scrollOfFireball = new Actor(
-        x,
-        y,
-        "#",
-        "scroll of Fireball",
-        Colors.SCROLL_OF_FIREBALL,
-      );
-      scrollOfFireball.blocks = false;
-      //scrollOfFireball.pickable = new Fireball(2, 5);
-      scrollOfFireball.pickable = new Pickable(
-        new TargetSelector(SelectorType.SELECTED_RANGE, 3),
-        new HealthEffect(-12, "hurdur"),
-      );
-      game.actors.push(scrollOfFireball);
-      game.sendToBack(scrollOfFireball);
+      item = createItem("scroll of fireball", x, y);
     } else if (rng < 70 + 25) {
-      const scrollOfConfusion = new Actor(
-        x,
-        y,
-        "#",
-        "scroll of Confusion",
-        Colors.SCROLL_OF_CONFUSION,
-      );
-      scrollOfConfusion.blocks = false;
-      //scrollOfConfusion.pickable = new Confuser(10, 8);
-      scrollOfConfusion.pickable = new Pickable(
-        new TargetSelector(SelectorType.SELECTED_MONSTER, 5),
-        new AiChangeEffect(new ConfusedMonsterAi(10), "confused af"),
-      );
-      game.actors.push(scrollOfConfusion);
-      game.sendToBack(scrollOfConfusion);
-      //console.log("conf!");
+      item = createItem("scroll of confusion", x, y);
     } else {
-      const scrollOfConfusion = new Actor(
-        x,
-        y,
-        "#",
-        "scroll of Map",
-        Colors.SCROLL_OF_MAP,
-      );
-      scrollOfConfusion.blocks = false;
-      //scrollOfConfusion.pickable = new Confuser(10, 8);
-      scrollOfConfusion.pickable = new Pickable(
-        undefined,
-        new MapClearEffect("All is clear!"),
-      );
+      item = createItem("scroll of map", x, y);
+    }
 
-      game.actors.push(scrollOfConfusion);
-      game.sendToBack(scrollOfConfusion);
-      console.log("uulu!");
+    if (item) {
+      game.actors.push(item);
+      game.sendToBack(item);
     }
   }
 
@@ -331,10 +246,11 @@ export default class Map {
     //take one room and make it spawn room
     const spawnRoomIndex = random.getInt(0, root.rooms.length - 1);
     const stairsRoomIndex = random.getInt(0, root.rooms.length - 1);
-
+    /*
     console.log(
       "spwanroom index: " + spawnRoomIndex + " / " + (root.rooms.length - 1),
     );
+    */
     for (let i = 0; i < root.rooms.length; i++) {
       const room = root.rooms[i];
       const spawnRoom = i === spawnRoomIndex ? true : false;

@@ -70,10 +70,10 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   if (name === "rat") {
     ch = "r";
     color = "#999";
-    power = 2;
+    power = 3;
     defense = 0;
     hp = 5;
-    xp = 2;
+    xp = 5;
     abi = new Abilities(2, 2, 2, 2, 2);
   } else if (name === "ghoul") {
     //medium, undead

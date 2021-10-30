@@ -64,7 +64,7 @@ export default class Actor {
       fx = new HealthEffect(actorTemplate.pickable?.effect.amount, undefined);
 
     if (actorTemplate?.pickable?.selectorName) {
-      console.log(actorTemplate.pickable.selectorName);
+      //console.log(actorTemplate.pickable.selectorName);
       this.pickable = new Pickable(
         new TargetSelector(
           ensure(actorTemplate.pickable.selector).type,
