@@ -43,6 +43,7 @@ export const Colors = {
   ENEMY_ATTACK: "#AAA",
   DEAD_BODY: "#A00",
   DEFAULT_TEXT: "#AAA",
+  HILIGHT_TEXT: "#FFF",
 
   DEFEAT: "#A00",
 };

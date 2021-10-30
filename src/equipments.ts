@@ -39,9 +39,20 @@ export default class Equipments {
     return ac;
   }
 
+  getPower(): string {
+    let dmg = "1d3";
+    for (const item of this.items) {
+      if (item.weapon) {
+        dmg = item.weapon.damage;
+      }
+    }
+    return dmg;
+  }
+
   update(owner: Actor) {
     if (owner.destructible) {
       ensure(owner?.destructible).defense = this.getAC();
+      ensure(owner.attacker).power = this.getPower();
     }
   }
 }

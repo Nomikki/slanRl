@@ -5,7 +5,7 @@ import Attacker from "./attacker";
 import { MonsterDestructible } from "./destructible";
 
 export const createMonster = (name: string, x: number, y: number): Actor => {
-  let power = 1;
+  let power = "1d4";
   let xp = 0;
   let hp = 1;
   let defense = 0;
@@ -70,7 +70,7 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   if (name === "rat") {
     ch = "r";
     color = "#999";
-    power = 3;
+    power = "1d3";
     defense = 0;
     hp = 5;
     xp = 5;
@@ -117,14 +117,14 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
     //actions:
     //greataxe: +5, reach 5ft, 1d12+3, slash
     abi = new Abilities(16, 12, 16, 7, 11);
-    power = 3;
+    power = "1d4";
     xp = 10;
     hp = 10;
     defense = 0;
     ch = "o";
     color = "#00AA00";
   } else if (name === "troll") {
-    power = 5;
+    power = "1d6";
     xp = 15;
     hp = 15;
     defense = 1;

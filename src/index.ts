@@ -94,7 +94,7 @@ class Game {
           2,
           "your cadaver",
         );
-        this.player.attacker = new Attacker(5);
+        this.player.attacker = new Attacker("1d4");
         this.player.ai = new PlayerAI();
         this.player.abilities = new Abilities(18, 15, 10, 8, 12);
         this.player.container = new Container(26);
@@ -128,8 +128,15 @@ class Game {
         y: ensure(this.player).y,
       });
 
+      const item3 = createItem({
+        name: "handaxe",
+        x: ensure(this.player).x - 1,
+        y: ensure(this.player).y,
+      });
+
       this.actors.push(item);
       this.actors.push(item2);
+      this.actors.push(item3);
     } else {
       this.log.add("Welcome back stranger!");
     }
@@ -244,7 +251,7 @@ class Game {
         }
 
         if (actor.pickable) {
-          if (actor.armor) {
+          if (actor.armor || actor.weapon) {
             this.actors[i] = createItem({
               name: actor.name,
               x: actor.x,
@@ -494,7 +501,7 @@ class Game {
 
     this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1, getHpColor());
     this.drawText("ATT: " + power, 7, this.height + 1);
-    this.drawText("AC: " + ac, 11, this.height + 1);
+    this.drawText("AC: " + ac, 13, this.height + 1);
 
     this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
     this.drawText("Turn: " + turn, this.width - 6, this.height + 2);
@@ -506,7 +513,7 @@ class Game {
     );
 
     const padding = 8;
-    const offset = 17;
+    const offset = 19;
 
     const abi = this.player?.abilities;
 

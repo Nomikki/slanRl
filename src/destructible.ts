@@ -40,16 +40,11 @@ export default class Destructible {
   }
 
   takeDamage(owner: Actor, damage: number): number {
-    damage -= this.defense;
-
-    if (damage > 0) {
-      this.hp -= damage;
-      if (this.hp <= 0) {
-        this.die(owner);
-      }
-    } else {
-      damage = 0;
+    this.hp -= damage;
+    if (this.hp <= 0) {
+      this.die(owner);
     }
+
     return damage;
   }
 

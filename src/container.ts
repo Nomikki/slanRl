@@ -2,8 +2,9 @@ import { game } from ".";
 import Actor from "./actor";
 import { ArmorType } from "./armor";
 import { Colors } from "./colors";
-import { SelectorType } from "./pickable";
+import { SelectorType, WearableType } from "./pickable";
 import { ensure } from "./utils";
+import { DamageType } from "./weapon";
 
 export default class Container {
   size: number;
@@ -98,6 +99,15 @@ export default class Container {
           propertiesText = `AC: ${it.armor.armorClass}, heavy armor`;
       }
 
+      if (it.weapon) {
+        if (it.weapon.damageType === DamageType.BLUDGEONING)
+          propertiesText = `damage: ${it.weapon.damage}, bludgeoning`;
+        if (it.weapon.damageType === DamageType.PIERCING)
+          propertiesText = `damage: ${it.weapon.damage}, piercing`;
+        if (it.weapon.damageType === DamageType.SLASHING)
+          propertiesText = `damage: ${it.weapon.damage}, slashing`;
+      }
+
       if (it.pickable?.effect) {
         let effectText = "";
 
@@ -137,6 +147,17 @@ export default class Container {
           selectorText = "wearer range";
 
         propertiesText += `${selectorText}, range: ${range}`;
+      }
+
+      if (it.pickable?.effect && it.pickable.effectName === "Wearable") {
+        if (it.pickable.effect.type === WearableType.ONEHANDED_WEAPON)
+          propertiesText += ", one-handed";
+        if (it.pickable.effect.type === WearableType.TWOHANDED_WEAPON)
+          propertiesText += ", two-handed";
+        if (it.pickable.effect.type === WearableType.SHIELD)
+          propertiesText += ", shield";
+        if (it.pickable.effect.type === WearableType.ARMOR)
+          propertiesText += ", armor";
       }
 
       game.drawText(`${propertiesText}`, 30, menuStartY + i);

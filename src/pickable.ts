@@ -285,7 +285,11 @@ export default class Pickable {
   }
 
   wear(owner: Actor, wearer: Actor) {
-    if (owner.armor && wearer.container && wearer.equipments) {
+    if (
+      (owner.armor || owner.weapon) &&
+      wearer.container &&
+      wearer.equipments
+    ) {
       //first, remove item from inventory (make space)
       wearer.container.remove(owner);
 
