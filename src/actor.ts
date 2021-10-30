@@ -1,6 +1,7 @@
 import { game } from ".";
 import { Abilities } from "./abilities";
 import { ConfusedAI, ConfusedMonsterAi, MonsterAI, PlayerAI } from "./ai";
+import Armor from "./armor";
 import Attacker from "./attacker";
 import Container from "./container";
 import Destructible from "./destructible";
@@ -39,6 +40,9 @@ export default class Actor {
   container?: Container;
 
   abilities?: Abilities;
+
+  //Armor: Something that can deal all armor items.
+  armor?: Armor;
 
   constructor(x: number, y: number, ch: string, name: string, color: string) {
     this.x = float2int(x);

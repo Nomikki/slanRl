@@ -119,6 +119,31 @@ export class MapClearEffect implements Effect {
   }
 }
 
+export enum WearableType {
+  ARMOR,
+  SHIELD,
+  ONEHANDED_WEAPON,
+  TWOHANDED_WEAPON,
+}
+
+export class Wearable implements Effect {
+  type: WearableType;
+
+  constructor(itemType: WearableType) {
+    this.type = itemType;
+  }
+
+  applyTo(actor: Actor): boolean {
+    ensure(actor);
+    console.log("apply to:" + actor.name);
+    /*
+    game.player?.fov?.showAll();
+    game.player?.computeFov();
+    */
+    return false;
+  }
+}
+
 export class HealthEffect implements Effect {
   amount = 0;
   message: any;
@@ -182,12 +207,13 @@ export default class Pickable {
     | AiChangeEffect
     | TemporaryAI
     | MapClearEffect
+    | Wearable
     | any;
   selectorName?: string;
   effectName?: string;
   constructor(
     selector: TargetSelector | void,
-    effect: HealthEffect | AiChangeEffect | MapClearEffect | void,
+    effect: HealthEffect | AiChangeEffect | MapClearEffect | Wearable | void,
   ) {
     this.selector = selector;
     this.effect = effect;

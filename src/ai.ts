@@ -208,13 +208,25 @@ export class PlayerAI extends AI {
       }
     };
 
+    const handleWield = async () => {
+      const wieldedItem = await this.choseFromInventory(owner);
+      if (wieldedItem) {
+        game.gameStatus = GameStatus.NEW_TURN;
+        game.log.add(`You wield up the ${wieldedItem.name}`, Colors.PICKED_UP);
+      } else {
+        game.log.add("Nevermind...");
+      }
+    };
+
     switch (ascii) {
       case "S": //save
         handleSave();
         break;
+
       case ">": //go down
         handleNextLevel();
         break;
+
       case "g": //pickup item
         handlePickup();
         break;
@@ -229,6 +241,10 @@ export class PlayerAI extends AI {
 
       case "o": //open
         await handleOpen();
+        break;
+
+      case "w": //wield
+        await handleWield();
         break;
       default:
         break;
@@ -246,15 +262,7 @@ export class PlayerAI extends AI {
         actor.x === targetX &&
         actor.y === targetY
       ) {
-        /*
-        if (actor.name === "door") {
-          if (actor.blocks) game.log.add("There is a door!");
-          else break;
-        } else 
-        */
-        {
-          ensure(owner.attacker).attack(owner, actor);
-        }
+        ensure(owner.attacker).attack(owner, actor);
         return false; //attack
       }
     }

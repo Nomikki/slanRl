@@ -7,6 +7,7 @@ import { Colors } from "./colors";
 import Container from "./container";
 import { MonsterDestructible, PlayerDestructible } from "./destructible";
 import Fov from "./fov";
+import { createItem } from "./itemGenerator";
 import Log from "./log";
 import Map from "./map";
 import { Menu, MenuItemCode } from "./menu";
@@ -108,6 +109,13 @@ class Game {
       this.sendToBack(this.stairs);
 
       this.log.add("Welcome stranger!");
+
+      const item = createItem(
+        "leather armor",
+        ensure(this.player).x,
+        ensure(this.player).y,
+      );
+      this.actors.push(item);
     } else {
       this.log.add("Welcome back stranger!");
     }
@@ -133,7 +141,7 @@ class Game {
 
   async newGame() {
     this.masterSeed = float2int(Math.random() * 0x7ffffff);
-    //this.masterSeed = 125660641;
+    //this.masterSeed = 106405165;
     this.turns = 0;
     this.depth = 1;
     await this.term();

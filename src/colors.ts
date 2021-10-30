@@ -13,6 +13,8 @@ export const Colors = {
   SCROLL_OF_CONFUSION: "#FFFFAA",
   SCROLL_OF_MAP: "#AAAA22",
 
+  ARMOR_ITEM: "#99AACC",
+
   //ui
   LEVEL_UP: "#FFFF00",
   HEALED: "#8F8",
