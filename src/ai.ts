@@ -133,7 +133,7 @@ export class PlayerAI extends AI {
     if (dx !== 0 || dy !== 0) {
       game.gameStatus = GameStatus.NEW_TURN;
 
-      if (this.moveOrAttack(owner, owner.x + dx, owner.y + dy)) {
+      if (await this.moveOrAttack(owner, owner.x + dx, owner.y + dy)) {
         game.player?.computeFov();
         game.camera.compute(ensure(game.player?.x), ensure(game.player?.y));
       }
@@ -252,7 +252,7 @@ export class PlayerAI extends AI {
     }
   }
 
-  moveOrAttack(owner: Actor, targetX: number, targetY: number): boolean {
+  async moveOrAttack(owner: Actor, targetX: number, targetY: number) {
     if (game.map?.isWall(targetX, targetY)) return false; //move
     let doorFound = false;
 
@@ -263,7 +263,7 @@ export class PlayerAI extends AI {
         actor.x === targetX &&
         actor.y === targetY
       ) {
-        ensure(owner.attacker).attack(owner, actor);
+        await ensure(owner.attacker).attack(owner, actor);
         return false; //attack
       }
     }
