@@ -33,10 +33,12 @@ export default class Map {
   readonly MAX_ROOM_ITEMS: number = 2;
 
   tiles: any;
+  templateDoors: Rectangle[];
 
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
+    this.templateDoors = [];
   }
 
   save() {
@@ -95,7 +97,12 @@ export default class Map {
     const door = new Actor(x, y, closed ? "D" : "+", "door", Colors.DOOR);
     door.blocks = true;
     //door.destructible = new Destructible(100, 0, "broken door", "door", 0);
-    game.actors.push(door);
+    //add door, if its between walls
+    if (
+      (this.isWall(x - 1, y) == true && this.isWall(x + 1, y) == true) ||
+      (this.isWall(x, y - 1) == true && this.isWall(x, y + 1) == true)
+    )
+      game.actors.push(door);
   }
 
   additem(x: number, y: number) {
@@ -154,8 +161,9 @@ export default class Map {
           lastWalkable === true &&
           (x1 === x2 || y1 === y2)
         ) {
-          if (withActors && tilex !== this.stairsX && tiley !== this.stairsY)
-            this.addDoor(tilex, tiley, true);
+          if (withActors && tilex !== this.stairsX && tiley !== this.stairsY) {
+            this.templateDoors.push(new Rectangle(tilex, tiley, 0, 0));
+          }
         }
         lastWalkable = this.tiles[index].canWalk;
 
@@ -301,6 +309,10 @@ export default class Map {
     if (withActors) {
       for (const room of monsterRooms) {
         this.addActors(room);
+      }
+
+      for (const door of this.templateDoors) {
+        this.addDoor(door.x, door.y, true);
       }
     }
   }
