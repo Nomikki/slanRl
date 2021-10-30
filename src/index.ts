@@ -44,6 +44,9 @@ class Game {
 
   turns = 0;
 
+  mapx = 80;
+  mapy = 80;
+
   camera: Camera;
 
   constructor() {
@@ -64,7 +67,8 @@ class Game {
     this.height = 40;
 
     this.actors = [];
-    this.map = new Map(this.width, this.height);
+
+    this.map = new Map(this.mapx, this.mapy);
 
     this.camera = new Camera();
     this.camera.setCenter(this.width, this.height);
@@ -73,7 +77,7 @@ class Game {
   async term() {
     this.log = new Log();
     this.actors = [];
-    this.map = new Map(this.width, this.height);
+    this.map = new Map(this.mapx, this.mapy);
     this.player = undefined;
   }
 
@@ -95,7 +99,7 @@ class Game {
         this.player.abilities = new Abilities(18, 15, 10, 8, 12);
         this.player.container = new Container(26);
         this.player.equipments = new Equipments();
-        this.player.fov = new Fov(this.width, this.height);
+        this.player.fov = new Fov(this.mapx, this.mapy);
       }
 
       ensure(this.player).x = ensure(this.map).startX;
@@ -144,7 +148,7 @@ class Game {
 
     const tempPlayer = this.player as Actor;
     this.actors = Array<Actor>();
-    this.map = new Map(this.width, this.height);
+    this.map = new Map(this.mapx, this.mapy);
     this.init(true, false);
     this.actors.push(tempPlayer);
 
@@ -185,7 +189,7 @@ class Game {
         //this.actors[i].ai = undefined;
 
         if (actor.fov) {
-          this.actors[i].fov = new Fov(this.width, this.height);
+          this.actors[i].fov = new Fov(this.mapx, this.mapy);
           ensure(this.actors[i].fov).mapped = actor.fov.mapped;
         }
 
