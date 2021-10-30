@@ -20,7 +20,7 @@ export const createItem = (name: string, x: number, y: number): Actor => {
     color = Colors.HEALTHPOTION;
     blocks = false;
     pickable = new Pickable(undefined, new HealthEffect(4, undefined));
-  } else if (name === "nutealla bun") {
+  } else if (name === "nutella bun") {
     ch = "@";
     color = Colors.HEALTHPOTION;
     blocks = false;
@@ -57,6 +57,8 @@ export const createItem = (name: string, x: number, y: number): Actor => {
     blocks = false;
 
     pickable = new Pickable(undefined, new MapClearEffect("All is clear!"));
+  } else {
+    console.error(`${name} not found.`);
   }
 
   const item = new Actor(x, y, ch, name, color);
