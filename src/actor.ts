@@ -62,7 +62,7 @@ export default class Actor {
 
     if (actorTemplate.pickable?.effectName === "Wearable") {
       fx = new Wearable(actorTemplate.pickable.effect.type);
-      console.log(actorTemplate);
+      //console.log(actorTemplate);
     }
 
     if (actorTemplate.pickable?.effectName === "AiChangeEffect") {
@@ -84,9 +84,14 @@ export default class Actor {
           ensure(actorTemplate.pickable.selector).range,
         ),
         effect: fx,
+        weight: actorTemplate.pickable.weight,
       });
     } else {
-      this.pickable = new Pickable({ selector: undefined, effect: fx });
+      this.pickable = new Pickable({
+        selector: undefined,
+        effect: fx,
+        weight: ensure(actorTemplate.pickable?.weight),
+      });
     }
   }
 

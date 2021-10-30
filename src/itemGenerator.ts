@@ -42,6 +42,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 10,
     });
   } else if (props.name === "studded leather") {
     armor = new Armor({
@@ -58,6 +59,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 13,
     });
   } else if (props.name === "hide") {
     armor = new Armor({
@@ -65,7 +67,6 @@ export const createItem = (props: {
       ac: 12,
       armorClassAbilityType: "dex",
       armorType: ArmorType.MEDIUM_ARMOR,
-      weight: 1,
       requirementStrenght: 2,
     });
     ch = "M";
@@ -74,6 +75,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 6,
     });
   } else if (props.name === "chain shirt") {
     armor = new Armor({
@@ -81,7 +83,7 @@ export const createItem = (props: {
       ac: 13,
       armorClassAbilityType: "dex",
       armorType: ArmorType.MEDIUM_ARMOR,
-      weight: 2,
+      weight: 20,
       requirementStrenght: 0,
     });
     ch = "M";
@@ -90,6 +92,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 20,
     });
   } else if (props.name === "scale mail") {
     armor = new Armor({
@@ -106,6 +109,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 45,
     });
   } else if (props.name === "breastplate") {
     armor = new Armor({
@@ -113,7 +117,6 @@ export const createItem = (props: {
       ac: 14,
       armorClassAbilityType: "dex",
       armorType: ArmorType.MEDIUM_ARMOR,
-      weight: 2,
       requirementStrenght: 0,
     });
     ch = "M";
@@ -122,6 +125,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 20,
     });
   } else if (props.name === "half plate") {
     armor = new Armor({
@@ -129,7 +133,6 @@ export const createItem = (props: {
       ac: 15,
       armorClassAbilityType: "dex",
       armorType: ArmorType.MEDIUM_ARMOR,
-      weight: 4,
       requirementStrenght: 0,
     });
     ch = "M";
@@ -138,6 +141,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 40,
     });
   } else if (props.name === "ring mail") {
     armor = new Armor({
@@ -145,7 +149,6 @@ export const createItem = (props: {
       ac: 14,
       armorClassAbilityType: "str",
       armorType: ArmorType.HEAVY_ARMOR,
-      weight: 40,
       requirementStrenght: 0,
     });
     ch = "H";
@@ -154,6 +157,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 40,
     });
   } else if (props.name === "chain mail") {
     armor = new Armor({
@@ -161,7 +165,6 @@ export const createItem = (props: {
       ac: 16,
       armorClassAbilityType: "str",
       armorType: ArmorType.HEAVY_ARMOR,
-      weight: 55,
       requirementStrenght: 13,
     });
     ch = "H";
@@ -170,6 +173,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 55,
     });
   } else if (props.name === "splint") {
     armor = new Armor({
@@ -177,7 +181,6 @@ export const createItem = (props: {
       ac: 17,
       armorClassAbilityType: "str",
       armorType: ArmorType.HEAVY_ARMOR,
-      weight: 60,
       requirementStrenght: 15,
     });
     ch = "H";
@@ -186,6 +189,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 60,
     });
   } else if (props.name === "plate") {
     armor = new Armor({
@@ -193,7 +197,6 @@ export const createItem = (props: {
       ac: 18,
       armorClassAbilityType: "str",
       armorType: ArmorType.HEAVY_ARMOR,
-      weight: 65,
       requirementStrenght: 15,
     });
     ch = "H";
@@ -202,6 +205,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.ARMOR),
+      weight: 65,
     });
   } else if (props.name === "shield") {
     armor = new Armor({
@@ -209,7 +213,6 @@ export const createItem = (props: {
       ac: 2,
       armorClassAbilityType: "",
       armorType: ArmorType.SHIELD,
-      weight: 6,
       requirementStrenght: 0,
     });
     ch = "H";
@@ -218,6 +221,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new Wearable(WearableType.SHIELD),
+      weight: 6,
     });
   } else if (props.name === "health potion") {
     ch = "!";
@@ -226,6 +230,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new HealthEffect(4, undefined),
+      weight: 0.1,
     });
   } else if (props.name === "nutella bun") {
     ch = "@";
@@ -234,6 +239,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new HealthEffect(30, undefined),
+      weight: 0.1,
     });
   } else if (props.name === "scroll of lighting bolt") {
     ch = "#";
@@ -242,6 +248,7 @@ export const createItem = (props: {
     pickable = pickable = new Pickable({
       selector: new TargetSelector(SelectorType.CLOSEST_MONSTER, 5),
       effect: new HealthEffect(-20, "A lighting bolt strikes!"),
+      weight: 0.05,
     });
   } else if (props.name === "scroll of fireball") {
     ch = "#";
@@ -251,6 +258,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: new TargetSelector(SelectorType.SELECTED_RANGE, 3),
       effect: new HealthEffect(-12, "hurdur"),
+      weight: 0.05,
     });
   } else if (props.name === "scroll of confusion") {
     ch = "#";
@@ -260,6 +268,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: new TargetSelector(SelectorType.SELECTED_MONSTER, 5),
       effect: new AiChangeEffect(new ConfusedMonsterAi(10), "confused af"),
+      weight: 0.05,
     });
   } else if (props.name === "scroll of map") {
     ch = "#";
@@ -269,6 +278,7 @@ export const createItem = (props: {
     pickable = new Pickable({
       selector: undefined,
       effect: new MapClearEffect("All is clear!"),
+      weight: 0.05,
     });
   } else {
     console.error(`${name} not found.`);
