@@ -32,13 +32,14 @@ export default class Map {
   readonly MAX_ROOM_MONSTERS: number = 3;
   readonly MAX_ROOM_ITEMS: number = 2;
 
-  tiles: any;
+  tiles: Tile[];
   templateDoors: Rectangle[];
 
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
     this.templateDoors = [];
+    this.tiles = new Array(this.width * this.height).fill(false);
   }
 
   save() {
@@ -48,6 +49,7 @@ export default class Map {
 
   isWall(x: number, y: number): boolean {
     const index = x + y * this.width;
+
     return !this.tiles[index].canWalk;
   }
 

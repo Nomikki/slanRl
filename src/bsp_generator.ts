@@ -1,7 +1,7 @@
 import bspNode from "./bsp_node";
 import Randomizer from "./random";
 import Rectangle from "./rectangle";
-import { float2int } from "./utils";
+import { ensure, float2int } from "./utils";
 
 const random = new Randomizer();
 
@@ -10,9 +10,9 @@ class bspGenerator {
   rootContainer: Rectangle;
   rows: number;
   cols: number;
-  map: any;
-  doorPlaces: any = null;
-  tempRooms: any = null;
+  map: Array<number>;
+  doorPlaces: Rectangle[];
+  tempRooms: Rectangle[];
   rooms: Rectangle[];
   tree: bspNode;
 
@@ -116,12 +116,13 @@ class bspGenerator {
     return false;
   }
 
-  ConnectRooms(node: bspNode): void {
-    if (node.A === null || node.B === null) return;
+  ConnectRooms(node: bspNode): boolean | void {
+    if (!node.A || !node.B) {
+      return false;
+    }
 
     const x1 = float2int(node.A.leaf.GetCenterX());
     const y1 = float2int(node.A.leaf.GetCenterY());
-
     const x2 = float2int(node.B.leaf.GetCenterX());
     const y2 = float2int(node.B.leaf.GetCenterY());
 
@@ -164,8 +165,8 @@ class bspGenerator {
       }
     }
 
-    this.ConnectRooms(node.A);
-    this.ConnectRooms(node.B);
+    this.ConnectRooms(ensure(node.A));
+    this.ConnectRooms(ensure(node.B));
   }
 }
 

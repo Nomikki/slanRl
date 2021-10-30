@@ -18,7 +18,7 @@ export const populateVersion = () =>
   `Commit ID: <span>${COMMIT_HASH}</span> | Version: <span>${VERSION}</span>`;
 
 export const printVersionContainer = () => {
-  document.querySelector("#version")!.innerHTML = populateVersion();
+  ensure(document.querySelector("#version")).innerHTML = populateVersion();
 };
 
 export const debugInit = () => {

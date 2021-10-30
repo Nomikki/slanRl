@@ -45,8 +45,8 @@ export class TargetSelector {
     };
 
     const handleSelectClosestMonster = () => {
-      const actor: any = game.getClosestMonster(wearer.x, wearer.y, this.range);
-      listOfActors.push(actor);
+      const actor = game.getClosestMonster(wearer.x, wearer.y, this.range);
+      if (actor) listOfActors.push(actor);
     };
 
     const handleSelectedMonster = async () => {
@@ -105,9 +105,9 @@ export interface Effect {
 }
 
 export class MapClearEffect implements Effect {
-  message: any;
+  message: string | undefined;
 
-  constructor(message: string | void) {
+  constructor(message: string | undefined) {
     this.message = message;
   }
 
@@ -155,9 +155,9 @@ export class Wearable implements Effect {
 
 export class HealthEffect implements Effect {
   amount = 0;
-  message: any;
+  message: string | undefined;
 
-  constructor(amount: number, message: string | void) {
+  constructor(amount: number, message: string | undefined) {
     //super();
     this.amount = amount;
     this.message = message;
@@ -223,8 +223,8 @@ export default class Pickable {
   weight: number;
 
   constructor(props: {
-    selector: TargetSelector | void;
-    effect: HealthEffect | AiChangeEffect | MapClearEffect | Wearable | void;
+    selector: TargetSelector | undefined;
+    effect: HealthEffect | AiChangeEffect | MapClearEffect | Wearable | any;
     weight: number;
   }) {
     this.selector = props?.selector;
@@ -288,12 +288,13 @@ export default class Pickable {
     if (
       (owner.armor || owner.weapon) &&
       wearer.container &&
-      wearer.equipments
+      wearer.equipments &&
+      owner.pickable
     ) {
       //first, remove item from inventory (make space)
       wearer.container.remove(owner);
 
-      const takeOff = wearer.equipments.takeOff(owner.pickable?.effect.type);
+      const takeOff = wearer.equipments.takeOff(owner.pickable.effect.type);
 
       //then, take off wielded item
       //and add it to inventory

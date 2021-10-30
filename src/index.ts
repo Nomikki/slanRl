@@ -28,7 +28,7 @@ class Game {
   map?: Map;
   stairs?: Actor;
   canvas: HTMLElement;
-  ctx: any;
+  ctx: CanvasRenderingContext2D;
   fontSize: number;
   log: Log;
 
@@ -50,9 +50,9 @@ class Game {
   camera: Camera;
 
   constructor() {
-    this.canvas = document.getElementById("screen")!;
+    this.canvas = ensure(document.getElementById("screen"));
 
-    this.ctx = (this.canvas as HTMLCanvasElement).getContext("2d");
+    this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
     this.ctx.font = "12px system-ui";
     this.fontSize = 12;
     this.ctx.textAlign = "center";
@@ -176,9 +176,9 @@ class Game {
       if (savedVersion === null)
         window.localStorage.setItem("version", VERSION);
 
-      this.masterSeed = parseInt(window.localStorage.getItem("seed")!);
-      this.depth = parseInt(window.localStorage.getItem("depth")!);
-      this.turns = parseInt(window.localStorage.getItem("turns")!);
+      this.masterSeed = parseInt(ensure(window.localStorage.getItem("seed")));
+      this.depth = parseInt(ensure(window.localStorage.getItem("depth")));
+      this.turns = parseInt(ensure(window.localStorage.getItem("turns")));
       await this.init(false);
 
       const tempUsers = JSON.parse(
@@ -628,7 +628,7 @@ class Game {
     return closest;
   }
 
-  getActor(x: number, y: number): any {
+  getActor(x: number, y: number): Actor | null {
     for (const actor of this.actors) {
       if (
         actor.x === x &&
@@ -642,7 +642,7 @@ class Game {
     return null;
   }
 
-  getAnyActor(x: number, y: number): any {
+  getAnyActor(x: number, y: number): Actor | null {
     for (const actor of this.actors) {
       if (actor.x === x && actor.y === y) {
         return actor;

@@ -367,9 +367,12 @@ export class MonsterAI extends AI {
 
 export class ConfusedAI extends AI {
   nbTurns: number;
-  oldAi: any;
+  oldAi: MonsterAI | PlayerAI | ConfusedAI | undefined;
 
-  constructor(nbTurns: number, oldAi: any) {
+  constructor(
+    nbTurns: number,
+    oldAi: MonsterAI | PlayerAI | ConfusedAI | undefined,
+  ) {
     super();
     this.nbTurns = nbTurns;
     this.oldAi = oldAi;
@@ -402,7 +405,7 @@ export class ConfusedAI extends AI {
 
 export class TemporaryAI extends AI {
   nbTurns: number;
-  oldAi: any;
+  oldAi: MonsterAI | PlayerAI | ConfusedAI | undefined;
 
   constructor(nbTurns: number) {
     super();
