@@ -137,9 +137,18 @@ export class Wearable implements Effect {
     ensure(actor);
     console.log("apply to:" + actor.name);
     /*
-    game.player?.fov?.showAll();
-    game.player?.computeFov();
+    //jos pelaajalla on jo tämmöinen esine päällä, riisutaan sen ensin.
+    //laitetaan tämä esine pelaajan päälle
+
+    const unwielded = actor.destructible.wielded.unwield(this.type);
+    if (actor.container?.add(unwielded)) {
+      console.log(`Unwielding ${unwielded.name}`);
+      return true;
+    } else {
+      console.log(`Inventory is full.`);
+    }
     */
+
     return false;
   }
 }
@@ -238,10 +247,8 @@ export default class Pickable {
     const actorList = Array<Actor>();
 
     if (this.selector) {
-      //console.log("1");
       await this.selector.selectTargets(wearer, actorList);
     } else {
-      //console.log("2");
       actorList.push(wearer);
     }
 
@@ -269,6 +276,27 @@ export default class Pickable {
       owner.x = wearer.x;
       owner.y = wearer.y;
       game.log.add(`${wearer.name} drops a ${owner.name}`);
+    }
+  }
+
+  wear(owner: Actor, wearer: Actor) {
+    if (owner.armor && wearer.container && wearer.equipments) {
+      //first, remove item from inventory (make space)
+      wearer.container.remove(owner);
+
+      const takeOff = wearer.equipments.takeOff(owner.pickable?.effect.type);
+
+      //then, take off wielded item
+      //and add it to inventory
+      if (wearer.container && takeOff) {
+        game.log.add(`take off a ${takeOff.name}`);
+        wearer.container.add(takeOff);
+      }
+
+      //and finally, add item to equipments
+      wearer.equipments.add(owner);
+      game.log.add(`${wearer.name} wear a ${owner.name}`);
+      wearer.equipments.update(wearer);
     }
   }
 }
