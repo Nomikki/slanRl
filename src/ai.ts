@@ -300,32 +300,7 @@ export class PlayerAI extends AI {
   async choseFromInventory(owner: Actor) {
     game.clear();
     game.render();
-    for (let y = 0; y < 28; y++) {
-      for (let x = 0; x < 40; x++) {
-        if ((y === 0 || y === 27) && x > 0 && x < 39)
-          game.drawChar("-", x + 20, y, Colors.MENU_BORDER);
-        else if ((x === 0 || x === 39) && y > 0 && y < 27)
-          game.drawChar("|", x + 20, y, Colors.MENU_BORDER);
-        else if (y === 0 || x === 0 || y === 27 || x === 39)
-          game.drawChar("+", x + 20, y, Colors.MENU_BORDER);
-        else game.drawChar(" ", x + 20, y);
-      }
-    }
-    game.drawText(" INVENTORY ", 34, 0);
-    game.drawText("name", 22, 1);
-    game.drawText("weight", 54, 1);
-
-    //game.renderUI();
-
-    let shortcut = "a";
-    let i = 0;
-    for (const it of ensure(owner.container).inventory) {
-      game.drawText(shortcut + ") " + it.name, 22, 2 + i);
-      const weight = ensure(it.pickable).weight;
-      game.drawText(`${weight} lb`, 54, 2 + i);
-      shortcut = String.fromCharCode(shortcut.charCodeAt(0) + 1);
-      i++;
-    }
+    if (owner.container) owner.container.render();
 
     const ch = await game.getch();
     const actorIndex = ch.charCodeAt(0) - 97; //97 = a

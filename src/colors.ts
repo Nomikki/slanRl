@@ -14,6 +14,7 @@ export const Colors = {
   SCROLL_OF_MAP: "#AAAA22",
 
   ARMOR_ITEM: "#99AACC",
+  WEAPON_ITEM: "#33FF33",
 
   //ui
   LEVEL_UP: "#FFFF00",

@@ -11,6 +11,7 @@ import Pickable, {
   Wearable,
   WearableType,
 } from "./pickable";
+import Weapon, { DamageType } from "./weapon";
 
 export const createItem = (props: {
   name: string;
@@ -23,17 +24,148 @@ export const createItem = (props: {
 
   let pickable = undefined;
   let armor = undefined;
+  let weapon = undefined;
+
+  //simple melee weapons
+  if (props.name === "club") {
+    weapon = new Weapon({
+      name: props.name,
+      damage: "1d4",
+      damageType: DamageType.BLUDGEONING,
+    });
+    ch = "F";
+    color = Colors.WEAPON_ITEM;
+    blocks = false;
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ONEHANDED_WEAPON),
+      weight: 2,
+    });
+  } else if (props.name === "dagger") {
+    weapon = new Weapon({
+      name: props.name,
+      damage: "1d4",
+      damageType: DamageType.PIERCING,
+    });
+    ch = "F";
+    color = Colors.WEAPON_ITEM;
+    blocks = false;
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ONEHANDED_WEAPON),
+      weight: 1,
+    });
+  } else if (props.name === "greatclub") {
+    weapon = new Weapon({
+      name: props.name,
+      damage: "1d8",
+      damageType: DamageType.BLUDGEONING,
+    });
+    ch = "F";
+    color = Colors.WEAPON_ITEM;
+    blocks = false;
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.TWOHANDED_WEAPON),
+      weight: 10,
+    });
+  } else if (props.name === "handaxe") {
+    weapon = new Weapon({
+      name: props.name,
+      damage: "1d6",
+      damageType: DamageType.SLASHING,
+    });
+    ch = "F";
+    color = Colors.WEAPON_ITEM;
+    blocks = false;
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ONEHANDED_WEAPON),
+      weight: 2,
+    });
+  } else if (props.name === "javelin") {
+    weapon = new Weapon({
+      name: props.name,
+      damage: "1d6",
+      damageType: DamageType.PIERCING,
+    });
+    ch = "F";
+    color = Colors.WEAPON_ITEM;
+    blocks = false;
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ONEHANDED_WEAPON),
+      weight: 2,
+    });
+  } else if (props.name === "light hammer") {
+    weapon = new Weapon({
+      name: props.name,
+      damage: "1d4",
+      damageType: DamageType.BLUDGEONING,
+    });
+    ch = "F";
+    color = Colors.WEAPON_ITEM;
+    blocks = false;
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ONEHANDED_WEAPON),
+      weight: 2,
+    });
+  } else if (props.name === "mace") {
+    weapon = new Weapon({
+      name: props.name,
+      damage: "1d6",
+      damageType: DamageType.BLUDGEONING,
+    });
+    ch = "F";
+    color = Colors.WEAPON_ITEM;
+    blocks = false;
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ONEHANDED_WEAPON),
+      weight: 4,
+    });
+  } else if (props.name === "quarterstaff") {
+    weapon = new Weapon({
+      name: props.name,
+      damage: "1d6",
+      damageType: DamageType.BLUDGEONING,
+    });
+    ch = "F";
+    color = Colors.WEAPON_ITEM;
+    blocks = false;
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ONEHANDED_WEAPON),
+      weight: 4,
+    });
+  } else if (props.name === "spear") {
+    weapon = new Weapon({
+      name: props.name,
+      damage: "1d6",
+      damageType: DamageType.PIERCING,
+    });
+    ch = "F";
+    color = Colors.WEAPON_ITEM;
+    blocks = false;
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ONEHANDED_WEAPON),
+      weight: 3,
+    });
+  }
+
+  //simple ranged weapons
 
   //armors
 
   //light armors
-  if (props.name === "leather armor") {
+  else if (props.name === "leather armor") {
     armor = new Armor({
       name: props.name,
       ac: 11,
       armorClassAbilityType: "dex",
       armorType: ArmorType.LIGHT_ARMOR,
-      weight: 10,
       requirementStrenght: 0,
     });
     ch = "L";
@@ -50,7 +182,6 @@ export const createItem = (props: {
       ac: 12,
       armorClassAbilityType: "dex",
       armorType: ArmorType.LIGHT_ARMOR,
-      weight: 13,
       requirementStrenght: 0,
     });
     ch = "L";
@@ -289,6 +420,7 @@ export const createItem = (props: {
   item.blocks = blocks;
   item.pickable = pickable;
   item.armor = armor;
+  item.weapon = weapon;
 
   return item;
 };

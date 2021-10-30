@@ -14,6 +14,7 @@ import Pickable, {
   Wearable,
 } from "./pickable";
 import { ensure, float2int } from "./utils";
+import Weapon from "./weapon";
 
 export default class Actor {
   x: number;
@@ -48,6 +49,9 @@ export default class Actor {
 
   //Armor: Something that can deal all armor items.
   armor?: Armor;
+
+  //Weapon: This item can be used as weapon.
+  weapon?: Weapon;
 
   constructor(x: number, y: number, ch: string, name: string, color: string) {
     this.x = float2int(x);

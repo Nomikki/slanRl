@@ -116,22 +116,20 @@ class Game {
 
       this.log.add("Welcome stranger!");
 
-      /*
-      const item = createItem(
-        "leather armor",
-        ensure(this.player).x,
-        ensure(this.player).y,
-      );
+      const item = createItem({
+        name: "leather armor",
+        x: ensure(this.player).x,
+        y: ensure(this.player).y,
+      });
 
-      const item2 = createItem(
-        "hide",
-        ensure(this.player).x + 1,
-        ensure(this.player).y,
-      );
-    
+      const item2 = createItem({
+        name: "hide",
+        x: ensure(this.player).x + 1,
+        y: ensure(this.player).y,
+      });
+
       this.actors.push(item);
       this.actors.push(item2);
-      */
     } else {
       this.log.add("Welcome back stranger!");
     }

@@ -137,7 +137,7 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   monster.destructible = new MonsterDestructible(
     hp,
     defense,
-    `death ${name}`,
+    `dead ${name}`,
     xp,
   );
   monster.attacker = new Attacker(power);
