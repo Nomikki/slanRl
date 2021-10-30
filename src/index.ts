@@ -112,6 +112,7 @@ class Game {
 
       this.log.add("Welcome stranger!");
 
+      /*
       const item = createItem(
         "leather armor",
         ensure(this.player).x,
@@ -123,9 +124,10 @@ class Game {
         ensure(this.player).x + 1,
         ensure(this.player).y,
       );
-
+    
       this.actors.push(item);
       this.actors.push(item2);
+      */
     } else {
       this.log.add("Welcome back stranger!");
     }
@@ -196,11 +198,11 @@ class Game {
                 new Actor(it.x, it.y, it.ch, it.name, it.color),
               ) - 1;
             //ensure(this.actors[i].container).inventory[k].create(it);
-            ensure(this.actors[i].container).inventory[k] = createItem(
-              it.name,
-              it.x,
-              it.y,
-            );
+            ensure(this.actors[i].container).inventory[k] = createItem({
+              name: it.name,
+              x: it.x,
+              y: it.y,
+            });
           }
         }
 
@@ -211,7 +213,7 @@ class Game {
             //console.log(it);
             //ensure(this.actors[i].equipments?.add(it));
             ensure(this.actors[i].equipments).add(
-              createItem(it.name, it.x, it.y),
+              createItem({ name: it.name, x: it.x, y: it.y }),
             );
 
             /*
@@ -241,7 +243,11 @@ class Game {
 
         if (actor.pickable) {
           if (actor.armor) {
-            this.actors[i] = createItem(actor.name, actor.x, actor.y);
+            this.actors[i] = createItem({
+              name: actor.name,
+              x: actor.x,
+              y: actor.y,
+            });
           } else {
             this.actors[i].create(actor);
           }

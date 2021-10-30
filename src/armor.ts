@@ -13,19 +13,19 @@ export default class Armor {
   armorRequirementStrenght: number;
   name: string;
 
-  constructor(
-    name: string,
-    ac: number,
-    armorClassAbilityType: string,
-    armorType: ArmorType,
-    weight: number,
-    requirementStrenght = 0,
-  ) {
-    this.name = name;
-    this.armorClass = ac;
-    this.armorClassAbilityType = armorClassAbilityType;
-    this.armorType = armorType;
-    this.weight = weight;
-    this.armorRequirementStrenght = requirementStrenght;
+  constructor(props: {
+    name: string;
+    ac: number;
+    armorClassAbilityType: string;
+    armorType: ArmorType;
+    weight: number;
+    requirementStrenght: number;
+  }) {
+    this.name = props.name;
+    this.armorClass = props.ac;
+    this.armorClassAbilityType = props.armorClassAbilityType;
+    this.armorType = props.armorType;
+    this.weight = props.weight;
+    this.armorRequirementStrenght = props?.requirementStrenght;
   }
 }

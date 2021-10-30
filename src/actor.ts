@@ -78,15 +78,15 @@ export default class Actor {
 
     if (actorTemplate?.pickable?.selectorName) {
       //console.log(actorTemplate.pickable.selectorName);
-      this.pickable = new Pickable(
-        new TargetSelector(
+      this.pickable = new Pickable({
+        selector: new TargetSelector(
           ensure(actorTemplate.pickable.selector).type,
           ensure(actorTemplate.pickable.selector).range,
         ),
-        fx,
-      );
+        effect: fx,
+      });
     } else {
-      this.pickable = new Pickable(undefined, fx);
+      this.pickable = new Pickable({ selector: undefined, effect: fx });
     }
   }
 

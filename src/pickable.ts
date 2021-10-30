@@ -220,12 +220,13 @@ export default class Pickable {
     | any;
   selectorName?: string;
   effectName?: string;
-  constructor(
-    selector: TargetSelector | void,
-    effect: HealthEffect | AiChangeEffect | MapClearEffect | Wearable | void,
-  ) {
-    this.selector = selector;
-    this.effect = effect;
+  constructor(props: {
+    selector: TargetSelector | void;
+    effect: HealthEffect | AiChangeEffect | MapClearEffect | Wearable | void;
+  }) {
+    this.selector = props?.selector;
+    this.effect = props?.effect;
+
     if (this.selector !== undefined) {
       this.selectorName = this.selector.constructor.name;
     }

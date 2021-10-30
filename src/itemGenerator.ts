@@ -12,7 +12,11 @@ import Pickable, {
   WearableType,
 } from "./pickable";
 
-export const createItem = (name: string, x: number, y: number): Actor => {
+export const createItem = (props: {
+  name: string;
+  x: number;
+  y: number;
+}): Actor => {
   let ch = "?";
   let color = "#F0F";
   let blocks = false;
@@ -23,125 +27,254 @@ export const createItem = (name: string, x: number, y: number): Actor => {
   //armors
 
   //light armors
-  if (name === "leather armor") {
-    armor = new Armor(name, 11, "dex", ArmorType.LIGHT_ARMOR, 10);
+  if (props.name === "leather armor") {
+    armor = new Armor({
+      name: props.name,
+      ac: 11,
+      armorClassAbilityType: "dex",
+      armorType: ArmorType.LIGHT_ARMOR,
+      weight: 10,
+      requirementStrenght: 0,
+    });
     ch = "L";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "studded leather") {
-    armor = new Armor(name, 12, "dex", ArmorType.LIGHT_ARMOR, 13);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "studded leather") {
+    armor = new Armor({
+      name: props.name,
+      ac: 12,
+      armorClassAbilityType: "dex",
+      armorType: ArmorType.LIGHT_ARMOR,
+      weight: 13,
+      requirementStrenght: 0,
+    });
     ch = "L";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "hide") {
-    armor = new Armor(name, 12, "dex", ArmorType.MEDIUM_ARMOR, 12);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "hide") {
+    armor = new Armor({
+      name: props.name,
+      ac: 12,
+      armorClassAbilityType: "dex",
+      armorType: ArmorType.MEDIUM_ARMOR,
+      weight: 1,
+      requirementStrenght: 2,
+    });
     ch = "M";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "chain shirt") {
-    armor = new Armor(name, 13, "dex", ArmorType.MEDIUM_ARMOR, 20);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "chain shirt") {
+    armor = new Armor({
+      name: props.name,
+      ac: 13,
+      armorClassAbilityType: "dex",
+      armorType: ArmorType.MEDIUM_ARMOR,
+      weight: 2,
+      requirementStrenght: 0,
+    });
     ch = "M";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "scale mail") {
-    armor = new Armor(name, 14, "dex", ArmorType.MEDIUM_ARMOR, 45);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "scale mail") {
+    armor = new Armor({
+      name: props.name,
+      ac: 14,
+      armorClassAbilityType: "dex",
+      armorType: ArmorType.MEDIUM_ARMOR,
+      weight: 4,
+      requirementStrenght: 5,
+    });
     ch = "M";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "breastplate") {
-    armor = new Armor(name, 14, "dex", ArmorType.MEDIUM_ARMOR, 20);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "breastplate") {
+    armor = new Armor({
+      name: props.name,
+      ac: 14,
+      armorClassAbilityType: "dex",
+      armorType: ArmorType.MEDIUM_ARMOR,
+      weight: 2,
+      requirementStrenght: 0,
+    });
     ch = "M";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "half plate") {
-    armor = new Armor(name, 15, "dex", ArmorType.MEDIUM_ARMOR, 40);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "half plate") {
+    armor = new Armor({
+      name: props.name,
+      ac: 15,
+      armorClassAbilityType: "dex",
+      armorType: ArmorType.MEDIUM_ARMOR,
+      weight: 4,
+      requirementStrenght: 0,
+    });
     ch = "M";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "ring mail") {
-    armor = new Armor(name, 14, "str", ArmorType.HEAVY_ARMOR, 40);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "ring mail") {
+    armor = new Armor({
+      name: props.name,
+      ac: 14,
+      armorClassAbilityType: "str",
+      armorType: ArmorType.HEAVY_ARMOR,
+      weight: 40,
+      requirementStrenght: 0,
+    });
     ch = "H";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "chain mail") {
-    armor = new Armor(name, 16, "str", ArmorType.HEAVY_ARMOR, 55, 13);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "chain mail") {
+    armor = new Armor({
+      name: props.name,
+      ac: 16,
+      armorClassAbilityType: "str",
+      armorType: ArmorType.HEAVY_ARMOR,
+      weight: 55,
+      requirementStrenght: 13,
+    });
     ch = "H";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "splint") {
-    armor = new Armor(name, 17, "str", ArmorType.HEAVY_ARMOR, 60, 15);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "splint") {
+    armor = new Armor({
+      name: props.name,
+      ac: 17,
+      armorClassAbilityType: "str",
+      armorType: ArmorType.HEAVY_ARMOR,
+      weight: 60,
+      requirementStrenght: 15,
+    });
     ch = "H";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "plate") {
-    armor = new Armor(name, 18, "str", ArmorType.HEAVY_ARMOR, 65, 15);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "plate") {
+    armor = new Armor({
+      name: props.name,
+      ac: 18,
+      armorClassAbilityType: "str",
+      armorType: ArmorType.HEAVY_ARMOR,
+      weight: 65,
+      requirementStrenght: 15,
+    });
     ch = "H";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.ARMOR));
-  } else if (name === "shield") {
-    armor = new Armor(name, 2, "", ArmorType.SHIELD, 6);
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.ARMOR),
+    });
+  } else if (props.name === "shield") {
+    armor = new Armor({
+      name: props.name,
+      ac: 2,
+      armorClassAbilityType: "",
+      armorType: ArmorType.SHIELD,
+      weight: 6,
+      requirementStrenght: 0,
+    });
     ch = "H";
     color = Colors.ARMOR_ITEM;
     blocks = false;
-    pickable = new Pickable(undefined, new Wearable(WearableType.SHIELD));
-  } else if (name === "health potion") {
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new Wearable(WearableType.SHIELD),
+    });
+  } else if (props.name === "health potion") {
     ch = "!";
     color = Colors.HEALTHPOTION;
     blocks = false;
-    pickable = new Pickable(undefined, new HealthEffect(4, undefined));
-  } else if (name === "nutella bun") {
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new HealthEffect(4, undefined),
+    });
+  } else if (props.name === "nutella bun") {
     ch = "@";
     color = Colors.HEALTHPOTION;
     blocks = false;
-    pickable = new Pickable(undefined, new HealthEffect(30, undefined));
-  } else if (name === "scroll of lighting bolt") {
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new HealthEffect(30, undefined),
+    });
+  } else if (props.name === "scroll of lighting bolt") {
     ch = "#";
     color = Colors.SCROLL_OF_LIGHTING;
     blocks = false;
-    pickable = pickable = new Pickable(
-      new TargetSelector(SelectorType.CLOSEST_MONSTER, 5),
-      new HealthEffect(-20, "A lighting bolt strikes!"),
-    );
-  } else if (name === "scroll of fireball") {
+    pickable = pickable = new Pickable({
+      selector: new TargetSelector(SelectorType.CLOSEST_MONSTER, 5),
+      effect: new HealthEffect(-20, "A lighting bolt strikes!"),
+    });
+  } else if (props.name === "scroll of fireball") {
     ch = "#";
     color = Colors.SCROLL_OF_FIREBALL;
     blocks = false;
 
-    pickable = new Pickable(
-      new TargetSelector(SelectorType.SELECTED_RANGE, 3),
-      new HealthEffect(-12, "hurdur"),
-    );
-  } else if (name === "scroll of confusion") {
+    pickable = new Pickable({
+      selector: new TargetSelector(SelectorType.SELECTED_RANGE, 3),
+      effect: new HealthEffect(-12, "hurdur"),
+    });
+  } else if (props.name === "scroll of confusion") {
     ch = "#";
     color = Colors.SCROLL_OF_CONFUSION;
     blocks = false;
 
-    pickable = new Pickable(
-      new TargetSelector(SelectorType.SELECTED_MONSTER, 5),
-      new AiChangeEffect(new ConfusedMonsterAi(10), "confused af"),
-    );
-  } else if (name === "scroll of map") {
+    pickable = new Pickable({
+      selector: new TargetSelector(SelectorType.SELECTED_MONSTER, 5),
+      effect: new AiChangeEffect(new ConfusedMonsterAi(10), "confused af"),
+    });
+  } else if (props.name === "scroll of map") {
     ch = "#";
     color = Colors.SCROLL_OF_MAP;
     blocks = false;
 
-    pickable = new Pickable(undefined, new MapClearEffect("All is clear!"));
+    pickable = new Pickable({
+      selector: undefined,
+      effect: new MapClearEffect("All is clear!"),
+    });
   } else {
     console.error(`${name} not found.`);
   }
 
-  const item = new Actor(x, y, ch, name, color);
+  const item = new Actor(props.x, props.y, ch, props.name, color);
 
   item.blocks = blocks;
   item.pickable = pickable;

@@ -104,19 +104,19 @@ export default class Map {
 
     if (rng < 70) {
       if (random.getInt(0, 100) < 95) {
-        item = createItem("health potion", x, y);
+        item = createItem({ name: "health potion", x, y });
       } else {
-        item = createItem("nutella bun", x, y);
+        item = createItem({ name: "nutella bun", x, y });
         console.log("Jossain haisoo nutella!");
       }
     } else if (rng < 70 + 10) {
-      item = createItem("scroll of lighting bolt", x, y);
+      item = createItem({ name: "scroll of lighting bolt", x, y });
     } else if (rng < 70 + 20) {
-      item = createItem("scroll of fireball", x, y);
+      item = createItem({ name: "scroll of fireball", x, y });
     } else if (rng < 70 + 25) {
-      item = createItem("scroll of confusion", x, y);
+      item = createItem({ name: "scroll of confusion", x, y });
     } else {
-      item = createItem("scroll of map", x, y);
+      item = createItem({ name: "scroll of map", x, y });
     }
 
     if (item) {
