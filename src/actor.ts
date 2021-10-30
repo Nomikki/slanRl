@@ -5,11 +5,13 @@ import Armor from "./armor";
 import Attacker from "./attacker";
 import Container from "./container";
 import Destructible from "./destructible";
+import Equipments from "./equipments";
 import Fov from "./fov";
 import Pickable, {
   AiChangeEffect,
   HealthEffect,
   TargetSelector,
+  Wearable,
 } from "./pickable";
 import { ensure, float2int } from "./utils";
 
@@ -39,6 +41,9 @@ export default class Actor {
   // Container: Something that can contain actors
   container?: Container;
 
+  // Equipments: All equipments
+  equipments?: Equipments;
+
   abilities?: Abilities;
 
   //Armor: Something that can deal all armor items.
@@ -53,9 +58,13 @@ export default class Actor {
   }
 
   create(actorTemplate: Actor) {
-    //console.log(actorTemplate);
+    let fx: AiChangeEffect | HealthEffect | Wearable | void = undefined;
 
-    let fx: AiChangeEffect | HealthEffect | void = undefined;
+    if (actorTemplate.pickable?.effectName === "Wearable") {
+      fx = new Wearable(actorTemplate.pickable.effect.type);
+      console.log(actorTemplate);
+    }
+
     if (actorTemplate.pickable?.effectName === "AiChangeEffect") {
       fx = new AiChangeEffect(
         new ConfusedMonsterAi(

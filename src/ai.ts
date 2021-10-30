@@ -211,8 +211,9 @@ export class PlayerAI extends AI {
     const handleWield = async () => {
       const wieldedItem = await this.choseFromInventory(owner);
       if (wieldedItem) {
+        //game.log.add(`You wield up the ${wieldedItem.name}`, Colors.PICKED_UP);
+        await ensure(wieldedItem.pickable).wear(wieldedItem, owner);
         game.gameStatus = GameStatus.NEW_TURN;
-        game.log.add(`You wield up the ${wieldedItem.name}`, Colors.PICKED_UP);
       } else {
         game.log.add("Nevermind...");
       }

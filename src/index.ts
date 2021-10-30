@@ -6,6 +6,7 @@ import { Camera } from "./camera";
 import { Colors } from "./colors";
 import Container from "./container";
 import { MonsterDestructible, PlayerDestructible } from "./destructible";
+import Equipments from "./equipments";
 import Fov from "./fov";
 import { createItem } from "./itemGenerator";
 import Log from "./log";
@@ -93,6 +94,7 @@ class Game {
         this.player.ai = new PlayerAI();
         this.player.abilities = new Abilities(18, 15, 10, 8, 12);
         this.player.container = new Container(26);
+        this.player.equipments = new Equipments();
         this.player.fov = new Fov(this.width, this.height);
       }
 
@@ -115,7 +117,15 @@ class Game {
         ensure(this.player).x,
         ensure(this.player).y,
       );
+
+      const item2 = createItem(
+        "hide",
+        ensure(this.player).x + 1,
+        ensure(this.player).y,
+      );
+
       this.actors.push(item);
+      this.actors.push(item2);
     } else {
       this.log.add("Welcome back stranger!");
     }
@@ -141,7 +151,7 @@ class Game {
 
   async newGame() {
     this.masterSeed = float2int(Math.random() * 0x7ffffff);
-    //this.masterSeed = 106405165;
+    this.masterSeed = 117290053;
     this.turns = 0;
     this.depth = 1;
     await this.term();
@@ -185,7 +195,32 @@ class Game {
               ensure(this.actors[i].container).inventory.push(
                 new Actor(it.x, it.y, it.ch, it.name, it.color),
               ) - 1;
-            ensure(this.actors[i].container).inventory[k].create(it);
+            //ensure(this.actors[i].container).inventory[k].create(it);
+            ensure(this.actors[i].container).inventory[k] = createItem(
+              it.name,
+              it.x,
+              it.y,
+            );
+          }
+        }
+
+        if (actor.equipments) {
+          this.actors[i].equipments = new Equipments();
+          for (const it of actor.equipments.items) {
+            //console.log(">>");
+            //console.log(it);
+            //ensure(this.actors[i].equipments?.add(it));
+            ensure(this.actors[i].equipments).add(
+              createItem(it.name, it.x, it.y),
+            );
+
+            /*
+            const k =
+              ensure(this.actors[i].equipments).items.push(
+                new Actor(it.x, it.y, it.ch, it.name, it.color),
+              ) - 1;
+            ensure(this.actors[i].equipments).add(it);
+            */
           }
         }
 
@@ -205,7 +240,11 @@ class Game {
         }
 
         if (actor.pickable) {
-          this.actors[i].create(actor);
+          if (actor.armor) {
+            this.actors[i] = createItem(actor.name, actor.x, actor.y);
+          } else {
+            this.actors[i].create(actor);
+          }
         }
 
         if (actor.name === "stairs") {
@@ -492,6 +531,15 @@ class Game {
     );
 
     this.log.render();
+
+    this.drawText("Weared", this.width - 20, this.height + 3);
+    let a = 0;
+    if (pl.equipments && pl.equipments?.items.length > 0) {
+      for (const actor of ensure(pl.equipments?.items)) {
+        this.drawText(actor.name, this.width - 20, this.height + 4 + a);
+        a++;
+      }
+    }
   }
 
   async gameloop() {
