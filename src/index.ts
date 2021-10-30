@@ -3,10 +3,7 @@ import Actor from "./actor";
 import { MonsterAI, PlayerAI } from "./ai";
 import Attacker from "./attacker";
 import Container from "./container";
-import Destructible, {
-  MonsterDestructible,
-  PlayerDestructible,
-} from "./destructible";
+import { MonsterDestructible, PlayerDestructible } from "./destructible";
 import Fov from "./fov";
 import Log from "./log";
 import Map from "./map";
@@ -41,7 +38,7 @@ class Game {
 
   menu?: Menu;
 
-  turns: number;
+  turns = 0;
 
   constructor() {
     this.canvas = document.getElementById("screen")!;
@@ -201,6 +198,7 @@ class Game {
         }
 
         if (actor.name === "door") {
+          /*
           this.actors[i].destructible = new Destructible(
             100,
             0,
@@ -208,6 +206,7 @@ class Game {
             "door",
             0,
           );
+          */
           this.actors[i].blocks = actor.blocks;
         }
 
@@ -552,6 +551,15 @@ class Game {
         actor.destructible &&
         !actor.destructible.isDead()
       ) {
+        return actor;
+      }
+    }
+    return null;
+  }
+
+  getAnyActor(x: number, y: number): any {
+    for (const actor of this.actors) {
+      if (actor.x === x && actor.y === y) {
         return actor;
       }
     }

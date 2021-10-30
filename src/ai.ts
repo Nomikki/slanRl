@@ -23,6 +23,27 @@ export class PlayerAI extends AI {
     return LEVEL_UP_BASE + this.xpLevel * LEVEL_UP_FACTOR;
   }
 
+  async pickDirection() {
+    const ch = await game.getch();
+
+    let dx = 0;
+    let dy = 0;
+    if (ch === "ArrowLeft") {
+      dx = -1;
+    }
+    if (ch === "ArrowRight") {
+      dx = 1;
+    }
+    if (ch === "ArrowUp") {
+      dy = -1;
+    }
+    if (ch === "ArrowDown") {
+      dy = 1;
+    }
+
+    return [dx, dy];
+  }
+
   async update(owner: Actor) {
     const levelUpXp = this.getNextLevelXP();
 
@@ -116,22 +137,8 @@ export class PlayerAI extends AI {
     const handleOpen = async () => {
       game.log.add("Which direction?");
       game.render();
-      const ch = await game.getch();
-      console.log(ch);
-      let dx = 0;
-      let dy = 0;
-      if (ch === "ArrowLeft") {
-        dx = -1;
-      }
-      if (ch === "ArrowRight") {
-        dx = 1;
-      }
-      if (ch === "ArrowUp") {
-        dy = -1;
-      }
-      if (ch === "ArrowDown") {
-        dy = 1;
-      }
+
+      const [dx, dy] = await this.pickDirection();
 
       if (!game?.map?.openCloseDoor(owner.x + dx, owner.y + dy)) {
         game.log.add("There is no any door.");
@@ -223,6 +230,7 @@ export class PlayerAI extends AI {
 
   moveOrAttack(owner: Actor, targetX: number, targetY: number): boolean {
     if (game.map?.isWall(targetX, targetY)) return false; //move
+    let doorFound = false;
 
     for (const actor of game.actors) {
       if (
@@ -231,10 +239,13 @@ export class PlayerAI extends AI {
         actor.x === targetX &&
         actor.y === targetY
       ) {
+        /*
         if (actor.name === "door") {
           if (actor.blocks) game.log.add("There is a door!");
           else break;
-        } else {
+        } else 
+        */
+        {
           ensure(owner.attacker).attack(owner, actor);
         }
         return false; //attack
@@ -244,11 +255,25 @@ export class PlayerAI extends AI {
     //look for corpses or items
     for (const actor of game.actors) {
       const corpseOrItem =
-        (actor.destructible && actor.destructible.isDead) || actor.pickable;
+        (actor.destructible && actor.destructible.isDead) ||
+        actor.pickable ||
+        actor.name === "door";
 
       if (corpseOrItem && actor.x === targetX && actor.y === targetY) {
         game.log.add(`There is a ${actor.name} here`);
       }
+      if (
+        actor.name === "door" &&
+        actor.blocks &&
+        actor.x === targetX &&
+        actor.y === targetY
+      ) {
+        doorFound = true;
+      }
+    }
+
+    if (doorFound) {
+      return false;
     }
 
     owner.x = targetX;

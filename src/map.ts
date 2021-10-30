@@ -2,7 +2,6 @@ import { game } from ".";
 import Actor from "./actor";
 import { ConfusedMonsterAi } from "./ai";
 import bspGenerator from "./bsp_generator";
-import Destructible from "./destructible";
 import { createMonster } from "./monsterGenerator";
 import Pickable, {
   AiChangeEffect,
@@ -83,7 +82,7 @@ export default class Map {
   }
 
   openCloseDoor(x: number, y: number): boolean {
-    const actor = game.getActor(x, y);
+    const actor = game.getAnyActor(x, y);
     if (actor && actor.name === "door") {
       actor.blocks = !actor.blocks;
       if (actor.blocks) {
@@ -101,7 +100,7 @@ export default class Map {
   addDoor(x: number, y: number, closed: boolean) {
     const door = new Actor(x, y, closed ? "D" : "+", "door", "#AA0");
     door.blocks = true;
-    door.destructible = new Destructible(100, 0, "broken door", "door", 0);
+    //door.destructible = new Destructible(100, 0, "broken door", "door", 0);
     game.actors.push(door);
   }
 
