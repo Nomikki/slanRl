@@ -6,6 +6,14 @@ import { SelectorType, WearableType } from "./pickable";
 import { ensure } from "./utils";
 import { DamageType } from "./weapon";
 
+interface MenuBackgroundProps {
+  title: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export default class Container {
   size: number;
   inventory: Actor[];
@@ -34,36 +42,25 @@ export default class Container {
     }
   }
 
-  renderMenuBackground(props: {
-    title: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  }) {
-    for (let yy = 0; yy < props.h; yy++) {
-      for (let xx = 0; xx < props.w; xx++) {
-        if ((yy === 0 || yy === props.h - 1) && xx > 0 && xx < props.w - 1)
-          game.drawChar("-", xx + props.x, yy + props.y, Colors.MENU_BORDER);
-        else if ((xx === 0 || xx === props.w - 1) && yy > 0 && yy < props.h - 1)
-          game.drawChar("|", xx + props.x, yy + props.y, Colors.MENU_BORDER);
-        else if (
-          yy === 0 ||
-          xx === 0 ||
-          yy === props.h - 1 ||
-          xx === props.w - 1
-        )
-          game.drawChar("+", xx + props.x, yy + props.y, Colors.MENU_BORDER);
-        else game.drawChar(" ", xx + props.x, yy + props.y, Colors.MENU_BORDER);
+  renderMenuBackground({ title, x, y, w, h }: MenuBackgroundProps) {
+    for (let yy = 0; yy < h; yy++) {
+      for (let xx = 0; xx < w; xx++) {
+        if ((yy === 0 || yy === h - 1) && xx > 0 && xx < w - 1)
+          game.drawChar("-", xx + x, yy + y, Colors.MENU_BORDER);
+        else if ((xx === 0 || xx === w - 1) && yy > 0 && yy < h - 1)
+          game.drawChar("|", xx + x, yy + y, Colors.MENU_BORDER);
+        else if (yy === 0 || xx === 0 || yy === h - 1 || xx === w - 1)
+          game.drawChar("+", xx + x, yy + y, Colors.MENU_BORDER);
+        else game.drawChar(" ", xx + x, yy + y, Colors.MENU_BORDER);
       }
     }
 
     //game.drawText(" INVENTORY ", 34, 0);
-    for (let i = 0; i < props.title.length; i++) {
+    for (let i = 0; i < title.length; i++) {
       game.drawChar(
-        props.title.charAt(i),
-        props.x + props.w / 2 - props.title.length / 2 + i,
-        props.y,
+        title.charAt(i),
+        x + w / 2 - title.length / 2 + i,
+        y,
         Colors.DEFAULT_TEXT,
       );
     }

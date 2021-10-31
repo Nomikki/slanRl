@@ -10,7 +10,7 @@ class bspGenerator {
   rootContainer: Rectangle;
   rows: number;
   cols: number;
-  map: Array<number>;
+  map: number[];
   doorPlaces: Rectangle[];
   tempRooms: Rectangle[];
   rooms: Rectangle[];

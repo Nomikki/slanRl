@@ -105,7 +105,7 @@ export interface Effect {
 }
 
 export class MapClearEffect implements Effect {
-  message: string | undefined;
+  message?: string;
 
   constructor(message: string | undefined) {
     this.message = message;
@@ -155,7 +155,7 @@ export class Wearable implements Effect {
 
 export class HealthEffect implements Effect {
   amount = 0;
-  message: string | undefined;
+  message?: string;
 
   constructor(amount: number, message: string | undefined) {
     //super();

@@ -27,7 +27,7 @@ export default class Map {
   levelSeed = 0;
   depth = 0;
 
-  readonly ROOM_MAX_SIZE: number = 10;
+  readonly ROOM_MAX_SIZE: number = 5;
   readonly ROOM_MIN_SIZE: number = 4;
   readonly MAX_ROOM_MONSTERS: number = 3;
   readonly MAX_ROOM_ITEMS: number = 2;
@@ -226,17 +226,20 @@ export default class Map {
     this.depth = depth;
 
     random.setSeed(this.levelSeed + depth * 25);
+
+    const maxSplitLevel = random.getInt(4, 8);
     console.log("seed: " + this.levelSeed);
     console.log("depth: " + this.depth);
+    console.log("split level:" + maxSplitLevel);
 
-    const root = new bspGenerator(0, 0, this.width, this.height, 5);
+    const root = new bspGenerator(0, 0, this.width, this.height, maxSplitLevel);
     this.tiles = new Array(this.width * this.height).fill(false);
 
     const monsterRooms = [];
 
     //const option = random.getInt(0, 2);
     //console.log("option: " + option);
-    const option = 2;
+    const option = random.getInt(1, 2);
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
@@ -266,20 +269,17 @@ export default class Map {
       const spawnRoom = i === spawnRoomIndex ? true : false;
 
       //option 1
-      /*
       if (option === 1) {
         w = room.w;
         h = room.h;
         x = room.x + 1;
         y = room.y + 1;
 
-        this.createRoom(x, y, x + w - 2, y + h - 2);
+        this.createRoom(x, y, x + w - 2, y + h - 2, withActors);
         if (!spawnRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
       }
-      */
 
       //option 2
-
       if (option === 2) {
         w = random.getInt(this.ROOM_MIN_SIZE, room.w - 2);
         h = random.getInt(this.ROOM_MIN_SIZE, room.h - 2);
@@ -299,7 +299,7 @@ export default class Map {
         this.stairsY = float2int(y + h / 2);
       }
 
-      if (/*option === 1 ||*/ option === 2) {
+      if (option === 1 || option === 2) {
         if (i > 0) {
           this.dig(lastx, lasty, x + w / 2, lasty, withActors);
           this.dig(x + w / 2, lasty, x + w / 2, y + h / 2, withActors);

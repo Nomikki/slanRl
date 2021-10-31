@@ -26,7 +26,29 @@ export default class Fov {
   }
 
   showAll() {
-    this.mapped = new Array(this.width * this.height).fill(1);
+    this.mapped = new Array(this.width * this.height).fill(2);
+    for (let y = 1; y < this.height - 1; y++) {
+      for (let x = 1; x < this.width - 1; x++) {
+        if (game.map?.isWall(x, y) == true) {
+          let walls = 0;
+          if (game.map?.isWall(x - 1, y)) walls++;
+          if (game.map?.isWall(x + 1, y)) walls++;
+          if (game.map?.isWall(x, y - 1)) walls++;
+          if (game.map?.isWall(x, y + 1)) walls++;
+
+          if (game.map?.isWall(x - 1, y + 1)) walls++;
+          if (game.map?.isWall(x + 1, y + 1)) walls++;
+
+          if (game.map?.isWall(x - 1, y - 1)) walls++;
+          if (game.map?.isWall(x + 1, y - 1)) walls++;
+
+          if (walls >= 8) {
+            const id = float2int(x) + float2int(y) * this.width;
+            this.mapped[id] = 0;
+          }
+        }
+      }
+    }
   }
 
   /* Just a placeholder */

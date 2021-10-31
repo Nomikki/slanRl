@@ -400,6 +400,38 @@ class Game {
     );
   }
 
+  saveImage() {
+    const tempW = this.width;
+    const tempH = this.height;
+
+    const oldCameraX = this.camera.x;
+    const oldCameraY = this.camera.y;
+
+    this.width = this.mapx;
+    this.height = this.mapy;
+
+    this.canvas = ensure(document.getElementById("temp-image"));
+    this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
+    this.ctx.canvas.width = this.mapx * this.fontSize;
+    this.ctx.canvas.height = this.mapy * this.fontSize;
+
+    this.camera.x = 0;
+    this.camera.y = 0;
+
+    this.clear();
+    ensure(this.map).render();
+    for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
+
+    this.canvas = ensure(document.getElementById("screen"));
+    this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
+
+    this.width = tempW;
+    this.height = tempH;
+
+    this.camera.x = oldCameraX;
+    this.camera.y = oldCameraY;
+  }
+
   drawChar(ch: string, x: number, y: number, color = Colors.BACKGROUND) {
     if (x < 0 || y < 0 || x > this.width || y > this.height) {
       return;

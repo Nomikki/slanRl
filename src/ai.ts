@@ -219,6 +219,11 @@ export class PlayerAI extends AI {
       }
     };
 
+    const handleFov = () => {
+      game.player?.fov?.showAll();
+      game.saveImage();
+    };
+
     switch (ascii) {
       case "S": //save
         handleSave();
@@ -247,6 +252,11 @@ export class PlayerAI extends AI {
       case "w": //wield
         await handleWield();
         break;
+
+      case "f":
+        handleFov();
+        break;
+
       default:
         break;
     }
@@ -367,7 +377,7 @@ export class MonsterAI extends AI {
 
 export class ConfusedAI extends AI {
   nbTurns: number;
-  oldAi: MonsterAI | PlayerAI | ConfusedAI | undefined;
+  oldAi?: MonsterAI | PlayerAI | ConfusedAI;
 
   constructor(
     nbTurns: number,
@@ -405,7 +415,7 @@ export class ConfusedAI extends AI {
 
 export class TemporaryAI extends AI {
   nbTurns: number;
-  oldAi: MonsterAI | PlayerAI | ConfusedAI | undefined;
+  oldAi?: MonsterAI | PlayerAI | ConfusedAI;
 
   constructor(nbTurns: number) {
     super();
