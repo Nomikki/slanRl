@@ -1,6 +1,98 @@
 [
   {
-    "name": "sword",
-    "attack": 5
+    "name": "health potion",
+    "message": "gulp gulp gulp...",
+    "ch": "!",
+    "color": "#FF00FF",
+    "weight": 0.1,
+    "selector":  {
+      "type": "none",
+      "range": 0
+    },
+    "effect": {
+      "type": "health",
+      "amount": 4
+    }
+  },
+  {
+    "name": "nutella bun",
+    "message": "omnomnom...",
+    "ch": "@",
+    "color": "#FF00FF",
+    "weight": 0.1,
+    "selector":  {
+      "type": "none",
+      "range": 0
+    },
+    "effect": {
+      "type": "health",
+      "amount": 30
+    }
+  }, 
+
+  {
+    "name": "scroll of fireball",
+    "message": "Everything burns",
+    "ch": "#",
+    "color": "#FFAA00",
+    "weight": 0.05,
+    "selector":  {
+      "type": "selected range",
+      "range": 3
+    },
+    "effect": {
+      "type": "health",
+      "amount": -12
+    }
+  }, 
+
+  {
+    "name": "scroll of confusion",
+    "message": "confused af",
+    "ch": "#",
+    "color": "#FFCCAA",
+    "weight": 0.05,
+    "selector":  {
+      "type": "selected monster",
+      "range": 5
+    },
+    "effect": {
+      "type": "change ai",
+      "amount": 10
+    }
+  },
+
+  {
+    "name": "scroll of map",
+    "message": "All is clear!",
+    "ch": "#",
+    "color": "#FFAA99",
+    "weight": 0.05,
+    "selector":  {
+      "type": "none",
+      "range": 0
+    },
+    "effect": {
+      "type": "map clear",
+      "amount": 0
+    }
+  },
+
+  
+  {
+    "name": "scroll of lighting bolt",
+    "message": "A lighting bolt strikes!",
+    "ch": "#",
+    "color": "#00CCFF",
+    "weight": 0.05,
+    "selector":  {
+      "type": "closest monster",
+      "range": 5
+    },
+    "effect": {
+      "type": "health",
+      "amount": -20
+    }
   }
+
 ]
