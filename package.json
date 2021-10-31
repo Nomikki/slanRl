@@ -1,6 +1,6 @@
 {
   "name": "slanrl",
-  "version": "0.0.1.11b",
+  "version": "0.0.1.12a",
   "main": "src/index.js",
   "repository": {
     "type": "git",

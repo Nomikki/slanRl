@@ -68,8 +68,26 @@ export default class Map {
   }
 
   addMonster(x: number, y: number) {
-    const rng = random.getInt(0, 100);
+    const monsterListSmall = [
+      "bat",
+      "rat",
+      "jackal",
+      "lizard",
+      "kobold",
+      "giant rat",
+    ];
 
+    const monsterListBig = ["giant rat", "orc", "ghoul"];
+
+    if (random.getInt(0, 100) > 20) {
+      const rng = random.getInt(0, monsterListSmall.length);
+      game.actors.push(createMonster(monsterListSmall[rng], x, y));
+    } else {
+      const rng = random.getInt(0, monsterListBig.length);
+      game.actors.push(createMonster(monsterListBig[rng], x, y));
+    }
+
+    /*
     if (rng < 60) {
       game.actors.push(createMonster("orc", x, y));
     } else if (rng < 60 + 10) {
@@ -77,6 +95,7 @@ export default class Map {
     } else {
       game.actors.push(createMonster("rat", x, y));
     }
+    */
   }
 
   openCloseDoor(x: number, y: number): boolean {

@@ -51,7 +51,11 @@ export default class Attacker {
         const eyes = numberOfEyes;
 
         game.log.add(
-          `${owner.name} attacks ${target.name} for ${diceDmg} hit points (${dices}d${eyes}+${attackModifier}).`,
+          `${owner.name} attacks ${
+            target.name
+          } for ${diceDmg} hit points (${dices}d${eyes}${
+            attackModifier > 0 ? "+" : "-"
+          }${Math.abs(attackModifier)}).`,
           owner === game.player ? Colors.PLAYER_ATTACK : Colors.ENEMY_ATTACK,
         );
         let finalDamage = diceDmg + attackModifier;

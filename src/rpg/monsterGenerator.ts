@@ -1,8 +1,42 @@
+import monsterJson from "../data/monsters.json";
 import Actor from "../units/actor";
 import { MonsterAI } from "../units/ai";
 import { MonsterDestructible } from "../units/destructible";
+import { ensure } from "../utils/utils";
 import { Abilities } from "./abilities";
 import Attacker from "./attacker";
+
+interface AbilitiesIntercace {
+  str: number;
+  dex: number;
+  con: number;
+  int: number;
+  wis: number;
+}
+
+interface AttacksInterface {
+  name: string;
+  damage: string;
+  damageType: string;
+}
+
+interface MonsterInterface {
+  name: string;
+  ch: string;
+  color: string;
+  hp: number;
+  ac: number;
+  xp: number;
+
+  abilities: AbilitiesIntercace;
+  attacks: AttacksInterface[];
+}
+
+export const monsters: MonsterInterface[] = monsterJson;
+
+const getMonsterUsingFind = (name: string): MonsterInterface | undefined => {
+  return monsters.find(item => item.name === name);
+};
 
 export const createMonster = (name: string, x: number, y: number): Actor => {
   let power = "1d4";
@@ -13,6 +47,13 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   let color = "#F0F";
 
   let abi = new Abilities(2, 2, 2, 2, 2);
+
+  const isMonster = (name: string): boolean => {
+    for (const n of monsters) {
+      if (n.name === name) return true;
+    }
+    return false;
+  };
 
   /*
     List of enemies (candidates)
@@ -67,69 +108,23 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
     plants,
     undead,
   */
-  if (name === "rat") {
-    ch = "r";
-    color = "#999";
-    power = "1d3";
-    defense = 0;
-    hp = 5;
-    xp = 5;
-    abi = new Abilities(2, 2, 2, 2, 2);
-  } else if (name === "ghoul") {
-    //medium, undead
-    //ac: 12
-    //hp: 22
-    //str, dex, con, int, wis
-    //13,  15,  10,  7,   10
-    //Immunities: poison
-    //challenge: 1, 200xp
-    //actions:
-    //bite: melee, +2 hit, reach 5ft, 2d6+2 pierc
-    //claws: melee, +4, reach 5ft, 2d+2, slash
-    abi = new Abilities(13, 15, 10, 7, 10);
-  } else if (name === "giant rat") {
-    //small, beast
-    //ac: 12
-    //hp: 7
-    //str, dex, con, int, wis
-    //7,   15,  11,   2,  10
-    //challenge: 1 / 8: 25xp
-    //actions:
-    //bite: melee, +4, reach 5ft, 1d4+2, pierc
-    abi = new Abilities(7, 15, 11, 2, 10);
-  } else if (name === "ogre") {
-    //large, giant
-    //ac: 11
-    //hp:59
-    //str, dex, con, int, wis
-    //19,   8,  16,   5,  7
-    //challenge: 2: 450xp
-    //actions:
-    //creatclub: +6, reach 5ft, 2d8+4, bludg
-    abi = new Abilities(19, 8, 16, 5, 7);
-  } else if (name === "orc") {
-    //medium humanoid
-    //ac: 13
-    //hp:15
-    //str, dex, con, int, wis
-    //16,   12,  16,  7,  11
-    //challenge: 1 / 2: 100xp
-    //actions:
-    //greataxe: +5, reach 5ft, 1d12+3, slash
-    abi = new Abilities(16, 12, 16, 7, 11);
-    power = "1d4";
-    xp = 10;
-    hp = 10;
-    defense = 0;
-    ch = "o";
-    color = "#00AA00";
-  } else if (name === "troll") {
-    power = "1d6";
-    xp = 15;
-    hp = 15;
-    defense = 1;
-    ch = "t";
-    color = "#008800";
+
+  if (isMonster(name)) {
+    const monsterTemplate = ensure(getMonsterUsingFind(name));
+
+    ch = monsterTemplate.ch;
+    color = monsterTemplate.color;
+    power = monsterTemplate.attacks[0].damage;
+    defense = monsterTemplate.ac;
+    hp = monsterTemplate.hp;
+    xp = monsterTemplate.xp;
+    abi = new Abilities(
+      monsterTemplate.abilities.str,
+      monsterTemplate.abilities.dex,
+      monsterTemplate.abilities.con,
+      monsterTemplate.abilities.int,
+      monsterTemplate.abilities.wis,
+    );
   }
 
   const monster = new Actor(x, y, ch, name, color);
