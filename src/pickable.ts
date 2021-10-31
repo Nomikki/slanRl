@@ -2,6 +2,7 @@ import { game } from ".";
 import Actor from "./actor";
 import { TemporaryAI } from "./ai";
 import { Colors } from "./colors";
+import weaponsJson from "./data/weapons.json";
 import { ensure } from "./utils";
 
 export enum SelectorType {
@@ -11,6 +12,17 @@ export enum SelectorType {
   WEARER_RANGE,
   SELECTED_RANGE,
 }
+
+interface Weapon {
+  name: string;
+  attack: number;
+}
+
+const weapons: Weapon[] = weaponsJson;
+const sword = weapons.find(({ name }: Weapon) => name === "sword");
+
+console.log("weapons", weapons);
+console.log("sword", sword);
 
 export class TargetSelector {
   type: SelectorType;
