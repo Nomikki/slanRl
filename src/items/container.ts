@@ -1,10 +1,10 @@
-import { game } from ".";
-import Actor from "./actor";
-import { ArmorType } from "./armor";
-import { Colors } from "./colors";
+import { game } from "../.";
+import { ArmorType } from "../rpg/armor";
+import { DamageType } from "../rpg/weapon";
+import Actor from "../units/actor";
+import { Colors } from "../utils/colors";
+import { ensure } from "../utils/utils";
 import { SelectorType, WearableType } from "./pickable";
-import { ensure } from "./utils";
-import { DamageType } from "./weapon";
 
 interface MenuBackgroundProps {
   title: string;

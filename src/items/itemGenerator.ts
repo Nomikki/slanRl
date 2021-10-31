@@ -1,7 +1,8 @@
-import Actor from "./actor";
-import { ConfusedMonsterAi } from "./ai";
-import Armor, { ArmorType } from "./armor";
-import { Colors } from "./colors";
+import Armor, { ArmorType } from "../rpg/armor";
+import Weapon, { DamageType } from "../rpg/weapon";
+import Actor from "../units/actor";
+import { ConfusedMonsterAi } from "../units/ai";
+import { Colors } from "../utils/colors";
 import Pickable, {
   AiChangeEffect,
   HealthEffect,
@@ -11,7 +12,6 @@ import Pickable, {
   Wearable,
   WearableType,
 } from "./pickable";
-import Weapon, { DamageType } from "./weapon";
 
 export const createItem = (props: {
   name: string;

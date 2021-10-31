@@ -1,8 +1,8 @@
+import Actor from "../units/actor";
+import { MonsterAI } from "../units/ai";
+import { MonsterDestructible } from "../units/destructible";
 import { Abilities } from "./abilities";
-import Actor from "./actor";
-import { MonsterAI } from "./ai";
 import Attacker from "./attacker";
-import { MonsterDestructible } from "./destructible";
 
 export const createMonster = (name: string, x: number, y: number): Actor => {
   let power = "1d4";

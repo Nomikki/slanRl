@@ -1,18 +1,19 @@
-import { ABILITIES, Abilities } from "./abilities";
-import Actor from "./actor";
-import { MonsterAI, PlayerAI } from "./ai";
-import Attacker from "./attacker";
-import { Camera } from "./camera";
-import { Colors } from "./colors";
-import Container from "./container";
-import { MonsterDestructible, PlayerDestructible } from "./destructible";
-import Equipments from "./equipments";
-import Fov from "./fov";
-import { createItem } from "./itemGenerator";
-import Log from "./log";
-import Map from "./map";
-import { Menu, MenuItemCode } from "./menu";
-import { debugInit, ensure, float2int } from "./utils";
+import Container from "./items/container";
+import Equipments from "./items/equipments";
+import { createItem } from "./items/itemGenerator";
+import { Camera } from "./map/camera";
+import Fov from "./map/fov";
+//import weaponsJson from "./items.json";
+import Map from "./map/map";
+import { ABILITIES, Abilities } from "./rpg/abilities";
+import Attacker from "./rpg/attacker";
+import Actor from "./units/actor";
+import { MonsterAI, PlayerAI } from "./units/ai";
+import { MonsterDestructible, PlayerDestructible } from "./units/destructible";
+import { Colors } from "./utils/colors";
+import Log from "./utils/log";
+import { Menu, MenuItemCode } from "./utils/menu";
+import { debugInit, ensure, float2int } from "./utils/utils";
 
 export enum GameStatus {
   STARTUP,
@@ -21,6 +22,9 @@ export enum GameStatus {
   VICTORY,
   DEFEAT,
 }
+
+//const weapons: Weapon[] = weaponsJson;
+//const sword = weapons.find(({ name }: Weapon) => name === "sword");
 
 class Game {
   gameStatus: number = GameStatus.STARTUP;
@@ -72,6 +76,8 @@ class Game {
 
     this.camera = new Camera();
     this.camera.setCenter(this.width, this.height);
+
+    //console.log(items);
   }
 
   async term() {

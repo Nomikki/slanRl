@@ -1,4 +1,4 @@
-import { game } from ".";
+import { game } from "../.";
 import { Colors } from "./colors";
 import { dimmerColor } from "./utils";
 

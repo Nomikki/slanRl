@@ -1,7 +1,7 @@
+import Randomizer from "../utils/random";
+import Rectangle from "../utils/rectangle";
+import { ensure, float2int } from "../utils/utils";
 import bspNode from "./bsp_node";
-import Randomizer from "./random";
-import Rectangle from "./rectangle";
-import { ensure, float2int } from "./utils";
 
 const random = new Randomizer();
 

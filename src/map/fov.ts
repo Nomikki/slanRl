@@ -1,5 +1,5 @@
-import { game } from ".";
-import { float2int } from "./utils";
+import { game } from "../.";
+import { float2int } from "../utils/utils";
 
 export default class Fov {
   width: number;
