@@ -54,8 +54,10 @@ export default class Attacker {
           `${owner.name} attacks ${target.name} for ${diceDmg} hit points (${dices}d${eyes}+${attackModifier}).`,
           owner === game.player ? Colors.PLAYER_ATTACK : Colors.ENEMY_ATTACK,
         );
+        let finalDamage = diceDmg + attackModifier;
+        if (finalDamage < 0) finalDamage = 0;
 
-        target.destructible.takeDamage(target, diceDmg + attackModifier);
+        target.destructible.takeDamage(target, finalDamage);
       }
     }
   }

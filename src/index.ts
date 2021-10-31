@@ -162,7 +162,7 @@ class Game {
 
   async newGame() {
     this.masterSeed = float2int(Math.random() * 0x7ffffff);
-    //this.masterSeed = 117290053;
+    //this.masterSeed = 11038250;
     this.turns = 0;
     this.depth = 1;
     await this.term();
@@ -621,6 +621,8 @@ class Game {
           Colors.DEFEAT,
         );
         this.log.add("DEFEAT", Colors.DEFEAT);
+        this.player?.fov?.showAll();
+        this.saveImage();
         break;
       }
     }
