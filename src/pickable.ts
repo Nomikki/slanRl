@@ -2,7 +2,7 @@ import { game } from ".";
 import Actor from "./actor";
 import { TemporaryAI } from "./ai";
 import { Colors } from "./colors";
-import weaponsJson from "./data/weapons.json";
+import weapons from "./data/weapons";
 import { ensure } from "./utils";
 
 export enum SelectorType {
@@ -13,13 +13,9 @@ export enum SelectorType {
   SELECTED_RANGE,
 }
 
-interface Weapon {
-  name: string;
-  attack: number;
-}
+const sword = weapons.find(({ name }) => name === "sword");
 
-const weapons: Weapon[] = weaponsJson;
-const sword = weapons.find(({ name }: Weapon) => name === "sword");
+sword?.attack;
 
 console.log("weapons", weapons);
 console.log("sword", sword);
