@@ -84,6 +84,13 @@ export const createItem = (props: {
 
   let armorType = ArmorType.LIGHT_ARMOR;
 
+  const isArmor = (name: string): boolean =>
+    !!armors.find(n => n.name === name);
+  const isWeapon = (name: string): boolean =>
+    !!weapons.find(n => n.name === name);
+  const isItem = (name: string): boolean => !!items.find(n => n.name === name);
+
+  /*
   const isArmor = (name: string): boolean => {
     for (const n of armors) {
       if (n.name === name) return true;
@@ -104,6 +111,7 @@ export const createItem = (props: {
     }
     return false;
   };
+  */
 
   //simple melee weapons
   if (isWeapon(props.name)) {
