@@ -239,7 +239,7 @@ export default class Map {
 
     //const option = random.getInt(0, 2);
     //console.log("option: " + option);
-    const option = random.getInt(1, 2);
+    const option = random.getInt(0, 100) > 70 ? 1 : 2;
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
