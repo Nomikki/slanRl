@@ -1,6 +1,9 @@
-[
-  {
-    "name": "hide",
-    "defense": 5
-  }
-]
+{
+  "$schema": "../../schema/armors.json",
+  "armors": [
+    {
+      "name": "hide",
+      "defense": 5
+    }
+  ]
+}

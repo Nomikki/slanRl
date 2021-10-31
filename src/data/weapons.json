@@ -1,6 +1,9 @@
-[
-  {
-    "name": "sword",
-    "attack": 5
-  }
-]
+{
+  "$schema": "../../schema/weapons.json",
+  "weapons": [
+    {
+      "name": "sword",
+      "attack": 101
+    }
+  ]
+}

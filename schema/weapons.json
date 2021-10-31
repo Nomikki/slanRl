@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "patternProperties": {
+    "weapons": {
+      "$ref": "#/definitions/weapons-schema"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "weapons-schema": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/weapon-schema"
+      }
+    },
+    "weapon-schema": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "attack": {
+          "$ref": "#/definitions/attack-schema"
+        }
+      },
+      "required": ["name", "attack"]
+    },
+    "attack-schema": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "description": "Defines the attack power"
+    }
+  }
+}

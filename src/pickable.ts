@@ -2,7 +2,8 @@ import { game } from ".";
 import Actor from "./actor";
 import { TemporaryAI } from "./ai";
 import { Colors } from "./colors";
-import { armors, weapons } from "./data";
+import { armors } from "./data/armors.json";
+import { weapons } from "./data/weapons.json";
 import { ensure } from "./utils";
 
 export enum SelectorType {
