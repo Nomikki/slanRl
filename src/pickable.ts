@@ -2,7 +2,7 @@ import { game } from ".";
 import Actor from "./actor";
 import { TemporaryAI } from "./ai";
 import { Colors } from "./colors";
-import weapons from "./data/weapons";
+import { armors, weapons } from "./data";
 import { ensure } from "./utils";
 
 export enum SelectorType {
@@ -15,8 +15,7 @@ export enum SelectorType {
 
 const sword = weapons.find(({ name }) => name === "sword");
 
-sword?.attack;
-
+console.log("armors", armors);
 console.log("weapons", weapons);
 console.log("sword", sword);
 
