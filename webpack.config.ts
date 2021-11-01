@@ -1,12 +1,12 @@
-const { version } = require("./package.json");
-const path = require("path");
-const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import path from "path";
+import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import webpack from "webpack";
+import { version } from "./package.json";
 
 const buildTime = new Date().toISOString();
 
-module.exports = {
+export default {
   entry: "./src/index.ts",
   mode: "development",
 
@@ -24,15 +24,18 @@ module.exports = {
       VERSION: JSON.stringify(process.env.VERSION || version || "dev"),
     }),
     new HtmlWebpackPlugin({
-      template: "./src/static/index.html",
-      favicon: "./src/static/images/favicon.png",
+      filename: "index.html",
+      title: "Slan Roguelike",
+      inject: true,
+      template: "src/static/index.html",
+      favicon: "src/static/images/favicon.png",
     }),
   ],
   module: {
     rules: [
       {
-        test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        test: /\.(sa|sc|c)ss$/,
+        use: ["style-loader", "css-loader", "sass-loader", "postcss-loader"],
       },
       {
         test: /\.ts$/,

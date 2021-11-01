@@ -1,3 +1,4 @@
+import "@/index.scss";
 import Container from "@/items/container";
 import Equipments from "@/items/equipments";
 import { createItem } from "@/items/itemGenerator";
@@ -7,7 +8,6 @@ import { Camera } from "@/map/camera";
 import Fov from "@/map/fov";
 import { ABILITIES, Abilities } from "@/rpg/abilities";
 import Attacker from "@/rpg/attacker";
-import "@/static/index.css";
 import Actor from "@/units/actor";
 import { MonsterAI, PlayerAI } from "@/units/ai";
 import { MonsterDestructible, PlayerDestructible } from "@/units/destructible";
