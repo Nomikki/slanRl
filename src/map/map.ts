@@ -1,12 +1,12 @@
-import { game } from "../.";
-import { createItem } from "../items/itemGenerator";
-import { createMonster } from "../rpg/monsterGenerator";
-import Actor from "../units/actor";
-import { Colors } from "../utils/colors";
-import Randomizer from "../utils/random";
-import Rectangle from "../utils/rectangle";
-import { float2int } from "../utils/utils";
-import bspGenerator from "./bsp_generator";
+import { game } from "@/index";
+import { createItem } from "@/items/itemGenerator";
+import bspGenerator from "@/map/bsp_generator";
+import { createMonster } from "@/rpg/monsterGenerator";
+import Actor from "@/units/actor";
+import { Colors } from "@/utils/colors";
+import Randomizer from "@/utils/random";
+import Rectangle from "@/utils/rectangle";
+import { float2int } from "@/utils/utils";
 
 export const random = new Randomizer();
 

@@ -2,6 +2,7 @@ const { version } = require("./package.json");
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 const buildTime = new Date().toISOString();
 
@@ -41,6 +42,7 @@ module.exports = {
     ],
   },
   resolve: {
+    plugins: [new TsconfigPathsPlugin()],
     extensions: [".js", ".ts"],
   },
 };

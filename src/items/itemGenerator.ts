@@ -1,12 +1,6 @@
-import armorsJson from "../data/armors.json";
-import itemsJson from "../data/items.json";
-import weaponsJson from "../data/weapons.json";
-import Armor, { ArmorType } from "../rpg/armor";
-import Weapon, { DamageType } from "../rpg/weapon";
-import Actor from "../units/actor";
-import { ConfusedMonsterAi } from "../units/ai";
-import { Colors } from "../utils/colors";
-import { ensure } from "../utils/utils";
+import armorsJson from "@/data/armors.json";
+import itemsJson from "@/data/items.json";
+import weaponsJson from "@/data/weapons.json";
 import Pickable, {
   AiChangeEffect,
   HealthEffect,
@@ -14,8 +8,14 @@ import Pickable, {
   SelectorType,
   TargetSelector,
   Wearable,
-  WearableType,
-} from "./pickable";
+  WearableType
+} from "@/items/pickable";
+import Armor, { ArmorType } from "@/rpg/armor";
+import Weapon, { DamageType } from "@/rpg/weapon";
+import Actor from "@/units/actor";
+import { ConfusedMonsterAi } from "@/units/ai";
+import { Colors } from "@/utils/colors";
+import { ensure } from "@/utils/utils";
 
 interface ArmorInterface {
   name: string;
