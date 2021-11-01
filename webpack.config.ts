@@ -1,4 +1,5 @@
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import path from "path";
 import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import webpack from "webpack";
@@ -6,12 +7,17 @@ import { version } from "./package.json";
 
 const buildTime = new Date().toISOString();
 
+const environment = process.env.NODE_ENV ? process.env.NODE_ENV : "development";
+const isProd = environment === "production";
+
 export default {
-  entry: "./src/index.ts",
-  mode: "development",
+  entry: {
+    index: "./src/index.ts",
+  },
+  mode: environment,
 
   output: {
-    filename: "main.js",
+    filename: "[name].js",
     path: path.resolve(__dirname, "dist"),
   },
   plugins: [
@@ -26,16 +32,26 @@ export default {
     new HtmlWebpackPlugin({
       filename: "index.html",
       title: "Slan Roguelike",
-      inject: true,
       template: "src/static/index.html",
       favicon: "src/static/images/favicon.png",
+      inject: true,
+      minify: false,
+      hash: true,
+    }),
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
     }),
   ],
   module: {
     rules: [
       {
         test: /\.(sa|sc|c)ss$/,
-        use: ["style-loader", "css-loader", "sass-loader", "postcss-loader"],
+        use: [
+          isProd ? MiniCssExtractPlugin.loader : "style-loader",
+          "css-loader",
+          "sass-loader",
+          "postcss-loader",
+        ],
       },
       {
         test: /\.ts$/,
