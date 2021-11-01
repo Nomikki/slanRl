@@ -4,7 +4,7 @@ import Attacker from "@/rpg/attacker";
 import Actor from "@/units/actor";
 import { MonsterAI } from "@/units/ai";
 import { MonsterDestructible } from "@/units/destructible";
-import { ensure } from "@/utils/utils";
+import { ensure } from "@/utils";
 
 interface AbilitiesIntercace {
   str: number;

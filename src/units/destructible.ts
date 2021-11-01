@@ -1,7 +1,7 @@
 import { game, GameStatus } from "@/index";
 import Actor from "@/units/actor";
+import { ensure } from "@/utils";
 import { Colors } from "@/utils/colors";
-import { ensure } from "@/utils/utils";
 
 export default class Destructible {
   maxHP: number;

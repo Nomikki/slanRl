@@ -1,6 +1,6 @@
 import { WearableType } from "@/items/pickable";
 import Actor from "@/units/actor";
-import { ensure } from "@/utils/utils";
+import { ensure } from "@/utils";
 
 export default class Equipments {
   items: Actor[];

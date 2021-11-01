@@ -3,10 +3,10 @@ import { createItem } from "@/items/itemGenerator";
 import bspGenerator from "@/map/bsp_generator";
 import { createMonster } from "@/rpg/monsterGenerator";
 import Actor from "@/units/actor";
+import { float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Randomizer from "@/utils/random";
 import Rectangle from "@/utils/rectangle";
-import { float2int } from "@/utils/utils";
 
 export const random = new Randomizer();
 

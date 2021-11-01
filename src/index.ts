@@ -1,20 +1,20 @@
 import Container from "@/items/container";
 import Equipments from "@/items/equipments";
 import { createItem } from "@/items/itemGenerator";
+//import weaponsJson from "@/items.json";
+import Map from "@/map";
 import { Camera } from "@/map/camera";
 import Fov from "@/map/fov";
-//import weaponsJson from "@/items.json";
-import Map from "@/map/map";
 import { ABILITIES, Abilities } from "@/rpg/abilities";
 import Attacker from "@/rpg/attacker";
 import "@/static/index.css";
 import Actor from "@/units/actor";
 import { MonsterAI, PlayerAI } from "@/units/ai";
 import { MonsterDestructible, PlayerDestructible } from "@/units/destructible";
+import { debugInit, ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
-import { debugInit, ensure, float2int } from "@/utils/utils";
 
 export enum GameStatus {
   STARTUP,

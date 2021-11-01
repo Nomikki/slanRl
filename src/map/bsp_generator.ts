@@ -1,7 +1,7 @@
 import bspNode from "@/map/bsp_node";
+import { ensure, float2int } from "@/utils";
 import Randomizer from "@/utils/random";
 import Rectangle from "@/utils/rectangle";
-import { ensure, float2int } from "@/utils/utils";
 
 const random = new Randomizer();
 

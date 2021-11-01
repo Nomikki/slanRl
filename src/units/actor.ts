@@ -5,7 +5,7 @@ import Pickable, {
   AiChangeEffect,
   HealthEffect,
   TargetSelector,
-  Wearable
+  Wearable,
 } from "@/items/pickable";
 import Fov from "@/map/fov";
 import { Abilities } from "@/rpg/abilities";
@@ -14,7 +14,7 @@ import Attacker from "@/rpg/attacker";
 import Weapon from "@/rpg/weapon";
 import { ConfusedAI, ConfusedMonsterAi, MonsterAI, PlayerAI } from "@/units/ai";
 import Destructible from "@/units/destructible";
-import { ensure, float2int } from "@/utils/utils";
+import { ensure, float2int } from "@/utils";
 
 export default class Actor {
   x: number;

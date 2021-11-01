@@ -1,6 +1,6 @@
 import { game } from "@/index";
+import { dimmerColor } from "@/utils";
 import { Colors } from "@/utils/colors";
-import { dimmerColor } from "@/utils/utils";
 
 class LogText {
   text: string;
