@@ -1,0 +1,46 @@
+#game {
+  position: fixed;
+  left: 50%;
+  -webkit-transform: translate(-50%, 0%);
+  transform: translate(-50%, 0%);
+}
+
+#screen {
+  image-rendering: pixelated;
+}
+
+#temp-image {
+  display: block;
+  border: 1x solid lime;
+  max-width: 20%;
+  max-height: 20%;
+
+  position: absolute;
+  bottom: 110px;
+  right: 10px;
+}
+
+#info {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  color: #8cb2c6;
+  position: absolute;
+  left: 10px;
+}
+
+#info span {
+  color: #fff;
+}
+
+#version {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  color: #8cb2c6;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+#version span {
+  color: #fff;
+}

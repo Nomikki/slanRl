@@ -23,12 +23,16 @@ module.exports = {
       VERSION: JSON.stringify(process.env.VERSION || version || "dev"),
     }),
     new HtmlWebpackPlugin({
-      template: "./src/index.html",
-      favicon: "src/images/favicon.png",
+      template: "./src/static/index.html",
+      favicon: "./src/static/images/favicon.png",
     }),
   ],
   module: {
     rules: [
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
       {
         test: /\.ts$/,
         loader: "ts-loader",
