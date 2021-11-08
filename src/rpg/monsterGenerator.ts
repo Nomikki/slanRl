@@ -1,4 +1,5 @@
-import monsterJson from "@/data/monsters.json";
+import colors from "@/css/colors.module.scss";
+import monsterJson from "@/data/monsters";
 import { Abilities } from "@/rpg/abilities";
 import Attacker from "@/rpg/attacker";
 import Actor from "@/units/actor";
@@ -44,7 +45,7 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   let hp = 1;
   let defense = 0;
   let ch = "?";
-  let color = "#F0F";
+  let color = colors.default_monster;
 
   let abi = new Abilities(2, 2, 2, 2, 2);
 

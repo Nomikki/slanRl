@@ -1,0 +1,155 @@
+@import "./_functions.scss";
+
+$colderGray: #8cb2c6;
+$coldGray: #979ea1;
+$darkBlue: #1f273c;
+$darkerBlue: #495c67;
+$darkerGreen: #008800;
+$darkGreen: #00aa00;
+$darkRed: #aa0000;
+$darkYellow: #aaaa22;
+$fuxian: #ff00ff;
+$gray: #888;
+$grayRed: #a88;
+$green: #00aa33;
+$lightBlue: #00ccff;
+$lighterLime: #aaffaa;
+$lighterRed: #ff8888;
+$lighterYellow: #ffffaa;
+$lightestGray: #dddddd;
+$lightGray: #aaaaaa;
+$lightLime: #88ff88;
+$lightOrange: #ffccaa;
+$lightPastelRed: #ffaa99;
+$lightPurple: #99aacc;
+$lightRed: #ff4444;
+$lightTeal: #00ffaa;
+$lightYellow: #ddc275;
+$lime: #33ff33;
+$navyBlue: #1a2032;
+$orange: #ffaa00;
+$pastelRed: #ffaaaa;
+$red: #ff0000;
+$teal: #00aa99;
+$turqoise: #00ffff;
+$white: #fff;
+$yellow: #ffff00;
+
+// In SASS use like: color('lime')
+// In TypeScript use like: colors.lime
+$colors: (
+  "colderGray": $colderGray,
+  "coldGray": $coldGray,
+  "darkBlue": $darkBlue,
+  "darkerBlue": $darkerBlue,
+  "darkerGreen": $darkerGreen,
+  "darkGreen": $darkGreen,
+  "darkRed": $darkRed,
+  "darkYellow": $darkYellow,
+  "fuxian": $fuxian,
+  "gray": $gray,
+  "grayRed": $grayRed,
+  "green": $green,
+  "lightBlue": $lightBlue,
+  "lighterLime": $lighterLime,
+  "lighterRed": $lighterRed,
+  "lighterYellow": $lighterYellow,
+  "lightestGray": $lightestGray,
+  "lightGray": $lightGray,
+  "lightLime": $lightLime,
+  "lightOrange": $lightOrange,
+  "lightPastelRed": $lightPastelRed,
+  "lightPurple": $lightPurple,
+  "lightRed": $lightRed,
+  "lightTeal": $lightTeal,
+  "lightYellow": $lightYellow,
+  "lime": $lime,
+  "navyBlue": $navyBlue,
+  "orange": $orange,
+  "pastelRed": $pastelRed,
+  "red": $red,
+  "teal": $teal,
+  "turqoise": $turqoise,
+  "white": $white,
+  "yellow": $yellow,
+);
+
+// In SASS use like: ui('background')
+// In TypeScript use like: colors.ui_background
+$uiColors: (
+  "allowed": $white,
+  "background": $navyBlue,
+  "disallowed": $lighterRed,
+  "door": $lightYellow,
+  "game_saved": $lightTeal,
+  "healed": $lightLime,
+  "hp_10_percent": $lightRed,
+  "hp_25_percent": $lightRed,
+  "hp_50_percent": $pastelRed,
+  "hp_95_percent": $lightGray,
+  "hp_max": $lighterLime,
+  "info": $coldGray,
+  "inventory_full": $red,
+  "level_up": $yellow,
+  "map_background": $darkBlue,
+  "menu_border": $lightGray,
+  "menu_cursor": $lightGray,
+  "picked_up": $lightGray,
+  "tempImage": $lime,
+  "text": $colderGray,
+  "version": $white,
+  "wall_dark": $darkerBlue,
+  "wall": $colderGray,
+);
+
+// In SASS use like: health('potion')
+// In TypeScript use like: colors.health_potion
+$pickupItemColors: (
+  "armor_item": $lightPurple,
+  "healthpotion": $fuxian,
+  "nutellabun": $lightYellow,
+  "scroll_of_confusion": $lighterYellow,
+  "scroll_of_fireball": $orange,
+  "scroll_of_lightning": $turqoise,
+  "scroll_of_map": $darkYellow,
+  "weapon_item": $lime,
+);
+
+// In SASS use like: actor('hero')
+// In TypeScript use like: colors.actor_hero
+$actorColors: (
+  "hero": $white,
+  "stairs": $white,
+);
+
+// In SASS use like: log('player_attack')
+// In TypeScript use like: colors.log_player_attack
+$logColors: (
+  "dead_body": $darkRed,
+  "default_text": $lightGray,
+  "defeat": $darkRed,
+  "enemy_attack": $lightGray,
+  "hilight_text": $white,
+  "player_attack": $lightestGray,
+);
+
+// In SASS use like: monser('rat')
+// In TypeScript use like: colors.monster_rat
+$monsterColors: (
+  "bat": $gray,
+  "ghoul": $teal,
+  "giant_rat": $gray,
+  "jackal": $gray,
+  "kobold": $grayRed,
+  "lizard": $green,
+  "org": $darkGreen,
+  "rat": $gray,
+  "troll": $darkerGreen,
+);
+
+// In SASS use like: defaultColor('item')
+// In TypeScript use like: colors.default_item
+$defaultColors: (
+  "item": $fuxian,
+  "monster": $fuxian,
+);

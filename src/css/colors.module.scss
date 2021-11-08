@@ -1,0 +1,52 @@
+@import "@/css/colors.scss";
+
+:export {
+  // Colors
+  // In SASS use like: color('lime')
+  // In TypeScript use like: colors.lime
+  @each $key, $value in $colors {
+    #{unquote($key)}: $value;
+  }
+
+  // UI Colors
+  // In SASS use like: ui('background')
+  // In TypeScript use like: colors.ui_background
+  @each $key, $value in $uiColors {
+    ui_#{unquote($key)}: $value;
+  }
+
+  // Pickup item Colors
+  // In SASS use like: pickup('healthpotion')
+  // In TypeScript use like: colors.pickup_healthpotion
+  @each $key, $value in $pickupItemColors {
+    pickup_#{unquote($key)}: $value;
+  }
+
+  // Actor Colors
+  // In SASS use like: actor('hero')
+  // In TypeScript use like: colors.actor_hero
+  @each $key, $value in $actorColors {
+    actor_#{unquote($key)}: $value;
+  }
+
+  // Monster Colors
+  // In SASS use like: monser('rat')
+  // In TypeScript use like: colors.monster_rat
+  @each $key, $value in $monsterColors {
+    monster_#{unquote($key)}: $value;
+  }
+
+  // Log Colors
+  // In SASS use like: log('player_attack')
+  // In TypeScript use like: colors.log_player_attack
+  @each $key, $value in $logColors {
+    log_#{unquote($key)}: $value;
+  }
+
+  // Default Colors
+  // In SASS use like: defaultColor('item')
+  // In TypeScript use like: colors.default_item
+  @each $key, $value in $defaultColors {
+    default_#{unquote($key)}: $value;
+  }
+}

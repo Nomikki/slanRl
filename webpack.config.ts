@@ -15,6 +15,7 @@ export default {
     index: "./src/index.ts",
   },
   mode: environment,
+  devtool: "inline-source-map",
 
   output: {
     filename: "[name].js",
@@ -49,8 +50,8 @@ export default {
         use: [
           isProd ? MiniCssExtractPlugin.loader : "style-loader",
           "css-loader",
-          "sass-loader",
           "postcss-loader",
+          "sass-loader",
         ],
       },
       {
@@ -62,6 +63,6 @@ export default {
   },
   resolve: {
     plugins: [new TsconfigPathsPlugin()],
-    extensions: [".js", ".ts"],
+    extensions: [".js", ".ts", ".scss"],
   },
 };

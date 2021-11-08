@@ -1,6 +1,7 @@
-import armorsJson from "@/data/armors.json";
-import itemsJson from "@/data/items.json";
-import weaponsJson from "@/data/weapons.json";
+import colors from "@/css/colors.module.scss";
+import armorsJson from "@/data/armors";
+import itemsJson from "@/data/items";
+import weaponsJson from "@/data/weapons";
 import Pickable, {
   AiChangeEffect,
   HealthEffect,
@@ -75,7 +76,7 @@ export const createItem = (props: {
   y: number;
 }): Actor => {
   let ch = "?";
-  let color = "#F0F";
+  let color = colors.default_item;
   let blocks = false;
 
   let pickable = undefined;

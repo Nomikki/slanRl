@@ -1,0 +1,83 @@
+// Colors
+// In SASS use like: color('lime')
+// In TypeScript use like: colors.lime
+@function color($key) {
+  @if map-has-key($colors, $key) {
+    @return map-get($colors, $key);
+  }
+
+  @warn "Unknown `#{$key}` in $colors.";
+  @return null;
+}
+
+// UI Colors
+// In SASS use like: ui('background')
+// In TypeScript use like: colors.ui_background
+@function ui($key) {
+  @if map-has-key($uiColors, $key) {
+    @return map-get($uiColors, $key);
+  }
+
+  @warn "Unknown `#{$key}` in $uiColors.";
+  @return null;
+}
+
+// Pickup item Colors
+// In SASS use like: pickup('healthpotion')
+// In TypeScript use like: colors.pickup_healthpotion
+@function pickup($key) {
+  @if map-has-key($pickupItemColors, $key) {
+    @return map-get($pickupItemColors, $key);
+  }
+
+  @warn "Unknown `#{$key}` in $pickupItemColors.";
+  @return null;
+}
+
+// Actor Colors
+// In SASS use like: actor('hero')
+// In TypeScript use like: colors.actor_hero
+@function actor($key) {
+  @if map-has-key($actorColors, $key) {
+    @return map-get($actorColors, $key);
+  }
+
+  @warn "Unknown `#{$key}` in $actorColors.";
+  @return null;
+}
+
+// Monster Colors
+// In SASS use like: monser('rat')
+// In TypeScript use like: colors.monster_rat
+@function monster($key) {
+  @if map-has-key($monsterColors, $key) {
+    @return map-get($monsterColors, $key);
+  }
+
+  @warn "Unknown `#{$key}` in $monsterColors.";
+  @return null;
+}
+
+// Log Colors
+// In SASS use like: log('player_attack')
+// In TypeScript use like: colors.log_player_attack
+@function log($key) {
+  @if map-has-key($logColors, $key) {
+    @return map-get($logColors, $key);
+  }
+
+  @warn "Unknown `#{$key}` in $logColors.";
+  @return null;
+}
+
+// Default Colors
+// In SASS use like: defaultColor('item')
+// In TypeScript use like: colors.default_item
+@function defaultColor($key) {
+  @if map-has-key($defaultColors, $key) {
+    @return map-get($defaultColors, $key);
+  }
+
+  @warn "Unknown `#{$key}` in $defaultColors.";
+  @return null;
+}
