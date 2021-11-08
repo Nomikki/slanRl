@@ -518,8 +518,7 @@ class Game {
     await this.waitingKeypress();
     const tempKey = this.lastKey;
     this.lastKey = "";
-    const tempImage = ensure(document.querySelector("#temp-image"));
-    tempImage.classList.remove("zoomed");
+    ensure(document.querySelector("#temp-image")).classList.remove("zoomed");
     return tempKey;
   }
 

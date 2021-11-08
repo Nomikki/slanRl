@@ -15,7 +15,7 @@ export default {
     index: "./src/index.ts",
   },
   mode: environment,
-  devtool: "inline-source-map",
+  devtool: isProd ? undefined : "inline-source-map",
 
   output: {
     filename: "[name].js",
