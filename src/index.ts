@@ -518,6 +518,8 @@ class Game {
     await this.waitingKeypress();
     const tempKey = this.lastKey;
     this.lastKey = "";
+    const tempImage = ensure(document.querySelector("#temp-image"));
+    tempImage.classList.remove("zoomed");
     return tempKey;
   }
 
@@ -644,6 +646,10 @@ class Game {
         this.log.add("DEFEAT", Colors.DEFEAT);
         this.player?.fov?.showAll();
         this.saveImage();
+        setTimeout(() => {
+          // Auto-zoom minimap on defeat
+          ensure(document.querySelector("#temp-image")).classList.add("zoomed");
+        }, 1 * 1000); // 1 seconds * 1000 milliseconds
         break;
       }
     }
