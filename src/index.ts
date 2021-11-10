@@ -11,10 +11,18 @@ import Attacker from "@/rpg/attacker";
 import Actor from "@/units/actor";
 import { MonsterAI, PlayerAI } from "@/units/ai";
 import { MonsterDestructible, PlayerDestructible } from "@/units/destructible";
-import { debugInit, ensure, float2int } from "@/utils";
+import {
+  createListOfProficiencies,
+  debugInit,
+  ensure,
+  float2int,
+  wordWrap,
+} from "@/utils";
 import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
+import { createListOfClasses, getClass } from "./rpg/classes";
+import { createListOfRaces, getRace } from "./rpg/races";
 
 export enum GameStatus {
   STARTUP,
@@ -175,9 +183,203 @@ class Game {
     this.save();
   }
 
+  async prepareNewJourney() {
+    enum phases {
+      choose_race = 0,
+      choose_class = 1,
+      choose_abilities = 2,
+      phases_max,
+    }
+
+    let phase = phases.choose_race;
+    let selectedRace = 0;
+    let selectedClass = 0;
+    let selectedAbilities = 0;
+
+    let selectDirection = 0;
+
+    const listOfRaces = createListOfRaces();
+    const listOfClasses = createListOfClasses();
+
+    while (true) {
+      this.clear();
+
+      for (let i = 0; i < 3; i++) {
+        let color = Colors.DEFAULT_TEXT;
+
+        if (phase === phases.choose_race && i === 0)
+          color = Colors.HILIGHT_TEXT;
+
+        if (phase === phases.choose_class && i === 1)
+          color = Colors.HILIGHT_TEXT;
+
+        if (phase === phases.choose_abilities && i === 2)
+          color = Colors.HILIGHT_TEXT;
+
+        if (i == 0) this.drawText("Choose race", 10, 10, color);
+        if (i == 1) this.drawText("Choose class", 20, 10, color);
+        if (i == 2) this.drawText("Set abilities", 30, 10, color);
+      }
+
+      this.drawText(
+        "Enter) Next   Backspace) Back   Use arrow keys to navigate",
+        11,
+        this.height,
+        Colors.DEFAULT_TEXT,
+      );
+
+      this.drawText("New game", 10, 1, Colors.HILIGHT_TEXT);
+
+      this.drawChar(">", 8, 12 + selectedRace, Colors.DEFAULT_TEXT);
+      for (let i = 0; i < listOfRaces.length; i++) {
+        this.drawText(listOfRaces[i], 10, 12 + i);
+      }
+
+      const toughnessIncrease = ensure(
+        getRace(listOfRaces[selectedRace])?.toughnessIncrease,
+      );
+      const resiliences = ensure(
+        getRace(listOfRaces[selectedRace])?.resilience,
+      );
+
+      const proficiencies = createListOfProficiencies(
+        listOfRaces[selectedRace],
+        listOfClasses[selectedClass],
+      );
+
+      if (phase === phases.choose_race) {
+        const flavourText = ensure(
+          getRace(listOfRaces[selectedRace])?.flavourText,
+        );
+        const wordWrapped: string[] = ensure(wordWrap(flavourText, 48));
+        for (let i = 0; i < wordWrapped.length; i++) {
+          this.drawText(wordWrapped[i], 10, 21 + i, Colors.DEFAULT_TEXT);
+        }
+      }
+
+      if (phase === phases.choose_class) {
+        const flavourText = ensure(
+          getClass(listOfClasses[selectedClass])?.flavourText,
+        );
+        const wordWrapped: string[] = ensure(wordWrap(flavourText, 48));
+        for (let i = 0; i < wordWrapped.length; i++) {
+          this.drawText(wordWrapped[i], 10, 21 + i, Colors.DEFAULT_TEXT);
+        }
+      }
+
+      if (toughnessIncrease > 0) {
+        this.drawText(
+          `hp increase: ${toughnessIncrease} per level`,
+          10,
+          18,
+          Colors.DEFAULT_TEXT,
+        );
+      }
+
+      if (resiliences !== "none")
+        this.drawText(
+          `Resiliences: ${resiliences}`,
+          10,
+          19,
+          Colors.DEFAULT_TEXT,
+        );
+
+      this.drawText("Profiencies: ", 39, 18);
+      if (proficiencies.length > 0) {
+        for (let i = 0; i < proficiencies.length; i++) {
+          this.drawText(proficiencies[i], 40, 19 + i);
+        }
+      } else {
+        this.drawText("none", 40, 19);
+      }
+
+      const abies = ensure(getRace(listOfRaces[selectedRace])?.abilityIncrease);
+
+      this.drawChar(">", 18, 12 + selectedClass, Colors.DEFAULT_TEXT);
+
+      this.drawText("Bard", 20, 12);
+      this.drawText("Cleric", 20, 13);
+      this.drawText("Fighter", 20, 14);
+      this.drawText("Rogue", 20, 15);
+      this.drawText("Wizard", 20, 16);
+
+      this.drawChar(">", 28, 12 + selectedAbilities, Colors.DEFAULT_TEXT);
+
+      if (phase === phases.choose_abilities) {
+        let abilityText = "";
+        if (selectedAbilities === 0)
+          abilityText = "Strength: Measuring physical power.";
+        if (selectedAbilities === 1)
+          abilityText = "Dexterity: Measuring agility.";
+        if (selectedAbilities === 2)
+          abilityText = "Constitution: Measuring endurance.";
+        if (selectedAbilities === 3)
+          abilityText = "Intelligence: Measuring reasoning and memory.";
+        if (selectedAbilities === 4)
+          abilityText = "Wisdom: Measuring perception and insight.";
+
+        this.drawText(abilityText, 10, 21);
+      }
+
+      this.drawText("Strength", 30, 12);
+      this.drawText("Dexterity", 30, 13);
+      this.drawText("Constitution", 30, 14);
+      this.drawText("Intelligence", 30, 15);
+      this.drawText("Wisdom", 30, 16);
+
+      this.drawText(abies.str !== 0 ? `+${abies.str.toString()}` : "", 40, 12);
+      this.drawText(abies.dex !== 0 ? `+${abies.dex.toString()}` : "", 40, 13);
+      this.drawText(abies.con !== 0 ? `+${abies.con.toString()}` : "", 40, 14);
+      this.drawText(abies.int !== 0 ? `+${abies.int.toString()}` : "", 40, 15);
+      this.drawText(abies.wis !== 0 ? `+${abies.wis.toString()}` : "", 40, 16);
+
+      const ch = await this.getch();
+      //console.log(ch, phase);
+      if (ch === "q") break;
+      if (ch === "Enter") {
+        phase++;
+        if (phase >= phases.phases_max) break;
+      }
+      if (ch === "Backspace") {
+        phase--;
+        if (phase < 0) phase = 0;
+      }
+
+      if (ch === "ArrowUp") {
+        selectDirection = -1;
+      } else if (ch === "ArrowDown") {
+        selectDirection = 1;
+      } else {
+        selectDirection = 0;
+      }
+
+      if (phase === phases.choose_race) {
+        selectedRace += selectDirection;
+        if (selectedRace < 0) selectedRace = listOfRaces.length - 1;
+        if (selectedRace > listOfRaces.length - 1) selectedRace = 0;
+      }
+
+      if (phase === phases.choose_class) {
+        selectedClass += selectDirection;
+        if (selectedClass < 0) selectedClass = 4;
+        if (selectedClass > 4) selectedClass = 0;
+      }
+
+      if (phase === phases.choose_abilities) {
+        selectedAbilities += selectDirection;
+        if (selectedAbilities < 0) selectedAbilities = 4;
+        if (selectedAbilities > 4) selectedAbilities = 0;
+      }
+    }
+  }
+
   async newGame() {
     this.masterSeed = float2int(Math.random() * 0x7ffffff);
-    //this.masterSeed = 11038250;
+
+    //choose race, class, abilities and give name
+    await this.prepareNewJourney();
+
+    //after everything is setted up
     this.turns = 0;
     this.depth = 1;
     await this.term();

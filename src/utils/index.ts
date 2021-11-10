@@ -1,3 +1,14 @@
+import { createListOfProficiencies_byClass } from "@/rpg/classes";
+import { createListOfProficiencies_byRace } from "@/rpg/races";
+
+export interface Proficience {
+  type: string;
+}
+
+export interface SavingThrow {
+  type: string;
+}
+
 export const paddedLogObject = (object: { [k in string]: string }) => {
   const maxKeyLength = Object.keys(object).reduce(
     (previousValue, currentValue) =>
@@ -93,4 +104,50 @@ export const dimmerColor = (color: string, dim: number): string => {
   b = float2int(b);
 
   return rgbToHex(r, g, b);
+};
+
+export const wordWrap = (text: string, maxLen: number): string[] => {
+  let lastSpace = 0;
+  const outputString = [];
+  let currentLen = 0;
+  let lastCut = 0;
+  for (let i = 0; i < text.length; i++) {
+    if (text.charAt(i) === " ") {
+      lastSpace = i;
+    }
+    currentLen++;
+
+    if (currentLen >= maxLen) {
+      outputString.push(text.substring(lastCut, lastSpace));
+      currentLen = 0;
+      lastCut = lastSpace + 1;
+    }
+  }
+
+  outputString.push(text.substring(lastCut, text.length));
+
+  return outputString;
+};
+
+export const createListOfProficiencies = (
+  raceName: string,
+  className: string,
+): string[] => {
+  const raceProfies = createListOfProficiencies_byRace(raceName);
+  const classProfies = createListOfProficiencies_byClass(className);
+  const proficiencies = new Set();
+  const proficienciesArray = [];
+
+  for (const c of raceProfies) {
+    proficiencies.add(c);
+  }
+
+  for (const c of classProfies) {
+    proficiencies.add(c);
+  }
+
+  for (const c of proficiencies) {
+    proficienciesArray.push(c);
+  }
+  return proficienciesArray as string[];
 };
