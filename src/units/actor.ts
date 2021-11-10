@@ -63,6 +63,7 @@ export default class Actor {
 
   create(actorTemplate: Actor) {
     let fx: AiChangeEffect | HealthEffect | Wearable | void = undefined;
+    this.blocks = false;
 
     if (actorTemplate.pickable?.effectName === "Wearable") {
       fx = new Wearable(actorTemplate.pickable.effect.type);

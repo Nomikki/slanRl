@@ -91,28 +91,6 @@ export const createItem = (props: {
     !!weapons.find(n => n.name === name);
   const isItem = (name: string): boolean => !!items.find(n => n.name === name);
 
-  /*
-  const isArmor = (name: string): boolean => {
-    for (const n of armors) {
-      if (n.name === name) return true;
-    }
-    return false;
-  };
-
-  const isWeapon = (name: string): boolean => {
-    for (const n of weapons) {
-      if (n.name === name) return true;
-    }
-    return false;
-  };
-
-  const isItem = (name: string): boolean => {
-    for (const n of items) {
-      if (n.name === name) return true;
-    }
-    return false;
-  };
-  */
 
   //simple melee weapons
   if (isWeapon(props.name)) {
