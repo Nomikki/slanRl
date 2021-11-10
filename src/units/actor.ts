@@ -11,10 +11,12 @@ import Fov from "@/map/fov";
 import { Abilities } from "@/rpg/abilities";
 import Armor from "@/rpg/armor";
 import Attacker from "@/rpg/attacker";
+import { createListOfClasses } from "@/rpg/classes";
+import { createListOfRaces } from "@/rpg/races";
 import Weapon from "@/rpg/weapon";
 import { ConfusedAI, ConfusedMonsterAi, MonsterAI, PlayerAI } from "@/units/ai";
 import Destructible from "@/units/destructible";
-import { ensure, float2int } from "@/utils";
+import { createListOfProficiencies, ensure, float2int } from "@/utils";
 
 export default class Actor {
   x: number;
@@ -22,6 +24,10 @@ export default class Actor {
   ch: string;
   name: string;
   color: string;
+
+  race: number;
+  class: number;
+  proficiencies?: string[];
 
   fov?: Fov;
   fovOnly = true;
@@ -59,6 +65,9 @@ export default class Actor {
     this.ch = ch;
     this.color = color;
     this.name = name;
+
+    this.race = 0;
+    this.class = 0;
   }
 
   create(actorTemplate: Actor) {
@@ -128,5 +137,15 @@ export default class Actor {
     const dx = this.x - x;
     const dy = this.y - y;
     return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  getProfiencies() {
+    const listOfRaces = createListOfRaces();
+    const listOfClasses = createListOfClasses();
+
+    this.proficiencies = createListOfProficiencies(
+      listOfRaces[this.race],
+      listOfClasses[this.class],
+    );
   }
 }

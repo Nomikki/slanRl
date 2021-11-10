@@ -59,3 +59,7 @@ export const createListOfProficiencies_byRace = (race: string): string[] => {
 
   return proficiencies;
 };
+
+export const getRaceNameByIndex = (index: number): string => {
+  return races[index].name;
+};

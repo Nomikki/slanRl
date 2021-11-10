@@ -21,8 +21,12 @@ import {
 import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
-import { createListOfClasses, getClass } from "./rpg/classes";
-import { createListOfRaces, getRace } from "./rpg/races";
+import {
+  createListOfClasses,
+  getClass,
+  getClassNameByIndex,
+} from "./rpg/classes";
+import { createListOfRaces, getRace, getRaceNameByIndex } from "./rpg/races";
 
 export enum GameStatus {
   STARTUP,
@@ -114,7 +118,7 @@ class Game {
         this.player = this.actors[i];
         this.player.destructible = new PlayerDestructible(
           30,
-          2,
+          10,
           "your cadaver",
         );
         this.player.attacker = new Attacker("1d4");
@@ -199,6 +203,11 @@ class Game {
     let selectDirection = 0;
     let unusedPoints = 14;
 
+    let hpStart = 0;
+    let hpPerLevel = 0;
+
+    let toughnessIncrease = 0;
+
     const listOfRaces = createListOfRaces();
     const listOfClasses = createListOfClasses();
     const tempAbies = new Abilities(10, 10, 10, 10, 10);
@@ -238,7 +247,7 @@ class Game {
         this.drawText(listOfRaces[i], 10, 12 + i);
       }
 
-      const toughnessIncrease = ensure(
+      toughnessIncrease = ensure(
         getRace(listOfRaces[selectedRace])?.toughnessIncrease,
       );
       const resiliences = ensure(
@@ -287,24 +296,20 @@ class Game {
           Colors.DEFAULT_TEXT,
         );
 
-      this.drawText("Profiencies: ", 50, 10);
+      this.drawText("Profiencies: ", 55, 20);
       if (proficiencies.length > 0) {
         for (let i = 0; i < proficiencies.length; i++) {
-          this.drawText(proficiencies[i], 50, 11 + i);
+          this.drawText(proficiencies[i], 55, 22 + i);
         }
-      } else {
-        this.drawText("none", 50, 10);
       }
 
       const abies = ensure(getRace(listOfRaces[selectedRace])?.abilityIncrease);
 
       this.drawChar(">", 18, 12 + selectedClass, Colors.DEFAULT_TEXT);
 
-      this.drawText("Bard", 20, 12);
-      this.drawText("Cleric", 20, 13);
-      this.drawText("Fighter", 20, 14);
-      this.drawText("Rogue", 20, 15);
-      this.drawText("Wizard", 20, 16);
+      for (let i = 0; i < listOfClasses.length; i++) {
+        this.drawText(listOfClasses[i], 20, 12 + i);
+      }
 
       this.drawChar(">", 28, 12 + selectedAbilities, Colors.DEFAULT_TEXT);
 
@@ -392,6 +397,26 @@ class Game {
         16,
       );
 
+      hpStart = ensure(getClass(listOfClasses[selectedClass])?.healthAtStart);
+      hpPerLevel = ensure(
+        getClass(listOfClasses[selectedClass])?.healthIncreasePerLevel,
+      );
+
+      const conModi = finalAbies.getBonus(ABILITIES.CON);
+      const finalHP = hpStart + conModi;
+      const finalHPperLevel = hpPerLevel + conModi;
+
+      this.drawText(
+        `Health at start: ${hpStart} + ${conModi} (CON) = ${finalHP}`,
+        50,
+        12,
+      );
+      this.drawText(
+        `Health increase per level +${hpPerLevel} + ${conModi} (CON) = ${finalHPperLevel}`,
+        50,
+        13,
+      );
+
       const ch = await this.getch();
 
       if (ch === "q") break;
@@ -454,8 +479,8 @@ class Game {
 
       if (phase === phases.choose_class) {
         selectedClass += selectDirection;
-        if (selectedClass < 0) selectedClass = 4;
-        if (selectedClass > 4) selectedClass = 0;
+        if (selectedClass < 0) selectedClass = listOfClasses.length - 1;
+        if (selectedClass > listOfClasses.length - 1) selectedClass = 0;
       }
 
       if (phase === phases.choose_abilities) {
@@ -464,19 +489,49 @@ class Game {
         if (selectedAbilities > 4) selectedAbilities = 0;
       }
     }
+
+    return [
+      finalAbies,
+      selectedRace,
+      selectedClass,
+      hpStart,
+      hpPerLevel,
+      toughnessIncrease,
+    ];
   }
 
   async newGame() {
     this.masterSeed = float2int(Math.random() * 0x7ffffff);
 
     //choose race, class, abilities and give name
-    await this.prepareNewJourney();
+    const [abi, selRace, selClass, hpStart, hpPerLevel, hpIncreasePerLevel] =
+      await this.prepareNewJourney();
 
     //after everything is setted up
     this.turns = 0;
     this.depth = 1;
     await this.term();
     await this.init(true, true);
+
+    const pl = ensure(this.player);
+
+    pl.abilities = ensure(abi as Abilities);
+    pl.race = ensure(selRace as number);
+    pl.class = ensure(selClass as number);
+    pl.getProfiencies();
+
+    const raceName = getRaceNameByIndex(selRace as number);
+    const className = getClassNameByIndex(selClass as number);
+
+    const newName = `${this.player?.name} the ${raceName} ${className}`;
+    pl.name = newName;
+    const hpBonus = (abi as Abilities).getBonus(ABILITIES.CON) as number;
+    ensure(pl.destructible).maxHP = (hpStart as number) + hpBonus;
+    ensure(pl.destructible).hp = ensure(pl.destructible)?.maxHP;
+
+    ensure(pl.destructible).hpPerLevel = hpPerLevel as number;
+    ensure(pl.destructible).hpPerLevelBonuses = hpIncreasePerLevel as number;
+
     await this.save();
   }
 
@@ -500,8 +555,6 @@ class Game {
           this.actors.push(
             new Actor(actor.x, actor.y, actor.ch, actor.name, actor.color),
           ) - 1;
-
-        //this.actors[i].ai = undefined;
 
         if (actor.fov) {
           this.actors[i].fov = new Fov(this.mapx, this.mapy);
@@ -595,12 +648,17 @@ class Game {
             this.player = this.actors[i];
             this.actors[i].destructible = new PlayerDestructible(
               30,
-              2,
+              10,
               "player corpse",
             );
 
             this.actors[i].ai = new PlayerAI();
             ensure(this.actors[i].destructible).xp = actor.destructible.xp;
+            ensure(this.actors[i].destructible).hpPerLevel =
+              actor.destructible.hpPerLevel;
+            ensure(this.actors[i].destructible).hpPerLevelBonuses =
+              actor.destructible.hpPerLevelBonuses;
+
             ensure(this.actors[i].destructible).hp = actor.destructible.hp;
             ensure(this.actors[i].destructible).maxHP =
               actor.destructible.maxHP;
@@ -860,6 +918,8 @@ class Game {
       1,
       this.height + 2,
     );
+
+    this.drawText(`${this.player?.name}`, 60, this.height + 1);
 
     const padding = 8;
     const offset = 19;

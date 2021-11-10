@@ -54,3 +54,7 @@ export const createListOfProficiencies_byClass = (
 
   return proficiencies;
 };
+
+export const getClassNameByIndex = (index: number): string => {
+  return classes[index].name;
+};

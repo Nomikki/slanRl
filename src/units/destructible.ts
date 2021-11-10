@@ -6,6 +6,8 @@ import { Colors } from "@/utils/colors";
 export default class Destructible {
   maxHP: number;
   hp: number;
+  hpPerLevel: number; //without bonuses
+  hpPerLevelBonuses: number;
   defense: number;
   corpseName: string;
   type: string;
@@ -24,6 +26,8 @@ export default class Destructible {
     this.corpseName = corpseName;
     this.type = type;
     this.xp = xp;
+    this.hpPerLevel = 0;
+    this.hpPerLevelBonuses = 0;
   }
 
   isDead(): boolean {
