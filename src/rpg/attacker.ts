@@ -1,9 +1,9 @@
-import { game } from "../.";
-import Actor from "../units/actor";
-import { random } from "../units/ai";
-import { Colors } from "../utils/colors";
-import { ensure } from "../utils/utils";
-import { ABILITIES } from "./abilities";
+import { game } from "@/index";
+import { ABILITIES } from "@/rpg/abilities";
+import Actor from "@/units/actor";
+import { random } from "@/units/ai";
+import { ensure } from "@/utils";
+import { Colors } from "@/utils/colors";
 
 export default class Attacker {
   power: string;

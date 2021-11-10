@@ -1,4 +1,4 @@
-import Rectangle from "../utils/rectangle";
+import Rectangle from "@/utils/rectangle";
 
 export type Leaf = bspNode;
 

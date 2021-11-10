@@ -1,19 +1,20 @@
-import Container from "./items/container";
-import Equipments from "./items/equipments";
-import { createItem } from "./items/itemGenerator";
-import { Camera } from "./map/camera";
-import Fov from "./map/fov";
-//import weaponsJson from "./items.json";
-import Map from "./map/map";
-import { ABILITIES, Abilities } from "./rpg/abilities";
-import Attacker from "./rpg/attacker";
-import Actor from "./units/actor";
-import { MonsterAI, PlayerAI } from "./units/ai";
-import { MonsterDestructible, PlayerDestructible } from "./units/destructible";
-import { Colors } from "./utils/colors";
-import Log from "./utils/log";
-import { Menu, MenuItemCode } from "./utils/menu";
-import { debugInit, ensure, float2int } from "./utils/utils";
+import "@/index.scss";
+import Container from "@/items/container";
+import Equipments from "@/items/equipments";
+import { createItem } from "@/items/itemGenerator";
+//import weaponsJson from "@/items.json";
+import Map from "@/map";
+import { Camera } from "@/map/camera";
+import Fov from "@/map/fov";
+import { ABILITIES, Abilities } from "@/rpg/abilities";
+import Attacker from "@/rpg/attacker";
+import Actor from "@/units/actor";
+import { MonsterAI, PlayerAI } from "@/units/ai";
+import { MonsterDestructible, PlayerDestructible } from "@/units/destructible";
+import { debugInit, ensure, float2int } from "@/utils";
+import { Colors } from "@/utils/colors";
+import Log from "@/utils/log";
+import { Menu, MenuItemCode } from "@/utils/menu";
 
 export enum GameStatus {
   STARTUP,
@@ -31,7 +32,7 @@ class Game {
   player?: Actor;
   map?: Map;
   stairs?: Actor;
-  canvas: HTMLElement;
+  canvas: Element;
   ctx: CanvasRenderingContext2D;
   fontSize: number;
   log: Log;
@@ -54,7 +55,7 @@ class Game {
   camera: Camera;
 
   constructor() {
-    this.canvas = ensure(document.getElementById("screen"));
+    this.canvas = ensure(document.querySelector("#screen"));
 
     this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
     this.ctx.font = "12px system-ui";
@@ -76,6 +77,14 @@ class Game {
 
     this.camera = new Camera();
     this.camera.setCenter(this.width, this.height);
+
+    const tempImage = ensure(document.querySelector("#temp-image"));
+    const zoomTempImage = () => {
+      tempImage.classList.toggle("zoomed");
+    };
+
+    tempImage.addEventListener("click", zoomTempImage);
+    // tempImage.removeEventListener("onclick", zoomTempImage);
 
     //console.log(items);
   }
@@ -416,7 +425,13 @@ class Game {
     this.width = this.mapx;
     this.height = this.mapy;
 
-    this.canvas = ensure(document.getElementById("temp-image"));
+    const tempImage = ensure(document.querySelector("#temp-image"));
+    tempImage.classList.remove("hidden");
+    const tempImageCanvas = ensure(
+      document.querySelector("#temp-image-canvas"),
+    );
+
+    this.canvas = tempImageCanvas;
     this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
     this.ctx.canvas.width = this.mapx * this.fontSize;
     this.ctx.canvas.height = this.mapy * this.fontSize;
@@ -503,6 +518,7 @@ class Game {
     await this.waitingKeypress();
     const tempKey = this.lastKey;
     this.lastKey = "";
+    ensure(document.querySelector("#temp-image")).classList.remove("zoomed");
     return tempKey;
   }
 
@@ -532,20 +548,20 @@ class Game {
       if (hp < (maxHP / 100) * 10) return Colors.HP_10_PERCENT;
       else if (hp < (maxHP / 100) * 25) return Colors.HP_25_PERCENT;
       else if (hp < (maxHP / 100) * 50) return Colors.HP_50_PERCENT;
-      else if (hp < (maxHP / 100) * 95) return Colors.HP_95_PERENT;
+      else if (hp < (maxHP / 100) * 95) return Colors.HP_95_PERCENT;
 
       return Colors.HP_MAX;
     };
 
-    this.drawText("HP: " + hp + "/" + maxHP, 1, this.height + 1, getHpColor());
-    this.drawText("ATT: " + power, 7, this.height + 1);
-    this.drawText("AC: " + ac, 13, this.height + 1);
+    this.drawText(`HP: ${hp}/${maxHP}`, 1, this.height + 1, getHpColor());
+    this.drawText(`ATT: ${power}`, 7, this.height + 1);
+    this.drawText(`AC: ${ac}`, 13, this.height + 1);
 
-    this.drawText("Depth: " + depth, this.width - 6, this.height + 1);
-    this.drawText("Turn: " + turn, this.width - 6, this.height + 2);
+    this.drawText(`Depth: ${depth}`, this.width - 6, this.height + 1);
+    this.drawText(`Turn: ${turn}`, this.width - 6, this.height + 2);
 
     this.drawText(
-      "EXP: " + xp + " / " + (pl.ai as PlayerAI)?.getNextLevelXP(),
+      `EXP: ${xp} / ${(pl.ai as PlayerAI)?.getNextLevelXP()}`,
       1,
       this.height + 2,
     );
@@ -629,6 +645,10 @@ class Game {
         this.log.add("DEFEAT", Colors.DEFEAT);
         this.player?.fov?.showAll();
         this.saveImage();
+        setTimeout(() => {
+          // Auto-zoom minimap on defeat
+          ensure(document.querySelector("#temp-image")).classList.add("zoomed");
+        }, 1 * 1000); // 1 seconds * 1000 milliseconds
         break;
       }
     }

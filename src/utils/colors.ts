@@ -1,49 +1,51 @@
+import colors from "@/css/colors.module.scss";
+
 export const Colors = {
   //map
-  BACKGROUND: "#1f273c",
-  WALL: "#8cb2c6",
-  WALL_DARK: "#495c67",
-  DOOR: "#ddc275",
+  BACKGROUND: colors.ui_map_background,
+  WALL: colors.ui_wall,
+  WALL_DARK: colors.ui_wall_dark,
+  DOOR: colors.ui_door,
 
   //pickups
-  HEALTHPOTION: "#FF00FF",
-  NUTELLABUN: "#ddc275",
-  SCROLL_OF_LIGHTING: "#00FFFF",
-  SCROLL_OF_FIREBALL: "#FFAA00",
-  SCROLL_OF_CONFUSION: "#FFFFAA",
-  SCROLL_OF_MAP: "#AAAA22",
+  HEALTHPOTION: colors.pickup_healthpotion,
+  NUTELLABUN: colors.pickup_nutellabun,
+  SCROLL_OF_LIGHTING: colors.pickup_scroll_of_lightning,
+  SCROLL_OF_FIREBALL: colors.pickup_scroll_of_fireball,
+  SCROLL_OF_CONFUSION: colors.pickup_scroll_of_confusion,
+  SCROLL_OF_MAP: colors.pickup_scroll_of_map,
 
-  ARMOR_ITEM: "#99AACC",
-  WEAPON_ITEM: "#33FF33",
+  ARMOR_ITEM: colors.pickup_armor_item,
+  WEAPON_ITEM: colors.pickup_weapon_item,
 
   //ui
-  LEVEL_UP: "#FFFF00",
-  HEALED: "#8F8",
-  MENU_CURSOR: "#AAA",
-  GAME_SAVED: "#0FA",
-  PICKED_UP: "#AAA",
-  INVENTORY_FULL: "#F00",
-  MENU_BORDER: "#AAA",
+  LEVEL_UP: colors.ui_level_up,
+  HEALED: colors.ui_healed,
+  MENU_CURSOR: colors.ui_menu_cursor,
+  GAME_SAVED: colors.ui_game_saved,
+  PICKED_UP: colors.ui_picked_up,
+  INVENTORY_FULL: colors.ui_inventory_full,
+  MENU_BORDER: colors.ui_menu_border,
 
-  ALLOWED: "#FFF",
-  DISALLOWED: "#F88",
+  ALLOWED: colors.ui_allowed,
+  DISALLOWED: colors.ui_disallowed,
 
-  HP_10_PERCENT: "#F44",
-  HP_25_PERCENT: "#F88",
-  HP_50_PERCENT: "#FAA",
-  HP_95_PERENT: "#AAA",
-  HP_MAX: "#AFA",
+  HP_10_PERCENT: colors.ui_hp_10_percent,
+  HP_25_PERCENT: colors.ui_hp_25_percent,
+  HP_50_PERCENT: colors.ui_hp_50_percent,
+  HP_95_PERCENT: colors.ui_hp_95_percent,
+  HP_MAX: colors.ui_hp_max,
 
   //actors
-  HERO: "#FFF",
-  STAIRS: "#FFF",
+  HERO: colors.actor_hero,
+  STAIRS: colors.actor_stairs,
 
   //log
-  PLAYER_ATTACK: "#DDD",
-  ENEMY_ATTACK: "#AAA",
-  DEAD_BODY: "#A00",
-  DEFAULT_TEXT: "#AAA",
-  HILIGHT_TEXT: "#FFF",
+  PLAYER_ATTACK: colors.log_player_attack,
+  ENEMY_ATTACK: colors.log_enemy_attack,
+  DEAD_BODY: colors.log_dead_body,
+  DEFAULT_TEXT: colors.log_default_text,
+  HILIGHT_TEXT: colors.log_hilight_text,
 
-  DEFEAT: "#A00",
+  DEFEAT: colors.log_defeat,
 };

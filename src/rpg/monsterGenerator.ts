@@ -1,10 +1,11 @@
-import monsterJson from "../data/monsters.json";
-import Actor from "../units/actor";
-import { MonsterAI } from "../units/ai";
-import { MonsterDestructible } from "../units/destructible";
-import { ensure } from "../utils/utils";
-import { Abilities } from "./abilities";
-import Attacker from "./attacker";
+import colors from "@/css/colors.module.scss";
+import monsterJson from "@/data/monsters";
+import { Abilities } from "@/rpg/abilities";
+import Attacker from "@/rpg/attacker";
+import Actor from "@/units/actor";
+import { MonsterAI } from "@/units/ai";
+import { MonsterDestructible } from "@/units/destructible";
+import { ensure } from "@/utils";
 
 interface AbilitiesIntercace {
   str: number;
@@ -44,7 +45,7 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   let hp = 1;
   let defense = 0;
   let ch = "?";
-  let color = "#F0F";
+  let color = colors.default_monster;
 
   let abi = new Abilities(2, 2, 2, 2, 2);
 

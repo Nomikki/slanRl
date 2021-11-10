@@ -1,8 +1,8 @@
-import { game } from "../.";
-import Actor from "../units//actor";
-import { TemporaryAI } from "../units//ai";
-import { Colors } from "../utils/colors";
-import { ensure } from "../utils/utils";
+import { game } from "@/index";
+import Actor from "@/units//actor";
+import { TemporaryAI } from "@/units//ai";
+import { ensure } from "@/utils";
+import { Colors } from "@/utils/colors";
 
 export enum SelectorType {
   NONE,

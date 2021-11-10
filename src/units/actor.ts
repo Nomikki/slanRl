@@ -1,20 +1,20 @@
-import { game } from "../.";
-import Container from "../items/container";
-import Equipments from "../items/equipments";
+import { game } from "@/index";
+import Container from "@/items/container";
+import Equipments from "@/items/equipments";
 import Pickable, {
   AiChangeEffect,
   HealthEffect,
   TargetSelector,
   Wearable,
-} from "../items/pickable";
-import Fov from "../map/fov";
-import { Abilities } from "../rpg/abilities";
-import Armor from "../rpg/armor";
-import Attacker from "../rpg/attacker";
-import Weapon from "../rpg/weapon";
-import { ensure, float2int } from "../utils/utils";
-import { ConfusedAI, ConfusedMonsterAi, MonsterAI, PlayerAI } from "./ai";
-import Destructible from "./destructible";
+} from "@/items/pickable";
+import Fov from "@/map/fov";
+import { Abilities } from "@/rpg/abilities";
+import Armor from "@/rpg/armor";
+import Attacker from "@/rpg/attacker";
+import Weapon from "@/rpg/weapon";
+import { ConfusedAI, ConfusedMonsterAi, MonsterAI, PlayerAI } from "@/units/ai";
+import Destructible from "@/units/destructible";
+import { ensure, float2int } from "@/utils";
 
 export default class Actor {
   x: number;

@@ -1,6 +1,6 @@
-import { game } from "../.";
-import { Colors } from "./colors";
-import { dimmerColor } from "./utils";
+import { game } from "@/index";
+import { dimmerColor } from "@/utils";
+import { Colors } from "@/utils/colors";
 
 class LogText {
   text: string;

@@ -1,9 +1,9 @@
-import { game, GameStatus } from "../.";
-import Actor from "../units/actor";
-import { Colors } from "../utils/colors";
-import { Menu, MenuItemCode } from "../utils/menu";
-import Randomizer from "../utils/random";
-import { ensure, float2int } from "../utils/utils";
+import { game, GameStatus } from "@/index";
+import Actor from "@/units/actor";
+import { ensure, float2int } from "@/utils";
+import { Colors } from "@/utils/colors";
+import { Menu, MenuItemCode } from "@/utils/menu";
+import Randomizer from "@/utils/random";
 
 export const random = new Randomizer();
 
