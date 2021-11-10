@@ -197,9 +197,12 @@ class Game {
     let selectedAbilities = 0;
 
     let selectDirection = 0;
+    let unusedPoints = 14;
 
     const listOfRaces = createListOfRaces();
     const listOfClasses = createListOfClasses();
+    const tempAbies = new Abilities(10, 10, 10, 10, 10);
+    const finalAbies = new Abilities(10, 10, 10, 10, 10);
 
     while (true) {
       this.clear();
@@ -326,15 +329,65 @@ class Game {
       this.drawText("Constitution", 30, 14);
       this.drawText("Intelligence", 30, 15);
       this.drawText("Wisdom", 30, 16);
+      this.drawText("Unused points", 30, 17);
 
-      this.drawText(abies.str !== 0 ? `+${abies.str.toString()}` : "", 40, 12);
-      this.drawText(abies.dex !== 0 ? `+${abies.dex.toString()}` : "", 40, 13);
-      this.drawText(abies.con !== 0 ? `+${abies.con.toString()}` : "", 40, 14);
-      this.drawText(abies.int !== 0 ? `+${abies.int.toString()}` : "", 40, 15);
-      this.drawText(abies.wis !== 0 ? `+${abies.wis.toString()}` : "", 40, 16);
+      this.drawText(`${tempAbies.str}`, 37, 12);
+      this.drawText(`${tempAbies.dex}`, 37, 13);
+      this.drawText(`${tempAbies.con}`, 37, 14);
+      this.drawText(`${tempAbies.int}`, 37, 15);
+      this.drawText(`${tempAbies.wis}`, 37, 16);
+      this.drawText(`${unusedPoints}`, 37, 17);
+
+      this.drawText(abies.str !== 0 ? `+${abies.str.toString()}` : "", 39, 12);
+      this.drawText(abies.dex !== 0 ? `+${abies.dex.toString()}` : "", 39, 13);
+      this.drawText(abies.con !== 0 ? `+${abies.con.toString()}` : "", 39, 14);
+      this.drawText(abies.int !== 0 ? `+${abies.int.toString()}` : "", 39, 15);
+      this.drawText(abies.wis !== 0 ? `+${abies.wis.toString()}` : "", 39, 16);
+
+      finalAbies.str = tempAbies.str + abies.str;
+      finalAbies.dex = tempAbies.dex + abies.dex;
+      finalAbies.con = tempAbies.con + abies.con;
+      finalAbies.int = tempAbies.int + abies.int;
+      finalAbies.wis = tempAbies.wis + abies.wis;
+
+      this.drawText(
+        `= ${finalAbies.str.toString()} (${finalAbies.getBonusWithSign(
+          ABILITIES.STR,
+        )})`,
+        41,
+        12,
+      );
+      this.drawText(
+        `= ${finalAbies.dex.toString()} (${finalAbies.getBonusWithSign(
+          ABILITIES.DEX,
+        )})`,
+        41,
+        13,
+      );
+      this.drawText(
+        `= ${finalAbies.con.toString()} (${finalAbies.getBonusWithSign(
+          ABILITIES.CON,
+        )})`,
+        41,
+        14,
+      );
+      this.drawText(
+        `= ${finalAbies.int.toString()} (${finalAbies.getBonusWithSign(
+          ABILITIES.INT,
+        )})`,
+        41,
+        15,
+      );
+      this.drawText(
+        `= ${finalAbies.wis.toString()} (${finalAbies.getBonusWithSign(
+          ABILITIES.WIS,
+        )})`,
+        41,
+        16,
+      );
 
       const ch = await this.getch();
-      //console.log(ch, phase);
+
       if (ch === "q") break;
       if (ch === "Enter") {
         phase++;
@@ -351,6 +404,40 @@ class Game {
         selectDirection = 1;
       } else {
         selectDirection = 0;
+      }
+
+      if (phase === phases.choose_abilities) {
+        let abiD = 0;
+        if (ch === "ArrowLeft") {
+          abiD = -1;
+        } else if (ch === "ArrowRight") {
+          abiD = 1;
+        }
+
+        if (unusedPoints - abiD >= 0) {
+          if (selectedAbilities === 0) {
+            if (tempAbies.inRange(tempAbies.str + abiD)) tempAbies.str += abiD;
+            else abiD = 0;
+          }
+          if (selectedAbilities === 1) {
+            if (tempAbies.inRange(tempAbies.dex + abiD)) tempAbies.dex += abiD;
+            else abiD = 0;
+          }
+          if (selectedAbilities === 2) {
+            if (tempAbies.inRange(tempAbies.con + abiD)) tempAbies.con += abiD;
+            else abiD = 0;
+          }
+          if (selectedAbilities === 3) {
+            if (tempAbies.inRange(tempAbies.int + abiD)) tempAbies.int += abiD;
+            else abiD = 0;
+          }
+          if (selectedAbilities === 4) {
+            if (tempAbies.inRange(tempAbies.wis + abiD)) tempAbies.wis += abiD;
+            else abiD = 0;
+          }
+
+          unusedPoints -= abiD;
+        }
       }
 
       if (phase === phases.choose_race) {

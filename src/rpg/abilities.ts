@@ -50,4 +50,9 @@ export class Abilities {
     const val = this.getBonus(type);
     return (val >= 0 ? "+" : "") + val.toString();
   }
+
+  inRange(value: number): boolean {
+    if (value > 0 && value <= 18) return true;
+    return false;
+  }
 }
