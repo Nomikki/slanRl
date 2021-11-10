@@ -287,13 +287,13 @@ class Game {
           Colors.DEFAULT_TEXT,
         );
 
-      this.drawText("Profiencies: ", 39, 18);
+      this.drawText("Profiencies: ", 50, 10);
       if (proficiencies.length > 0) {
         for (let i = 0; i < proficiencies.length; i++) {
-          this.drawText(proficiencies[i], 40, 19 + i);
+          this.drawText(proficiencies[i], 50, 11 + i);
         }
       } else {
-        this.drawText("none", 40, 19);
+        this.drawText("none", 50, 10);
       }
 
       const abies = ensure(getRace(listOfRaces[selectedRace])?.abilityIncrease);
@@ -322,6 +322,12 @@ class Game {
           abilityText = "Wisdom: Measuring perception and insight.";
 
         this.drawText(abilityText, 10, 21);
+
+        this.drawText(
+          "Use left and right arrows to change ability scores.",
+          30,
+          19,
+        );
       }
 
       this.drawText("Strength", 30, 12);
