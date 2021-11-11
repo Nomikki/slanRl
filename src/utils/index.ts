@@ -151,3 +151,7 @@ export const createListOfProficiencies = (
   }
   return proficienciesArray as string[];
 };
+
+export const sleep = (ms: number) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};

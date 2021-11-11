@@ -2,7 +2,7 @@ import { game } from "@/index";
 import { ABILITIES } from "@/rpg/abilities";
 import Actor from "@/units/actor";
 import { random } from "@/units/ai";
-import { ensure } from "@/utils";
+import { ensure, float2int, sleep } from "@/utils";
 import { Colors } from "@/utils/colors";
 
 export default class Attacker {
@@ -75,8 +75,42 @@ export default class Attacker {
     }
   }
 
-  rangeAttack(owner: Actor, x: number, y: number) {
+  async rangeAttack(owner: Actor, x: number, y: number) {
     const target = game.getActor(x, y);
+
+    const distance = float2int(owner.getDistance(x, y));
+    const dx = (x - owner.x) / distance;
+    const dy = (y - owner.y) / distance;
+
+    let arrowX = owner.x;
+    let arrowY = owner.y;
+    let arrowCh = "-";
+
+    const angle = float2int(((Math.atan2(dy, dx) / 3.1415) * 180 + 360) % 360);
+    console.log(angle);
+
+    if (angle >= 270 - 25 && angle <= 270 + 25) arrowCh = "|";
+    else if (angle >= 90 - 25 && angle <= 90 + 25) arrowCh = "|";
+    else if (angle > 25 && angle < 45 + 25) arrowCh = "\\";
+    else if (angle > 180 + 25 && angle < 180 + 45) arrowCh = "\\";
+    else arrowCh = "/";
+
+    for (let i = 0; i < distance; i++) {
+      await sleep(100);
+      arrowX += dx;
+      arrowY += dy;
+
+      game.render();
+      game.drawChar(
+        arrowCh,
+        float2int(arrowX) + game.camera.x,
+        float2int(arrowY) + game.camera.y,
+        Colors.HILIGHT_TEXT,
+      );
+    }
+
+    game.render();
+
     if (target && game.player?.fov?.isInFov(x, y)) {
       this.attackPhase(owner, target, ABILITIES.DEX, this.power_range);
     }

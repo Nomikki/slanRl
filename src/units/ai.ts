@@ -253,7 +253,11 @@ export class PlayerAI extends AI {
         ensure(rangeWeapon.weapon).isReloaded = false;
 
         if (isOnRange) {
-          owner.attacker?.rangeAttack(owner, tileX as number, tileY as number);
+          await owner.attacker?.rangeAttack(
+            owner,
+            tileX as number,
+            tileY as number,
+          );
           game.gameStatus = GameStatus.NEW_TURN;
         }
       } else {
