@@ -106,3 +106,4 @@ typings/
 
 dist
 .DS_Store
+test-results
