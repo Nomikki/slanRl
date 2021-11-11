@@ -3,7 +3,7 @@ import { Colors } from "@/utils/colors";
 import { game } from "..";
 import { ABILITIES, Abilities } from "./abilities";
 import { createListOfClasses, getClass } from "./classes";
-import { createListOfRaces, getRace } from "./races";
+import { AbilitiesIntercace, createListOfRaces, getRace } from "./races";
 
 enum phases {
   choose_race = 0,
@@ -26,12 +26,19 @@ export const prepareNewJourney = async () => {
 
   let toughnessIncrease = 0;
 
+  let wordWrappedFlavourText: string[];
+
   const listOfRaces = createListOfRaces();
   const listOfClasses = createListOfClasses();
   const tempAbies = new Abilities(10, 10, 10, 10, 10);
   const finalAbies = new Abilities(10, 10, 10, 10, 10);
 
-  const renderPreparingInfo = () => {
+  const renderPreparingInfo = (
+    resiliences: string,
+    proficiencies: string[],
+    abies: AbilitiesIntercace,
+  ) => {
+    game.clear();
     game.drawText("New game", 10, 1, Colors.HILIGHT_TEXT);
 
     for (let i = 0; i < 3; i++) {
@@ -52,70 +59,10 @@ export const prepareNewJourney = async () => {
     for (let i = 0; i < listOfRaces.length; i++) {
       game.drawText(listOfRaces[i], 10, 12 + i);
     }
-  };
 
-  const usePoints = (abiD: number) => {
-    if (unusedPoints - abiD >= 0) {
-      if (selectedAbilities === 0) {
-        if (tempAbies.inRange(tempAbies.str + abiD)) tempAbies.str += abiD;
-        else abiD = 0;
-      }
-      if (selectedAbilities === 1) {
-        if (tempAbies.inRange(tempAbies.dex + abiD)) tempAbies.dex += abiD;
-        else abiD = 0;
-      }
-      if (selectedAbilities === 2) {
-        if (tempAbies.inRange(tempAbies.con + abiD)) tempAbies.con += abiD;
-        else abiD = 0;
-      }
-      if (selectedAbilities === 3) {
-        if (tempAbies.inRange(tempAbies.int + abiD)) tempAbies.int += abiD;
-        else abiD = 0;
-      }
-      if (selectedAbilities === 4) {
-        if (tempAbies.inRange(tempAbies.wis + abiD)) tempAbies.wis += abiD;
-        else abiD = 0;
-      }
-
-      unusedPoints -= abiD;
-    }
-  };
-
-  while (true) {
-    game.clear();
-
-    renderPreparingInfo();
-
-    toughnessIncrease = ensure(
-      getRace(listOfRaces[selectedRace])?.toughnessIncrease,
-    );
-    const resiliences = ensure(getRace(listOfRaces[selectedRace])?.resilience);
-
-    const proficiencies = createListOfProficiencies(
-      listOfRaces[selectedRace],
-      listOfClasses[selectedClass],
-    );
-
-    if (phase === phases.choose_race) {
-      const flavourText = ensure(
-        getRace(listOfRaces[selectedRace])?.flavourText,
-      );
-
-      const wordWrapped: string[] = ensure(wordWrap(flavourText, 48));
-
-      for (let i = 0; i < wordWrapped.length; i++) {
-        game.drawText(wordWrapped[i], 10, 21 + i, Colors.DEFAULT_TEXT);
-      }
-    }
-
-    if (phase === phases.choose_class) {
-      const flavourText = ensure(
-        getClass(listOfClasses[selectedClass])?.flavourText,
-      );
-      const wordWrapped: string[] = ensure(wordWrap(flavourText, 48));
-      for (let i = 0; i < wordWrapped.length; i++) {
-        game.drawText(wordWrapped[i], 10, 21 + i, Colors.DEFAULT_TEXT);
-      }
+    game.drawChar(">", 18, 12 + selectedClass, Colors.DEFAULT_TEXT);
+    for (let i = 0; i < listOfClasses.length; i++) {
+      game.drawText(listOfClasses[i], 20, 12 + i);
     }
 
     game.drawText(
@@ -134,44 +81,31 @@ export const prepareNewJourney = async () => {
       Colors.DEFAULT_TEXT,
     );
 
-    game.drawText("Profiencies: ", 55, 20);
-    if (proficiencies.length > 0) {
-      for (let i = 0; i < proficiencies.length; i++) {
-        game.drawText(proficiencies[i], 55, 22 + i);
-      }
-    }
+    if (phase === phases.choose_abilities) {
+      wordWrappedFlavourText = [];
 
-    const abies = ensure(getRace(listOfRaces[selectedRace])?.abilityIncrease);
+      wordWrappedFlavourText.push(
+        "Use left and right arrows to change ability scores.",
+      );
+      wordWrappedFlavourText.push("");
 
-    game.drawChar(">", 18, 12 + selectedClass, Colors.DEFAULT_TEXT);
-
-    for (let i = 0; i < listOfClasses.length; i++) {
-      game.drawText(listOfClasses[i], 20, 12 + i);
+      if (selectedAbilities === 0)
+        wordWrappedFlavourText.push("Strength: Measuring physical power.");
+      if (selectedAbilities === 1)
+        wordWrappedFlavourText.push("Dexterity: Measuring agility.");
+      if (selectedAbilities === 2)
+        wordWrappedFlavourText.push("Constitution: Measuring endurance.");
+      if (selectedAbilities === 3)
+        wordWrappedFlavourText.push(
+          "Intelligence: Measuring reasoning and memory.",
+        );
+      if (selectedAbilities === 4)
+        wordWrappedFlavourText.push(
+          "Wisdom: Measuring perception and insight.",
+        );
     }
 
     game.drawChar(">", 28, 12 + selectedAbilities, Colors.DEFAULT_TEXT);
-
-    if (phase === phases.choose_abilities) {
-      let abilityText = "";
-      if (selectedAbilities === 0)
-        abilityText = "Strength: Measuring physical power.";
-      if (selectedAbilities === 1)
-        abilityText = "Dexterity: Measuring agility.";
-      if (selectedAbilities === 2)
-        abilityText = "Constitution: Measuring endurance.";
-      if (selectedAbilities === 3)
-        abilityText = "Intelligence: Measuring reasoning and memory.";
-      if (selectedAbilities === 4)
-        abilityText = "Wisdom: Measuring perception and insight.";
-
-      game.drawText(abilityText, 10, 21);
-
-      game.drawText(
-        "Use left and right arrows to change ability scores.",
-        30,
-        19,
-      );
-    }
 
     game.drawText("Strength", 30, 12);
     game.drawText("Dexterity", 30, 13);
@@ -192,12 +126,6 @@ export const prepareNewJourney = async () => {
     game.drawText(abies.con !== 0 ? `+${abies.con.toString()}` : "", 39, 14);
     game.drawText(abies.int !== 0 ? `+${abies.int.toString()}` : "", 39, 15);
     game.drawText(abies.wis !== 0 ? `+${abies.wis.toString()}` : "", 39, 16);
-
-    finalAbies.str = tempAbies.str + abies.str;
-    finalAbies.dex = tempAbies.dex + abies.dex;
-    finalAbies.con = tempAbies.con + abies.con;
-    finalAbies.int = tempAbies.int + abies.int;
-    finalAbies.wis = tempAbies.wis + abies.wis;
 
     game.drawText(
       `= ${finalAbies.str.toString()} (${finalAbies.getBonusWithSign(
@@ -235,10 +163,16 @@ export const prepareNewJourney = async () => {
       16,
     );
 
-    hpStart = ensure(getClass(listOfClasses[selectedClass])?.healthAtStart);
-    hpPerLevel = ensure(
-      getClass(listOfClasses[selectedClass])?.healthIncreasePerLevel,
-    );
+    for (let i = 0; i < wordWrappedFlavourText.length; i++) {
+      game.drawText(wordWrappedFlavourText[i], 10, 21 + i, Colors.DEFAULT_TEXT);
+    }
+
+    game.drawText("Profiencies: ", 55, 20);
+    if (proficiencies.length > 0) {
+      for (let i = 0; i < proficiencies.length; i++) {
+        game.drawText(proficiencies[i], 55, 22 + i);
+      }
+    }
 
     const conModi = finalAbies.getBonus(ABILITIES.CON);
     const finalHP = hpStart + conModi;
@@ -253,6 +187,73 @@ export const prepareNewJourney = async () => {
       `Health increase per level +${hpPerLevel} + ${conModi} (CON) = ${finalHPperLevel}`,
       50,
       13,
+    );
+  };
+
+  const usePoints = (abiD: number) => {
+    if (unusedPoints - abiD >= 0) {
+      if (selectedAbilities === 0) {
+        if (tempAbies.inRange(tempAbies.str + abiD)) tempAbies.str += abiD;
+        else abiD = 0;
+      }
+      if (selectedAbilities === 1) {
+        if (tempAbies.inRange(tempAbies.dex + abiD)) tempAbies.dex += abiD;
+        else abiD = 0;
+      }
+      if (selectedAbilities === 2) {
+        if (tempAbies.inRange(tempAbies.con + abiD)) tempAbies.con += abiD;
+        else abiD = 0;
+      }
+      if (selectedAbilities === 3) {
+        if (tempAbies.inRange(tempAbies.int + abiD)) tempAbies.int += abiD;
+        else abiD = 0;
+      }
+      if (selectedAbilities === 4) {
+        if (tempAbies.inRange(tempAbies.wis + abiD)) tempAbies.wis += abiD;
+        else abiD = 0;
+      }
+
+      unusedPoints -= abiD;
+    }
+  };
+
+  while (true) {
+    toughnessIncrease = ensure(
+      getRace(listOfRaces[selectedRace])?.toughnessIncrease,
+    );
+    const resiliences = ensure(getRace(listOfRaces[selectedRace])?.resilience);
+
+    const proficiencies = createListOfProficiencies(
+      listOfRaces[selectedRace],
+      listOfClasses[selectedClass],
+    );
+
+    if (phase === phases.choose_race) {
+      const flavourText = ensure(
+        getRace(listOfRaces[selectedRace])?.flavourText,
+      );
+
+      wordWrappedFlavourText = ensure(wordWrap(flavourText, 48));
+    } else if (phase === phases.choose_class) {
+      const flavourText = ensure(
+        getClass(listOfClasses[selectedClass])?.flavourText,
+      );
+      wordWrappedFlavourText = ensure(wordWrap(flavourText, 48));
+    }
+
+    const abies = ensure(getRace(listOfRaces[selectedRace])?.abilityIncrease);
+
+    renderPreparingInfo(resiliences, proficiencies, abies);
+
+    finalAbies.str = tempAbies.str + abies.str;
+    finalAbies.dex = tempAbies.dex + abies.dex;
+    finalAbies.con = tempAbies.con + abies.con;
+    finalAbies.int = tempAbies.int + abies.int;
+    finalAbies.wis = tempAbies.wis + abies.wis;
+
+    hpStart = ensure(getClass(listOfClasses[selectedClass])?.healthAtStart);
+    hpPerLevel = ensure(
+      getClass(listOfClasses[selectedClass])?.healthIncreasePerLevel,
     );
 
     selectDirection = 0;
