@@ -79,7 +79,7 @@ export default class Map {
 
     const monsterListBig = ["giant rat", "orc", "ghoul"];
 
-    if (random.getInt(0, 100) > 20) {
+    if (random.getInt(0, 100) > 5) {
       const rng = random.getInt(0, monsterListSmall.length);
       game.actors.push(createMonster(monsterListSmall[rng], x, y));
     } else {
