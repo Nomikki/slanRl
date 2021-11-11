@@ -12,6 +12,8 @@
       "*": ["types/*.d.ts"],
       "@/": ["src"],
       "@/*": ["src/*"],
+      "@tests": ["tests"],
+      "@tests/*": ["tests/*"]
     },
     "suppressExcessPropertyErrors": true,
     "sourceMap": true,
@@ -27,7 +29,7 @@
     "strictFunctionTypes": true,
     "esModuleInterop": true,
     "preserveWatchOutput": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules"]
 }

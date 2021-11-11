@@ -18,10 +18,13 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "build": "rimraf dist && cross-env NODE_ENV=production webpack --config webpack.config.ts",
     "start": "webpack serve --config webpack.config.ts --progress --open",
+    "playwright:install": "npx playwright install",
+    "playwright:test": "npx playwright test tests/*.test.ts",
     "verify": "tsc --noEmit",
     "watch": "webpack --watch"
   },
   "devDependencies": {
+    "@playwright/test": "1.16.3",
     "@types/mini-css-extract-plugin": "2.4.0",
     "@typescript-eslint/eslint-plugin": "5.1.0",
     "@typescript-eslint/parser": "5.1.0",
