@@ -195,7 +195,7 @@ class Game {
   }
 
   async newGame() {
-    this.masterSeed = float2int(Math.random() * 0x7ffffff);
+    this.masterSeed = parseInt(SEED) || float2int(Math.random() * 0x7ffffff);
 
     //choose race, class, abilities and give name
     const [abi, selRace, selClass, hpStart, hpPerLevel, hpIncreasePerLevel] =

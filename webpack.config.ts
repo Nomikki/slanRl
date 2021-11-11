@@ -28,6 +28,7 @@ export default {
       BUILD_DATETIME: JSON.stringify(buildTime), // format: 2021-10-19T15:15:48.944Z
       COMMIT_HASH: JSON.stringify(process.env.COMMIT_HASH || "dev"),
       PRODUCTION: JSON.stringify(true),
+      SEED: JSON.stringify(process.env.SEED),
       VERSION: JSON.stringify(process.env.VERSION || version || "dev"),
     }),
     new HtmlWebpackPlugin({
