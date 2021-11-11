@@ -1,5 +1,6 @@
 import { game } from "@/index";
 import { ABILITIES } from "@/rpg/abilities";
+import { DamageType } from "@/rpg/weapon";
 import Actor from "@/units/actor";
 import { random } from "@/units/ai";
 import { ensure, float2int, sleep } from "@/utils";
@@ -7,6 +8,7 @@ import { Colors } from "@/utils/colors";
 
 export default class Attacker {
   power_melee: string;
+
   power_range: string;
   rangeAttack_range: number;
 
@@ -25,6 +27,7 @@ export default class Attacker {
     target: Actor,
     modifier: ABILITIES,
     power: string,
+    damageType: DamageType,
   ) {
     if (target.destructible && !target.destructible.isDead()) {
       //check if damage roll is succesful
@@ -71,6 +74,21 @@ export default class Attacker {
         if (finalDamage < 0) finalDamage = 0;
 
         target.destructible.takeDamage(target, finalDamage);
+
+        //console.log(damageType);
+
+        if (damageType === DamageType.BLUDGEONING && bonus === true) {
+          const distance = attacker.getDistance(target.x, target.y);
+          const dx = float2int((target.x - attacker.x) / distance);
+          const dy = float2int((target.y - attacker.y) / distance);
+
+          //console.log(dx, dy);
+
+          if (game.map?.canWalk(target.x + dx, target.y + dy)) {
+            target.x += dx;
+            target.y += dy;
+          }
+        }
       }
     }
   }
@@ -84,18 +102,9 @@ export default class Attacker {
 
     let arrowX = owner.x;
     let arrowY = owner.y;
-    let arrowCh = "-";
+    const arrowCh = "-";
 
-    const angle = float2int(((Math.atan2(dy, dx) / 3.1415) * 180 + 360) % 360);
-    console.log(angle);
-
-    if (angle >= 270 - 25 && angle <= 270 + 25) arrowCh = "|";
-    else if (angle >= 90 - 25 && angle <= 90 + 25) arrowCh = "|";
-    else if (angle > 25 && angle < 45 + 25) arrowCh = "\\";
-    else if (angle > 180 + 25 && angle < 180 + 45) arrowCh = "\\";
-    else arrowCh = "/";
-
-    for (let i = 0; i < distance; i++) {
+    for (let i = 0; i < distance + 1; i++) {
       await sleep(100);
       arrowX += dx;
       arrowY += dy;
@@ -111,14 +120,31 @@ export default class Attacker {
 
     game.render();
 
+    const damageType = owner.equipments?.getRangeWeapon()?.weapon?.damageType;
     if (target && game.player?.fov?.isInFov(x, y)) {
-      this.attackPhase(owner, target, ABILITIES.DEX, this.power_range);
+      this.attackPhase(
+        owner,
+        target,
+        ABILITIES.DEX,
+        this.power_range,
+        damageType as DamageType,
+      );
     }
   }
 
   meleeAttack(owner: Actor, target: Actor) {
     if (target.destructible && !target.destructible.isDead()) {
-      this.attackPhase(owner, target, ABILITIES.STR, this.power_melee);
+      const damageType = owner.equipments?.getMeleeWeapon()?.weapon?.damageType;
+
+      this.attackPhase(
+        owner,
+        target,
+        ABILITIES.STR,
+        this.power_melee,
+        damageType === undefined
+          ? DamageType.BLUDGEONING
+          : (damageType as DamageType),
+      );
     }
   }
 }

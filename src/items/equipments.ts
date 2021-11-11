@@ -55,6 +55,21 @@ export default class Equipments {
     return undefined;
   }
 
+  getMeleeWeapon(): Actor | undefined {
+    for (let i = 0; i < this.items.length; i++) {
+      if (
+        this.items[i].pickable?.effect &&
+        (this.items[i].pickable?.effect.type ===
+          WearableType.ONEHANDED_WEAPON ||
+          this.items[i].pickable?.effect.type === WearableType.TWOHANDED_WEAPON)
+      ) {
+        return this.items[i];
+      }
+    }
+
+    return undefined;
+  }
+
   getAC(): number {
     let ac = 0;
     for (const item of this.items) {

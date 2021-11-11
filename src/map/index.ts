@@ -120,9 +120,10 @@ export default class Map {
     if (
       (this.isWall(x - 1, y) == true && this.isWall(x + 1, y) == true) ||
       (this.isWall(x, y - 1) == true && this.isWall(x, y + 1) == true)
-    )
+    ) {
       game.actors.push(door);
-    else {
+      game.sendToBack(door);
+    } else {
       return;
     }
 

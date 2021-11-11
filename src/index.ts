@@ -158,11 +158,18 @@ class Game {
         y: ensure(this.player).y,
       });
 
+      const item6 = createItem({
+        name: "club",
+        x: ensure(this.player).x,
+        y: ensure(this.player).y,
+      });
+
       this.player?.container?.add(item);
       this.player?.container?.add(item2);
       this.player?.container?.add(item3);
       this.player?.container?.add(item4);
       this.player?.container?.add(item5);
+      this.player?.container?.add(item6);
     } else {
       this.log.add("Welcome back stranger!");
       this.log.add("Need help? Press '?'", Colors.HILIGHT_TEXT);
