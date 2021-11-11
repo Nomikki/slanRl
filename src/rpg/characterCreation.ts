@@ -1,9 +1,9 @@
+import { game } from "@/index";
+import { ABILITIES, Abilities } from "@/rpg/abilities";
+import { createListOfClasses, getClass } from "@/rpg/classes";
+import { AbilitiesIntercace, createListOfRaces, getRace } from "@/rpg/races";
 import { createListOfProficiencies, ensure, wordWrap } from "@/utils";
 import { Colors } from "@/utils/colors";
-import { game } from "..";
-import { ABILITIES, Abilities } from "./abilities";
-import { createListOfClasses, getClass } from "./classes";
-import { AbilitiesIntercace, createListOfRaces, getRace } from "./races";
 
 enum phases {
   choose_race = 0,

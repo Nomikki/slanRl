@@ -2,12 +2,14 @@ import "@/index.scss";
 import Container from "@/items/container";
 import Equipments from "@/items/equipments";
 import { createItem } from "@/items/itemGenerator";
-//import weaponsJson from "@/items.json";
 import Map from "@/map";
 import { Camera } from "@/map/camera";
 import Fov from "@/map/fov";
 import { ABILITIES, Abilities } from "@/rpg/abilities";
 import Attacker from "@/rpg/attacker";
+import { prepareNewJourney } from "@/rpg/characterCreation";
+import { getClassNameByIndex } from "@/rpg/classes";
+import { getRaceNameByIndex } from "@/rpg/races";
 import Actor from "@/units/actor";
 import { MonsterAI, PlayerAI } from "@/units/ai";
 import { MonsterDestructible, PlayerDestructible } from "@/units/destructible";
@@ -15,9 +17,6 @@ import { debugInit, ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
-import { prepareNewJourney } from "./rpg/characterCreation";
-import { getClassNameByIndex } from "./rpg/classes";
-import { getRaceNameByIndex } from "./rpg/races";
 
 export enum GameStatus {
   STARTUP,
