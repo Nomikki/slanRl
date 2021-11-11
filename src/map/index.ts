@@ -32,6 +32,8 @@ export default class Map {
   readonly MAX_ROOM_MONSTERS: number = 3;
   readonly MAX_ROOM_ITEMS: number = 2;
 
+  readonly AMBIENCE_COLOR: string = "#33AACC";
+
   tiles: Tile[];
   templateDoors: Rectangle[];
 

@@ -26,9 +26,6 @@ export enum GameStatus {
   DEFEAT,
 }
 
-//const weapons: Weapon[] = weaponsJson;
-//const sword = weapons.find(({ name }: Weapon) => name === "sword");
-
 class Game {
   gameStatus: number = GameStatus.STARTUP;
   player?: Actor;
@@ -86,9 +83,6 @@ class Game {
     };
 
     tempImage.addEventListener("click", zoomTempImage);
-    // tempImage.removeEventListener("onclick", zoomTempImage);
-
-    //console.log(items);
   }
 
   async term() {
@@ -248,7 +242,6 @@ class Game {
               ensure(this.actors[i].container).inventory.push(
                 new Actor(it.x, it.y, it.ch, it.name, it.color),
               ) - 1;
-            //ensure(this.actors[i].container).inventory[k].create(it);
             ensure(this.actors[i].container).inventory[k] = createItem({
               name: it.name,
               x: it.x,
@@ -260,20 +253,9 @@ class Game {
         if (actor.equipments) {
           this.actors[i].equipments = new Equipments();
           for (const it of actor.equipments.items) {
-            //console.log(">>");
-            //console.log(it);
-            //ensure(this.actors[i].equipments?.add(it));
             ensure(this.actors[i].equipments).add(
               createItem({ name: it.name, x: it.x, y: it.y }),
             );
-
-            /*
-            const k =
-              ensure(this.actors[i].equipments).items.push(
-                new Actor(it.x, it.y, it.ch, it.name, it.color),
-              ) - 1;
-            ensure(this.actors[i].equipments).add(it);
-            */
           }
         }
 
@@ -310,15 +292,6 @@ class Game {
         }
 
         if (actor.name === "door") {
-          /*
-          this.actors[i].destructible = new Destructible(
-            100,
-            0,
-            "broken door",
-            "door",
-            0,
-          );
-          */
           this.actors[i].blocks = actor.blocks;
         }
 
@@ -474,6 +447,7 @@ class Game {
     this.clear();
     ensure(this.map).render();
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
+    this.renderLighting();
 
     this.canvas = ensure(document.getElementById("screen"));
     this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
@@ -501,6 +475,32 @@ class Game {
 
     this.ctx.fillStyle = color;
     this.ctx.fillText(ch, x * this.fontSize, y * this.fontSize + this.fontSize);
+  }
+
+  drawRectangle(
+    x: number,
+    y: number,
+    color = Colors.BACKGROUND,
+    opacity: number,
+  ) {
+    if (x < 0 || y < 0 || x > this.width || y > this.height) {
+      return;
+    }
+
+    let lvalue = opacity.toString(16);
+    if (lvalue.length === 0) lvalue = "00";
+    if (lvalue.length < 2) lvalue = "0" + lvalue;
+
+    this.ctx.textAlign = "center";
+    this.ctx.fillStyle = color + lvalue;
+    this.ctx.fillRect(
+      x * this.fontSize - this.fontSize / 2,
+      y * this.fontSize,
+      this.fontSize,
+      this.fontSize,
+    );
+
+    this.ctx.fillStyle = "#FFFFFF";
   }
 
   drawText(text: string, x: number, y: number, color = Colors.DEFAULT_TEXT) {
@@ -558,7 +558,29 @@ class Game {
     this.clear();
     ensure(this.map).render();
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
+
+    this.renderLighting();
+
     this.renderUI();
+  }
+
+  renderLighting() {
+    for (let y = 0; y < this.mapy; y++) {
+      for (let x = 0; x < this.mapx; x++) {
+        const lightValue = ensure(this.player?.fov?.getLight(x, y));
+
+        const cx = x + this.camera.x;
+        const cy = y + this.camera.y;
+
+        ////"#33AACC",
+        this.drawRectangle(
+          cx,
+          cy,
+          this.map?.AMBIENCE_COLOR,
+          lightValue > 255 ? 255 : float2int((lightValue as number) * 0.15),
+        );
+      }
+    }
   }
 
   renderUI() {

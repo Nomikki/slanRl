@@ -5,24 +5,28 @@ export default class Fov {
   width: number;
   height: number;
   mapped: number[];
+  light: number[];
 
   constructor(w: number, h: number) {
     this.width = w;
     this.height = h;
 
     this.mapped = new Array(this.width * this.height).fill(0);
+    this.light = new Array(this.width * this.height).fill(0);
   }
 
   clear() {
     for (let i = 0; i < this.width * this.height; i++) {
       if (this.mapped[i] === 2) {
         this.mapped[i] = 1;
+        this.light[i] = 128;
       }
     }
   }
 
   fullClear() {
     this.mapped = new Array(this.width * this.height).fill(0);
+    this.light = new Array(this.width * this.height).fill(0);
   }
 
   showAll() {
@@ -61,6 +65,7 @@ export default class Fov {
     let py = 0;
 
     this.mapped[x + y * this.width] = 2;
+    this.light[x + y * this.width] = 0;
 
     for (let a = 0; a < 360; a++) {
       dx = Math.sin((a / 3.1415) * 180.0);
@@ -79,6 +84,9 @@ export default class Fov {
 
         const id = float2int(px) + float2int(py) * this.width;
         this.mapped[id] = 2;
+        this.light[id] = float2int(l * (128 / len));
+        if (this.light[id] < 0) this.light[id] = 0;
+        if (this.light[id] > 512) this.light[id] = 512;
 
         if (!game.map?.canWalk(float2int(px), float2int(py))) {
           break;
@@ -91,6 +99,12 @@ export default class Fov {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height)
       return this.mapped[x + y * this.width];
     else return 2;
+  }
+
+  getLight(x: number, y: number): number {
+    if (x >= 0 && y >= 0 && x < this.width && y < this.height)
+      return this.light[x + y * this.width];
+    else return 0;
   }
 
   isInFov(x: number, y: number): boolean {
