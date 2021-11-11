@@ -109,9 +109,17 @@ export default class Fov {
 
   isInFov(x: number, y: number): boolean {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
-      return this.mapped[x + y * this.width] > 0;
+      return this.mapped[x + y * this.width] > 1;
     }
-
     return false;
   }
+
+  /*
+  is(x: number, y: number): boolean {
+    if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
+      return this.mapped[x + y * this.width] > 0;
+    }
+    return false;
+  }
+  */
 }

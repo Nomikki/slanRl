@@ -77,7 +77,7 @@ export default class Attacker {
 
   rangeAttack(owner: Actor, x: number, y: number) {
     const target = game.getActor(x, y);
-    if (target) {
+    if (target && game.player?.fov?.isInFov(x, y)) {
       this.attackPhase(owner, target, ABILITIES.DEX, this.power_range);
     }
   }

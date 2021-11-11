@@ -128,7 +128,7 @@ export default class Map {
 
     //make secret door!
     const rng = random.getInt(0, 100);
-    if (rng > 20) {
+    if (rng < 20) {
       door.ch = "#";
       door.color = Colors.WALL;
     }
