@@ -131,44 +131,38 @@ class Game {
       const item = createItem({
         name: "leather armor",
         x: ensure(this.player).x,
-        y: ensure(this.player).y + 1,
+        y: ensure(this.player).y,
       });
 
       const item2 = createItem({
         name: "hide",
-        x: ensure(this.player).x + 1,
+        x: ensure(this.player).x,
         y: ensure(this.player).y,
       });
 
       const item3 = createItem({
         name: "handaxe",
-        x: ensure(this.player).x - 1,
+        x: ensure(this.player).x,
         y: ensure(this.player).y,
       });
 
       const item4 = createItem({
         name: "light crossbow",
         x: ensure(this.player).x,
-        y: ensure(this.player).y - 1,
+        y: ensure(this.player).y,
       });
 
       const item5 = createItem({
         name: "shortbow",
-        x: ensure(this.player).x - 1,
-        y: ensure(this.player).y - 1,
+        x: ensure(this.player).x,
+        y: ensure(this.player).y,
       });
 
-      this.actors.push(item);
-      this.actors.push(item2);
-      this.actors.push(item3);
-      this.actors.push(item4);
-      this.actors.push(item5);
-
-      this.sendToBack(item);
-      this.sendToBack(item2);
-      this.sendToBack(item3);
-      this.sendToBack(item4);
-      this.sendToBack(item5);
+      this.player?.container?.add(item);
+      this.player?.container?.add(item2);
+      this.player?.container?.add(item3);
+      this.player?.container?.add(item4);
+      this.player?.container?.add(item5);
     } else {
       this.log.add("Welcome back stranger!");
       this.log.add("Need help? Press '?'", Colors.HILIGHT_TEXT);
@@ -360,6 +354,8 @@ class Game {
               actor.destructible.defense;
             ensure(this.actors[i].destructible).corpseName =
               actor.destructible.corpseName;
+
+            if (actor.destructible.hp <= 0) this.actors[i].blocks = false;
 
             this.actors[i].ai = new MonsterAI();
           }

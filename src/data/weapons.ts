@@ -89,7 +89,7 @@ export default [
     weight: 6,
     rangeMax: 12,
     wearableType: "ranged",
-    special: "",
+    special: "loading",
   },
   {
     name: "dart",
@@ -98,7 +98,7 @@ export default [
     weight: 0.25,
     rangeMax: 6,
     wearableType: "ranged",
-    special: "loading",
+    special: "",
   },
 
   {

@@ -226,15 +226,31 @@ export class PlayerAI extends AI {
     };
 
     const handleShooting = async () => {
+      //if enemies are too close, cant shoot
+      const closestMonster = game.getClosestMonster(owner.x, owner.y, 2);
+      if (closestMonster) {
+        game.log.add("Can't shoot. You are in melee fight.");
+        return;
+      }
+
       //lets find out if any bow/shooting weapon is equipped
       const rangeWeapon = owner.equipments?.getRangeWeapon();
       if (rangeWeapon) {
+        if (rangeWeapon.weapon?.needReload && !rangeWeapon.weapon.isReloaded) {
+          rangeWeapon.weapon.isReloaded = true;
+          game.log.add(`Reloading ${rangeWeapon.name}...`);
+          game.gameStatus = GameStatus.NEW_TURN;
+          return;
+        }
+
         //if it, pick target tile
         const [isOnRange, tileX, tileY] = await game.pickATile(
           owner.x,
           owner.y,
           rangeWeapon.weapon?.rangeMax,
         );
+
+        ensure(rangeWeapon.weapon).isReloaded = false;
 
         if (isOnRange) {
           owner.attacker?.rangeAttack(owner, tileX as number, tileY as number);

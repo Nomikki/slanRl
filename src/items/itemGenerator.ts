@@ -125,6 +125,7 @@ export const createItem = (props: {
       damage: weaponTemplate?.damage,
       damageType: damageType,
       rangeMax: weaponTemplate.rangeMax,
+      needReload: weaponTemplate.special === "loading" ? true : false,
     });
 
     color = Colors.WEAPON_ITEM;

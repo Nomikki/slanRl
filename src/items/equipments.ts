@@ -99,9 +99,12 @@ export default class Equipments {
       ensure(owner?.destructible).defense = this.getAC();
       ensure(owner.attacker).power_melee = this.getMeleePower();
       ensure(owner.attacker).power_range = this.getRangePower();
-      ensure(owner.attacker).rangeAttack_range = ensure(
-        this.getRangeWeapon()?.weapon?.rangeMax,
-      );
+
+      if (this.getRangeWeapon()) {
+        ensure(owner.attacker).rangeAttack_range = ensure(
+          this.getRangeWeapon()?.weapon?.rangeMax,
+        );
+      }
     }
   }
 }
