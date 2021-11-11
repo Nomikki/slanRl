@@ -302,7 +302,7 @@ export class PlayerAI extends AI {
       const corpseOrItem =
         (actor.destructible && actor.destructible.isDead) ||
         actor.pickable ||
-        actor.name === "door";
+        (actor.name === "door" && actor.ch === "D");
 
       if (corpseOrItem && actor.x === targetX && actor.y === targetY) {
         game.log.add(`There is a ${actor.name} here`);

@@ -88,16 +88,6 @@ export default class Map {
       const rng = random.getInt(0, monsterListBig.length);
       game.actors.push(createMonster(monsterListBig[rng], x, y));
     }
-
-    /*
-    if (rng < 60) {
-      game.actors.push(createMonster("orc", x, y));
-    } else if (rng < 60 + 10) {
-      game.actors.push(createMonster("troll", x, y));
-    } else {
-      game.actors.push(createMonster("rat", x, y));
-    }
-    */
   }
 
   openCloseDoor(x: number, y: number): boolean {
@@ -108,8 +98,14 @@ export default class Map {
         actor.ch = "D";
         game.log.add("a door is closed");
       } else {
-        actor.ch = "+";
-        game.log.add("a door is opened");
+        if (actor.ch === "#") {
+          actor.color = Colors.DOOR;
+          actor.ch = "+";
+          game.log.add("a secret door is opened!", Colors.HILIGHT_TEXT);
+        } else {
+          actor.ch = "+";
+          game.log.add("a door is opened");
+        }
       }
       return true;
     }
@@ -119,13 +115,23 @@ export default class Map {
   addDoor(x: number, y: number, closed: boolean) {
     const door = new Actor(x, y, closed ? "D" : "+", "door", Colors.DOOR);
     door.blocks = true;
-    //door.destructible = new Destructible(100, 0, "broken door", "door", 0);
+
     //add door, if its between walls
     if (
       (this.isWall(x - 1, y) == true && this.isWall(x + 1, y) == true) ||
       (this.isWall(x, y - 1) == true && this.isWall(x, y + 1) == true)
     )
       game.actors.push(door);
+    else {
+      return;
+    }
+
+    //make secret door!
+    const rng = random.getInt(0, 100);
+    if (rng > 20) {
+      door.ch = "#";
+      door.color = Colors.WALL;
+    }
   }
 
   additem(x: number, y: number) {
