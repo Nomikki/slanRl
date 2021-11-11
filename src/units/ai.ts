@@ -219,9 +219,22 @@ export class PlayerAI extends AI {
       }
     };
 
+    //this feature is disabled for now
+    /*
     const handleFov = () => {
       game.player?.fov?.showAll();
       game.saveImage();
+    };
+    */
+
+    const handleHelpInfo = () => {
+      game.log.add("Use ARROW KEYS to move and attacks");
+      game.log.add("g: Pick up a item.");
+      game.log.add("i: Use item");
+      game.log.add("d: Drop item from inventory");
+      game.log.add(">: Use stairs");
+      game.log.add("o: Open or close door.");
+      game.log.add("w: Wear/equip");
     };
 
     switch (ascii) {
@@ -253,9 +266,15 @@ export class PlayerAI extends AI {
         await handleWield();
         break;
 
+      case "?": //wield
+        handleHelpInfo();
+        break;
+
+      /*
       case "f":
         handleFov();
         break;
+        */
 
       default:
         break;

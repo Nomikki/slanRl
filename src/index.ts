@@ -133,6 +133,7 @@ class Game {
       this.sendToBack(this.stairs);
 
       this.log.add("Welcome stranger!");
+      this.log.add("Need help? Press '?'", Colors.HILIGHT_TEXT);
 
       const item = createItem({
         name: "leather armor",
@@ -157,6 +158,7 @@ class Game {
       this.actors.push(item3);
     } else {
       this.log.add("Welcome back stranger!");
+      this.log.add("Need help? Press '?'", Colors.HILIGHT_TEXT);
     }
 
     this.gameStatus = GameStatus.STARTUP;
