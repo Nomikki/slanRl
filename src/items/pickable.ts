@@ -124,6 +124,7 @@ export enum WearableType {
   SHIELD,
   ONEHANDED_WEAPON,
   TWOHANDED_WEAPON,
+  RANGED_WEAPON,
 }
 
 export class Wearable implements Effect {

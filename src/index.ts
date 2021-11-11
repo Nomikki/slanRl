@@ -105,7 +105,7 @@ class Game {
           10,
           "your cadaver",
         );
-        this.player.attacker = new Attacker("1d4");
+        this.player.attacker = new Attacker("1d4", "1d1");
         this.player.ai = new PlayerAI();
         this.player.abilities = new Abilities(18, 15, 10, 8, 12);
         this.player.container = new Container(26);
@@ -131,7 +131,7 @@ class Game {
       const item = createItem({
         name: "leather armor",
         x: ensure(this.player).x,
-        y: ensure(this.player).y,
+        y: ensure(this.player).y + 1,
       });
 
       const item2 = createItem({
@@ -146,9 +146,29 @@ class Game {
         y: ensure(this.player).y,
       });
 
+      const item4 = createItem({
+        name: "light crossbow",
+        x: ensure(this.player).x,
+        y: ensure(this.player).y - 1,
+      });
+
+      const item5 = createItem({
+        name: "shortbow",
+        x: ensure(this.player).x - 1,
+        y: ensure(this.player).y - 1,
+      });
+
       this.actors.push(item);
       this.actors.push(item2);
       this.actors.push(item3);
+      this.actors.push(item4);
+      this.actors.push(item5);
+
+      this.sendToBack(item);
+      this.sendToBack(item2);
+      this.sendToBack(item3);
+      this.sendToBack(item4);
+      this.sendToBack(item5);
     } else {
       this.log.add("Welcome back stranger!");
       this.log.add("Need help? Press '?'", Colors.HILIGHT_TEXT);
@@ -271,7 +291,12 @@ class Game {
         }
 
         if (actor.attacker) {
-          this.actors[i].attacker = new Attacker(actor.attacker.power);
+          this.actors[i].attacker = new Attacker(
+            actor.attacker.power_melee,
+            actor.attacker.power_range,
+          );
+          ensure(this.actors[i].attacker).rangeAttack_range =
+            actor.attacker.rangeAttack_range;
         }
 
         if (actor.pickable) {
@@ -592,7 +617,10 @@ class Game {
 
     const hp = ensure(pl.destructible?.hp);
     const ac = pl.destructible?.defense;
-    const power = pl.attacker?.power;
+    const power_melee = pl.attacker?.power_melee;
+    const power_range = pl.attacker?.power_range;
+    const rangeWeapon_range = pl.attacker?.rangeAttack_range;
+
     const maxHP = ensure(pl.destructible?.maxHP);
     const depth = ensure(this.map).depth;
     const turn = ensure(this.turns);
@@ -608,8 +636,11 @@ class Game {
     };
 
     this.drawText(`HP: ${hp}/${maxHP}`, 1, this.height + 1, getHpColor());
-    this.drawText(`ATT: ${power}`, 7, this.height + 1);
-    this.drawText(`AC: ${ac}`, 13, this.height + 1);
+    this.drawText(`AC: ${ac}`, 7, this.height + 1);
+
+    this.drawText(`ATT M: ${power_melee}`, 13, this.height + 1);
+    this.drawText(`ATT R: ${power_range}`, 13, this.height + 2);
+    this.drawText(`Range: ${rangeWeapon_range}`, 19, this.height + 2);
 
     this.drawText(`Depth: ${depth}`, this.width - 6, this.height + 1);
     this.drawText(`Turn: ${turn}`, this.width - 6, this.height + 2);

@@ -30,7 +30,9 @@ interface WeaponInterface {
   damage: string;
   damageType: string;
   weight: number;
+  rangeMax: number;
   wearableType: string;
+  special: string;
 }
 
 interface Selector {
@@ -91,8 +93,8 @@ export const createItem = (props: {
     !!weapons.find(n => n.name === name);
   const isItem = (name: string): boolean => !!items.find(n => n.name === name);
 
-
   //simple melee weapons
+  //simple ranged weapons
   if (isWeapon(props.name)) {
     const weaponTemplate = ensure(getWeaponsUsingFind(props.name));
     let damageType = DamageType.BLUDGEONING;
@@ -105,17 +107,26 @@ export const createItem = (props: {
     if (weaponTemplate.damageType === "piercing")
       damageType = DamageType.PIERCING;
 
-    if (weaponTemplate.wearableType === "one-handed")
+    if (weaponTemplate.wearableType === "one-handed") {
       wearableType = WearableType.ONEHANDED_WEAPON;
-    if (weaponTemplate.wearableType === "two-handed")
+      ch = "f";
+    }
+    if (weaponTemplate.wearableType === "two-handed") {
       wearableType = WearableType.TWOHANDED_WEAPON;
+      ch = "F";
+    }
+    if (weaponTemplate.wearableType === "ranged") {
+      wearableType = WearableType.RANGED_WEAPON;
+      ch = "€";
+    }
 
     weapon = new Weapon({
       name: props.name,
       damage: weaponTemplate?.damage,
       damageType: damageType,
+      rangeMax: weaponTemplate.rangeMax,
     });
-    ch = "F";
+
     color = Colors.WEAPON_ITEM;
     blocks = false;
     pickable = new Pickable({
@@ -124,7 +135,6 @@ export const createItem = (props: {
       weight: weaponTemplate.weight,
     });
   }
-  //simple ranged weapons
 
   //armors
   else if (isArmor(props.name)) {

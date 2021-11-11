@@ -2,7 +2,7 @@ import { game, GameStatus } from "@/index";
 import Actor from "@/units/actor";
 import { ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
-import { Menu, MenuItemCode } from "@/utils/menu";
+//import { Menu, MenuItemCode } from "@/utils/menu";
 import Randomizer from "@/utils/random";
 
 export const random = new Randomizer();
@@ -56,6 +56,8 @@ export class PlayerAI extends AI {
         Colors.LEVEL_UP,
       );
 
+      /*
+
       game.menu = new Menu();
       game.menu.clear();
       game.menu.addItem(MenuItemCode.CONSTITUTION, "Constitution (+20 hp)");
@@ -90,6 +92,8 @@ export class PlayerAI extends AI {
       }
 
       if (selectedItem != -1) {
+
+        
         if (selectedItem === MenuItemCode.CONSTITUTION) {
           ensure(owner.destructible).hp += 20;
           ensure(owner.destructible).maxHP += 20;
@@ -102,7 +106,9 @@ export class PlayerAI extends AI {
         if (selectedItem === MenuItemCode.AGILITY) {
           ensure(owner.destructible).defense += 1;
         }
+        
       }
+    */
 
       game.render();
     }
@@ -219,6 +225,26 @@ export class PlayerAI extends AI {
       }
     };
 
+    const handleShooting = async () => {
+      //lets find out if any bow/shooting weapon is equipped
+      const rangeWeapon = owner.equipments?.getRangeWeapon();
+      if (rangeWeapon) {
+        //if it, pick target tile
+        const [isOnRange, tileX, tileY] = await game.pickATile(
+          owner.x,
+          owner.y,
+          rangeWeapon.weapon?.rangeMax,
+        );
+
+        if (isOnRange) {
+          owner.attacker?.rangeAttack(owner, tileX as number, tileY as number);
+          game.gameStatus = GameStatus.NEW_TURN;
+        }
+      } else {
+        game.log.add("Can't shoot. You need ranged weapon first.");
+      }
+    };
+
     //this feature is disabled for now
     /*
     const handleFov = () => {
@@ -229,6 +255,7 @@ export class PlayerAI extends AI {
 
     const handleHelpInfo = () => {
       game.log.add("Use ARROW KEYS to move and attacks");
+      game.log.add("s: Shoot");
       game.log.add("g: Pick up a item.");
       game.log.add("i: Use item");
       game.log.add("d: Drop item from inventory");
@@ -266,6 +293,9 @@ export class PlayerAI extends AI {
         await handleWield();
         break;
 
+      case "s": //shoort
+        await handleShooting();
+        break;
       case "?": //wield
         handleHelpInfo();
         break;

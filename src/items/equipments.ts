@@ -29,6 +29,32 @@ export default class Equipments {
     return undefined;
   }
 
+  thisTypeIsWeared(type: WearableType): Actor | undefined {
+    for (let i = 0; i < this.items.length; i++) {
+      if (
+        this.items[i].pickable?.effect &&
+        this.items[i].pickable?.effect.type === type
+      ) {
+        return this.items[i];
+      }
+    }
+
+    return undefined;
+  }
+
+  getRangeWeapon(): Actor | undefined {
+    for (let i = 0; i < this.items.length; i++) {
+      if (
+        this.items[i].pickable?.effect &&
+        this.items[i].pickable?.effect.type === WearableType.RANGED_WEAPON
+      ) {
+        return this.items[i];
+      }
+    }
+
+    return undefined;
+  }
+
   getAC(): number {
     let ac = 0;
     for (const item of this.items) {
@@ -39,10 +65,29 @@ export default class Equipments {
     return ac;
   }
 
-  getPower(): string {
+  getMeleePower(): string {
     let dmg = "1d3";
     for (const item of this.items) {
-      if (item.weapon) {
+      if (
+        item.weapon &&
+        item.pickable &&
+        (item.pickable.effect.type === WearableType.ONEHANDED_WEAPON ||
+          item.pickable.effect.type === WearableType.TWOHANDED_WEAPON)
+      ) {
+        dmg = item.weapon.damage;
+      }
+    }
+    return dmg;
+  }
+
+  getRangePower(): string {
+    let dmg = "1d3";
+    for (const item of this.items) {
+      if (
+        item.weapon &&
+        item.pickable &&
+        item.pickable.effect.type === WearableType.RANGED_WEAPON
+      ) {
         dmg = item.weapon.damage;
       }
     }
@@ -52,7 +97,11 @@ export default class Equipments {
   update(owner: Actor) {
     if (owner.destructible) {
       ensure(owner?.destructible).defense = this.getAC();
-      ensure(owner.attacker).power = this.getPower();
+      ensure(owner.attacker).power_melee = this.getMeleePower();
+      ensure(owner.attacker).power_range = this.getRangePower();
+      ensure(owner.attacker).rangeAttack_range = ensure(
+        this.getRangeWeapon()?.weapon?.rangeMax,
+      );
     }
   }
 }

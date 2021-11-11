@@ -136,7 +136,7 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
     `dead ${name}`,
     xp,
   );
-  monster.attacker = new Attacker(power);
+  monster.attacker = new Attacker(power, "1d1");
   monster.ai = new MonsterAI();
   monster.abilities = abi;
 
