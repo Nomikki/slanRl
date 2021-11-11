@@ -2,15 +2,22 @@ import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import path from "path";
 import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
-import webpack from "webpack";
+import webpack, { Configuration } from "webpack";
 import { version } from "./package.json";
 
 const buildTime = new Date().toISOString();
 
-const environment = process.env.NODE_ENV ? process.env.NODE_ENV : "development";
+type Environment = "development" | "production" | "none";
+type WebpackPlugin = { apply(...args: any[]): void };
+
+const environment = process.env.NODE_ENV
+  ? (process.env.NODE_ENV as Environment)
+  : "development";
 const isProd = environment === "production";
 
-export default {
+const isTest = JSON.parse(process.env.TEST || "false");
+
+const config: Configuration = {
   entry: {
     index: "./src/index.ts",
   },
@@ -42,8 +49,16 @@ export default {
     }),
     new MiniCssExtractPlugin({
       filename: "[name].css",
-    }),
+    }) as WebpackPlugin,
   ],
+  devServer: {
+    open: !isTest,
+    hot: true,
+  },
+  stats: !isTest,
+  infrastructureLogging: {
+    level: isTest ? "none" : "info",
+  },
   module: {
     rules: [
       {
@@ -67,3 +82,5 @@ export default {
     extensions: [".js", ".ts", ".scss"],
   },
 };
+
+export default config;
