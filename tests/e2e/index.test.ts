@@ -8,7 +8,7 @@ test("basic test", async ({ page, browserName, viewport }) => {
   const { width, height } = viewport || {};
 
   await page.screenshot({
-    path: `tests/snapshots/${browserName}/test1_${width}x${height}.png`,
+    path: `test-results/snapshots/${browserName}/test1_${width}x${height}.png`,
     fullPage: true,
   });
 
