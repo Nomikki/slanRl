@@ -8,7 +8,7 @@ import { version } from "./package.json";
 const buildTime = new Date().toISOString();
 
 type Environment = "development" | "production" | "none";
-type WebpackPlugin = { apply(...args: any[]): void };
+type WebpackPlugin = { apply(...args: unknown[]): void };
 
 const environment = process.env.NODE_ENV
   ? (process.env.NODE_ENV as Environment)
@@ -22,7 +22,7 @@ const config: Configuration = {
     index: "./src/index.ts",
   },
   mode: environment,
-  devtool: isProd ? undefined : "inline-source-map",
+  devtool: isProd || isTest ? undefined : "inline-source-map",
 
   output: {
     filename: "[name].js",
@@ -36,7 +36,7 @@ const config: Configuration = {
       COMMIT_HASH: JSON.stringify(process.env.COMMIT_HASH || "dev"),
       PRODUCTION: JSON.stringify(true),
       SEED: JSON.stringify(process.env.SEED),
-      VERSION: JSON.stringify(process.env.VERSION || version || "dev"),
+      VERSION: JSON.stringify(process.env.VERSION || `v${version}` || "dev"),
     }),
     new HtmlWebpackPlugin({
       filename: "index.html",
@@ -54,7 +54,7 @@ const config: Configuration = {
   devServer: {
     port: process.env.PORT || 8080,
     open: !isTest,
-    hot: true,
+    hot: !isTest,
   },
   stats: !isTest,
   infrastructureLogging: {
