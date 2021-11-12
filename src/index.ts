@@ -604,7 +604,7 @@ class Game {
         this.drawRectangle(
           cx,
           cy,
-          this.map?.AMBIENCE_COLOR,
+          this.map?.ambienceColor,
           lightValue > 255 ? 255 : float2int((lightValue as number) * 0.15),
         );
       }

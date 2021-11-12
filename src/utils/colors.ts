@@ -48,4 +48,17 @@ export const Colors = {
   HILIGHT_TEXT: colors.log_hilight_text,
 
   DEFEAT: colors.log_defeat,
+
+  AMBIENCE_COLOR: [
+    "#0088FF",
+    "#CCAAFF",
+    "#000000",
+    "#CCCCCC",
+    "#33AA33",
+    "#AAFFAA",
+    "#CC00CC",
+    "#FFFF00",
+    "#33AACC",
+    "#FF0000",
+  ],
 };

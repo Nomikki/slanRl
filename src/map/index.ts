@@ -18,7 +18,7 @@ class Tile {
 export default class Map {
   width: number;
   height: number;
-
+  ambienceColor: string;
   startX = 0;
   startY = 0;
   stairsX = 0;
@@ -32,8 +32,6 @@ export default class Map {
   readonly MAX_ROOM_MONSTERS: number = 3;
   readonly MAX_ROOM_ITEMS: number = 2;
 
-  readonly AMBIENCE_COLOR: string = "#33AACC";
-
   tiles: Tile[];
   templateDoors: Rectangle[];
 
@@ -42,6 +40,7 @@ export default class Map {
     this.height = height;
     this.templateDoors = [];
     this.tiles = new Array(this.width * this.height).fill(false);
+    this.ambienceColor = "#AAAAAA";
   }
 
   save() {
@@ -259,6 +258,9 @@ export default class Map {
     console.log("seed: " + this.levelSeed);
     console.log("depth: " + this.depth);
     console.log("split level:" + maxSplitLevel);
+
+    this.ambienceColor =
+      Colors.AMBIENCE_COLOR[random.getInt(0, Colors.AMBIENCE_COLOR.length)];
 
     const root = new bspGenerator(0, 0, this.width, this.height, maxSplitLevel);
     this.tiles = new Array(this.width * this.height).fill(false);
