@@ -722,12 +722,13 @@ class Game {
 
   renderVersion() {
     const versionText = `Commit ID: ${COMMIT_HASH} | Version: ${VERSION}`;
+    console.log(Colors.VERSION);
 
     this.drawText(
       `${versionText}`,
-      this.ctx.canvas.width / this.fontSize - 1,
-      this.ctx.canvas.height / this.fontSize - 1,
-      Colors.DEFAULT_TEXT,
+      this.ctx.canvas.width / this.fontSize - 2,
+      this.ctx.canvas.height / this.fontSize - 2,
+      Colors.VERSION,
       "right",
     );
   }

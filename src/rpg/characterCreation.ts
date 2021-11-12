@@ -244,13 +244,13 @@ export const prepareNewJourney = async () => {
 
     const abies = ensure(getRace(listOfRaces[selectedRace])?.abilityIncrease);
 
-    renderPreparingInfo(resiliences, proficiencies, abies);
-
     finalAbies.str = tempAbies.str + abies.str;
     finalAbies.dex = tempAbies.dex + abies.dex;
     finalAbies.con = tempAbies.con + abies.con;
     finalAbies.int = tempAbies.int + abies.int;
     finalAbies.wis = tempAbies.wis + abies.wis;
+
+    renderPreparingInfo(resiliences, proficiencies, abies);
 
     hpStart = ensure(getClass(listOfClasses[selectedClass])?.healthAtStart);
     hpPerLevel = ensure(

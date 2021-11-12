@@ -61,4 +61,6 @@ export const Colors = {
     "#33AACC",
     "#FF0000",
   ],
+
+  VERSION: colors.ui_version,
 };
