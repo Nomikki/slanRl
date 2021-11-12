@@ -89,6 +89,8 @@ export default class Attacker {
             target.y += dy;
           }
         }
+      } else {
+        game.log.add(`${target.name} miss attack by ${attacker.name}`);
       }
     }
   }
