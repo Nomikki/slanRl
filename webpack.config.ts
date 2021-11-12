@@ -52,6 +52,7 @@ const config: Configuration = {
     }) as WebpackPlugin,
   ],
   devServer: {
+    port: process.env.PORT || 8080,
     open: !isTest,
     hot: true,
   },
