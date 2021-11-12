@@ -1,6 +1,8 @@
 import { PlaywrightTestConfig } from "@playwright/test";
 
-const config: PlaywrightTestConfig = {
+const port = 8081;
+
+export const config: PlaywrightTestConfig = {
   timeout: 30000,
   testDir: "e2e",
   retries: 2,
@@ -33,8 +35,8 @@ const config: PlaywrightTestConfig = {
   ],
 
   webServer: {
-    command: "yarn webpack:start",
-    port: 8080,
+    command: `cross-env PORT=${port} yarn webpack:start`,
+    port,
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
     stats: "none",

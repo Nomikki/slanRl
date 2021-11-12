@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { config } from "../playwright.config";
 
 test("run tests", async ({ page, browserName, viewport }) => {
-  await page.goto("http://localhost:8080");
+  await page.goto(`http://localhost:${config?.webServer?.port || 8080}`);
   const pageTitle = page.locator("title");
   await expect(pageTitle).toHaveText("Slan Roguelike");
 
