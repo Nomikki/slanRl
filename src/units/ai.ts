@@ -282,6 +282,40 @@ export class PlayerAI extends AI {
       game.log.add(">: Use stairs");
       game.log.add("o: Open or close door.");
       game.log.add("w: Wear/equip");
+      game.log.add("P/p: Pull/push");
+    };
+
+    const handlePush = async () => {
+      game.log.add("Which direction to push?");
+      game.render();
+
+      const [dx, dy] = await this.pickDirection();
+
+      if (!game?.map?.pushTo(owner.x + dx, owner.y + dy, dx, dy)) {
+        game.log.add("There's nothing to push.");
+      }
+
+      game.player?.computeFov();
+      game.camera.compute(ensure(game.player?.x), ensure(game.player?.y));
+      game.gameStatus = GameStatus.NEW_TURN;
+    };
+
+    const handlePull = async () => {
+      game.log.add("Which direction to pull?");
+      game.render();
+
+      const [dx, dy] = await this.pickDirection();
+
+      if (!game?.map?.pullTo(owner.x, owner.y, dx, dy)) {
+        game.log.add("There's nothing to pull.");
+      } else {
+        owner.x += dx;
+        owner.y += dy;
+      }
+
+      game.player?.computeFov();
+      game.camera.compute(ensure(game.player?.x), ensure(game.player?.y));
+      game.gameStatus = GameStatus.NEW_TURN;
     };
 
     switch (ascii) {
@@ -313,11 +347,19 @@ export class PlayerAI extends AI {
         await handleWield();
         break;
 
-      case "s": //shoort
+      case "s": //shoot
         await handleShooting();
         break;
       case "?": //wield
         handleHelpInfo();
+        break;
+
+      case "p": //push
+        await handlePush();
+        break;
+
+      case "P": //pull
+        await handlePull();
         break;
 
       /*

@@ -55,7 +55,6 @@ export default class Container {
       }
     }
 
-    //game.drawText(" INVENTORY ", 34, 0);
     for (let i = 0; i < title.length; i++) {
       game.drawChar(
         title.charAt(i),

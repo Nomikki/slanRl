@@ -89,6 +89,59 @@ export default class Map {
     }
   }
 
+  pushTo(x: number, y: number, dx: number, dy: number): boolean {
+    //console.log(x, y, dx, dy);
+
+    const actorList = [];
+    for (const c of game.actors) {
+      if (
+        c.x === x &&
+        c.y === y &&
+        (c.pickable || (c.destructible && c.destructible.isDead()))
+      ) {
+        actorList.push(c);
+      }
+    }
+
+    for (const c of actorList) {
+      if (this.canWalk(c.x + dx, c.y + dy)) {
+        c.x += dx;
+        c.y += dy;
+      } else {
+        game.log.add("Can't push");
+        break;
+      }
+    }
+    if (actorList.length > 0) return true;
+
+    return false;
+  }
+
+  pullTo(x: number, y: number, dx: number, dy: number): boolean {
+    if (!this.canWalk(x + dx, y + dy)) {
+      game.log.add("Can't pull");
+      return false;
+    }
+    const actorList = [];
+    for (const c of game.actors) {
+      if (
+        c.x === x - dx &&
+        c.y === y - dy &&
+        (c.pickable || (c.destructible && c.destructible.isDead()))
+      ) {
+        actorList.push(c);
+      }
+    }
+
+    for (const c of actorList) {
+      c.x += dx;
+      c.y += dy;
+    }
+    if (actorList.length > 0) return true;
+
+    return true;
+  }
+
   openCloseDoor(x: number, y: number): boolean {
     const actor = game.getAnyActor(x, y);
     if (actor && actor.name === "door") {
