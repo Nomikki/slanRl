@@ -1,8 +1,12 @@
 @import "@/css/_functions.scss";
 @import "@/css/colors.scss";
 
+html,
 body {
   background-color: ui("background");
+  margin: 0;
+  padding: 0;
+  display: flex;
 }
 
 #game {
@@ -13,6 +17,7 @@ body {
 
 #screen {
   image-rendering: pixelated;
+  height: 100vh;
 }
 
 #temp-image {
