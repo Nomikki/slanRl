@@ -10,6 +10,9 @@ const config: PlaywrightTestConfig = {
     ignoreHTTPSErrors: true,
     video: "on-first-retry",
     trace: "retain-on-failure",
+    launchOptions: {
+      slowMo: process.env.SLOW ? 1000 : 0,
+    },
   },
   projects: [
     {
