@@ -1,8 +1,13 @@
 import { PlaywrightTestConfig } from "@playwright/test";
-
-type BrowserName = "chromium" | "firefox" | "webkit";
+import {
+  BrowserName,
+  initialiseBrowserConfig,
+  resolveSlowMotion,
+} from "./playwright.utils";
 
 const port = 8081;
+
+const browsers: BrowserName[] = ["chromium", "firefox"];
 
 const resolutions = [
   // { width: 768, height: 576 },
@@ -11,17 +16,7 @@ const resolutions = [
   // { width: 3840, height: 2160 },
 ];
 
-const browserConfig = (browserName: BrowserName) => {
-  const configs = resolutions.map(({ width, height }) => ({
-    name: `${browserName}-${width}-${height}`,
-    use: {
-      browserName,
-      viewport: { width, height },
-    },
-  }));
-
-  return configs;
-};
+const browserConfig = initialiseBrowserConfig(resolutions);
 
 export const config: PlaywrightTestConfig = {
   timeout: 120 * 1000,
@@ -31,24 +26,27 @@ export const config: PlaywrightTestConfig = {
   use: {
     headless: true,
     ignoreHTTPSErrors: true,
-    // video: "on-first-retry",
+    video: "on",
     // trace: "retain-on-failure",
     launchOptions: {
-      slowMo: process.env.SLOW ? 250 : 0,
+      slowMo: process.env.SLOW ? resolveSlowMotion(process.env.SLOWMO) : 0,
     },
   },
-  projects: [...browserConfig("chromium"), ...browserConfig("firefox")],
+  projects: browsers.flatMap(browserName => browserConfig(browserName)),
 
   webServer: {
-    command: `cross-env PORT=${port} yarn webpack:start`,
+    command: `yarn webpack:start`,
     port,
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
     stats: "none",
     env: {
-      TEST: "true",
-      SEED: "74477464",
+      COMMIT_HASH: "snapshot",
       NODE_ENV: "production",
+      PORT: JSON.stringify(port),
+      SEED: "74477464",
+      TEST: "true",
+      VERSION: "snapshot",
     },
   },
 };
