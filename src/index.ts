@@ -111,6 +111,49 @@ class Game {
         this.player.container = new Container(26);
         this.player.equipments = new Equipments();
         this.player.fov = new Fov(this.mapx, this.mapy);
+
+        const item = createItem({
+          name: "leather armor",
+          x: ensure(this.player).x,
+          y: ensure(this.player).y,
+        });
+
+        const item2 = createItem({
+          name: "hide",
+          x: ensure(this.player).x,
+          y: ensure(this.player).y,
+        });
+
+        const item3 = createItem({
+          name: "handaxe",
+          x: ensure(this.player).x,
+          y: ensure(this.player).y,
+        });
+
+        const item4 = createItem({
+          name: "light crossbow",
+          x: ensure(this.player).x,
+          y: ensure(this.player).y,
+        });
+
+        const item5 = createItem({
+          name: "shortbow",
+          x: ensure(this.player).x,
+          y: ensure(this.player).y,
+        });
+
+        const item6 = createItem({
+          name: "club",
+          x: ensure(this.player).x,
+          y: ensure(this.player).y,
+        });
+
+        this.player?.container?.add(item);
+        this.player?.container?.add(item2);
+        this.player?.container?.add(item3);
+        this.player?.container?.add(item4);
+        this.player?.container?.add(item5);
+        this.player?.container?.add(item6);
       }
 
       ensure(this.player).x = ensure(this.map).startX;
@@ -127,49 +170,6 @@ class Game {
 
       this.log.add("Welcome stranger!");
       this.log.add("Need help? Press '?'", Colors.HILIGHT_TEXT);
-
-      const item = createItem({
-        name: "leather armor",
-        x: ensure(this.player).x,
-        y: ensure(this.player).y,
-      });
-
-      const item2 = createItem({
-        name: "hide",
-        x: ensure(this.player).x,
-        y: ensure(this.player).y,
-      });
-
-      const item3 = createItem({
-        name: "handaxe",
-        x: ensure(this.player).x,
-        y: ensure(this.player).y,
-      });
-
-      const item4 = createItem({
-        name: "light crossbow",
-        x: ensure(this.player).x,
-        y: ensure(this.player).y,
-      });
-
-      const item5 = createItem({
-        name: "shortbow",
-        x: ensure(this.player).x,
-        y: ensure(this.player).y,
-      });
-
-      const item6 = createItem({
-        name: "club",
-        x: ensure(this.player).x,
-        y: ensure(this.player).y,
-      });
-
-      this.player?.container?.add(item);
-      this.player?.container?.add(item2);
-      this.player?.container?.add(item3);
-      this.player?.container?.add(item4);
-      this.player?.container?.add(item5);
-      this.player?.container?.add(item6);
     } else {
       this.log.add("Welcome back stranger!");
       this.log.add("Need help? Press '?'", Colors.HILIGHT_TEXT);

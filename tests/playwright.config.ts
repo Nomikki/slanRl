@@ -3,17 +3,17 @@ import { PlaywrightTestConfig } from "@playwright/test";
 const port = 8081;
 
 export const config: PlaywrightTestConfig = {
-  timeout: 30000,
+  timeout: 120 * 1000,
   testDir: "e2e",
   retries: 2,
 
   use: {
     headless: true,
     ignoreHTTPSErrors: true,
-    video: "on-first-retry",
-    trace: "retain-on-failure",
+    // video: "on-first-retry",
+    // trace: "retain-on-failure",
     launchOptions: {
-      slowMo: process.env.SLOW ? 1000 : 0,
+      slowMo: process.env.SLOW ? 250 : 0,
     },
   },
   projects: [
