@@ -39,6 +39,7 @@ export const prepareNewJourney = async () => {
     abies: AbilitiesIntercace,
   ) => {
     game.clear();
+    game.renderVersion();
     game.drawText("New game", 10, 1, Colors.HILIGHT_TEXT);
 
     for (let i = 0; i < 3; i++) {

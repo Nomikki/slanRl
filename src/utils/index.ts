@@ -34,7 +34,7 @@ export const printVersionContainer = () => {
 
 export const debugInit = () => {
   // Populates the content for "version" div in the bottom right corner
-  printVersionContainer();
+  //printVersionContainer();
 
   // Console logs a padded object
   paddedLogObject({

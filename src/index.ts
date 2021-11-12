@@ -376,6 +376,7 @@ class Game {
       window.localStorage.clear();
     this.menu = new Menu();
     this.menu.clear();
+
     if (window.localStorage.getItem("depth"))
       this.menu.addItem(MenuItemCode.CONTINUE, "Continue");
     this.menu.addItem(MenuItemCode.NEW_GAME, "New Game");
@@ -384,6 +385,8 @@ class Game {
     let selectedItem = -1;
     while (true) {
       this.clear();
+      this.renderVersion();
+
       this.drawChar(">", this.width / 2 - 12, 10 + cursor, Colors.MENU_CURSOR);
       for (let i = 0; i < this.menu.items.length; i++) {
         this.drawText(this.menu.items[i].label, this.width / 2 - 10, 10 + i);
@@ -531,8 +534,14 @@ class Game {
     this.ctx.fillStyle = "#FFFFFF";
   }
 
-  drawText(text: string, x: number, y: number, color = Colors.DEFAULT_TEXT) {
-    this.ctx.textAlign = "left";
+  drawText(
+    text: string,
+    x: number,
+    y: number,
+    color = Colors.DEFAULT_TEXT,
+    align = "left",
+  ) {
+    this.ctx.textAlign = align as CanvasTextAlign;
 
     this.ctx.fillStyle = Colors.BACKGROUND;
     this.ctx.fillStyle = color;
@@ -707,6 +716,20 @@ class Game {
         a++;
       }
     }
+
+    this.renderVersion();
+  }
+
+  renderVersion() {
+    const versionText = `Commit ID: ${COMMIT_HASH} | Version: ${VERSION}`;
+
+    this.drawText(
+      `${versionText}`,
+      this.ctx.canvas.width / this.fontSize - 1,
+      this.ctx.canvas.height / this.fontSize - 1,
+      Colors.DEFAULT_TEXT,
+      "right",
+    );
   }
 
   async gameloop() {
