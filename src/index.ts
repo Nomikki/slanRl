@@ -18,6 +18,14 @@ import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
 
+interface MenuBackgroundProps {
+  title: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export enum GameStatus {
   STARTUP,
   IDLE,
@@ -875,6 +883,29 @@ class Game {
     }
 
     return [false, px, py];
+  }
+
+  renderMenuBackground({ title, x, y, w, h }: MenuBackgroundProps) {
+    for (let yy = 0; yy < h; yy++) {
+      for (let xx = 0; xx < w; xx++) {
+        if ((yy === 0 || yy === h - 1) && xx > 0 && xx < w - 1)
+          this.drawChar("-", xx + x, yy + y, Colors.MENU_BORDER);
+        else if ((xx === 0 || xx === w - 1) && yy > 0 && yy < h - 1)
+          this.drawChar("|", xx + x, yy + y, Colors.MENU_BORDER);
+        else if (yy === 0 || xx === 0 || yy === h - 1 || xx === w - 1)
+          this.drawChar("+", xx + x, yy + y, Colors.MENU_BORDER);
+        else this.drawChar(" ", xx + x, yy + y, Colors.MENU_BORDER);
+      }
+    }
+
+    for (let i = 0; i < title.length; i++) {
+      this.drawChar(
+        title.charAt(i),
+        x + w / 2 - title.length / 2 + i,
+        y,
+        Colors.DEFAULT_TEXT,
+      );
+    }
   }
 }
 

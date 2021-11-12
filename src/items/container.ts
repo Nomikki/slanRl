@@ -4,15 +4,6 @@ import { ArmorType } from "@/rpg/armor";
 import { DamageType } from "@/rpg/weapon";
 import Actor from "@/units/actor";
 import { capitalize, ensure } from "@/utils";
-import { Colors } from "@/utils/colors";
-
-interface MenuBackgroundProps {
-  title: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
 
 export default class Container {
   size: number;
@@ -42,31 +33,8 @@ export default class Container {
     }
   }
 
-  renderMenuBackground({ title, x, y, w, h }: MenuBackgroundProps) {
-    for (let yy = 0; yy < h; yy++) {
-      for (let xx = 0; xx < w; xx++) {
-        if ((yy === 0 || yy === h - 1) && xx > 0 && xx < w - 1)
-          game.drawChar("-", xx + x, yy + y, Colors.MENU_BORDER);
-        else if ((xx === 0 || xx === w - 1) && yy > 0 && yy < h - 1)
-          game.drawChar("|", xx + x, yy + y, Colors.MENU_BORDER);
-        else if (yy === 0 || xx === 0 || yy === h - 1 || xx === w - 1)
-          game.drawChar("+", xx + x, yy + y, Colors.MENU_BORDER);
-        else game.drawChar(" ", xx + x, yy + y, Colors.MENU_BORDER);
-      }
-    }
-
-    for (let i = 0; i < title.length; i++) {
-      game.drawChar(
-        title.charAt(i),
-        x + w / 2 - title.length / 2 + i,
-        y,
-        Colors.DEFAULT_TEXT,
-      );
-    }
-  }
-
   render() {
-    this.renderMenuBackground({
+    game.renderMenuBackground({
       title: "INVENTORY",
       x: 15,
       y: 4,

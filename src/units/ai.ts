@@ -273,16 +273,30 @@ export class PlayerAI extends AI {
     };
     */
 
-    const handleHelpInfo = () => {
-      game.log.add("Use ARROW KEYS to move and attacks");
-      game.log.add("s: Shoot");
-      game.log.add("g: Pick up a item.");
-      game.log.add("i: Use item");
-      game.log.add("d: Drop item from inventory");
-      game.log.add(">: Use stairs");
-      game.log.add("o: Open or close door.");
-      game.log.add("w: Wear/equip");
-      game.log.add("P/p: Pull/push");
+    const handleHelpInfo = async () => {
+      game.renderMenuBackground({
+        title: "HELP",
+        x: 15,
+        y: 4,
+        w: 45,
+        h: 30,
+      });
+
+      game.drawText(
+        "Use ARROW KEYS to move and attacks",
+        17,
+        6,
+        Colors.DEFAULT_TEXT,
+      );
+      game.drawText("a: Shoot", 17, 7, Colors.DEFAULT_TEXT);
+      game.drawText("g: Pick up a item.", 17, 8, Colors.DEFAULT_TEXT);
+      game.drawText("i: Use item", 17, 9, Colors.DEFAULT_TEXT);
+      game.drawText("d: Drop item from inventory", 17, 10, Colors.DEFAULT_TEXT);
+      game.drawText(">: Use stairs", 17, 11, Colors.DEFAULT_TEXT);
+      game.drawText("o: Open or close door.", 17, 12, Colors.DEFAULT_TEXT);
+      game.drawText("w: Wear/equip", 17, 13, Colors.DEFAULT_TEXT);
+      game.drawText("P/p: Pull/push", 17, 14, Colors.DEFAULT_TEXT);
+      await game.getch();
     };
 
     const handlePush = async () => {
@@ -347,11 +361,11 @@ export class PlayerAI extends AI {
         await handleWield();
         break;
 
-      case "s": //shoot
+      case "a": //shoot
         await handleShooting();
         break;
       case "?": //wield
-        handleHelpInfo();
+        await handleHelpInfo();
         break;
 
       case "p": //push

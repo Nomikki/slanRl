@@ -1,0 +1,182 @@
+Spells:
+-----------------------------
+acid splash lvl 1
+range: 5
+target saving throw: dex
+lvl1: damage: 1d6
+lvl2: damage: 2d6
+lvl3: damage: 3d6
+lvl4: damage: 4d6
+
+
+blur:
+turns: 20
+range: self
+attacker has disadvantage
+Aura
+
+Burning hands:
+range: 3
+shape: cone
+lvl1: damage: 3d6
+lvl2: damage: 4d6
+lvl3: damage: 5d6
+lvl4: damage: 6d6
+target make dex saving throw, if is fail, it takes dmg, or half of it if succesful
+
+cure wounds:
+range: self
+lvl1: heal: 1d8
+lvl2: heal: 2d8
+lvl3: heal: 3d8
+lvl4: heal: 4d8
+healing: heal + spell casting modifier
+
+detect magic:
+turns: 20*30
+range: 3
+Find secret doors in range
+Aura
+
+Fear:
+turns: 20
+range: 5
+shape: cone
+Target make wisdom saving throw, if fails, target is frightened and try escape
+Aura
+
+Fireball:
+range: 7
+shape: sphere
+size: 2
+lvl1: damage: 8d6
+lvl2: damage: 9d6
+lvl3: damage: 10d6
+target make dex saving throw, if is fail, it takes dmg, or half of it if succesful
+
+Fire bolt:
+range: 10
+lvl1: damage: 1d10
+lvl2: damage: 2d10
+lvl3: damage: 3d10
+lvl4: damage: 4d10
+
+
+Guiding bolt:
+range: 10
+lvl1: damage: 4d6
+lvl2: damage: 5d6
+lvl3: damage: 6d6
+lvl4: damage: 7d6
+target creature has disadvantage on next attack.
+
+Haste:
+turns: 20
+range: self
+speed is doubled
+ac gains +2
+aura
+
+Holding person:
+turns: 20
+range: 4
+target makes wisdom saving throw, if fails, its paralyzed
+
+Inflict wounds:
+range: 1
+lvl1: damage: 3d10
+lvl2: damage: 4d10
+lvl3: damage: 5d10
+lvl4: damage: 6d10
+
+Lighting bolt:
+range: 10
+shape: line
+lvl1: damage: 8d6
+lvl1: damage: 9d6
+lvl1: damage: 10d6
+lvl1: damage: 11d6
+target make dex saving throw, if is fail, it takes dmg, or half of it if succesful
+
+Magic missile:
+range: 5
+damage: 1d4+1
+lvl1: amount: 3
+lvl2: amount: 4
+lvl3: amount: 5
+lvl4: amount: 6
+Shoot amount missiles to targets, pick every target separately
+
+Misty step:
+range: 4
+Surrounded by mist, teleport to an unoccupied space that you can see.
+
+Poison spray:
+range: 2
+lvl1: damage: 1d12
+lvl2: damage: 2d12
+lvl3: damage: 3d12
+lvl4: damage: 4d12
+target make dex saving throw, if is fail, it takes dmg
+
+Ray of frost:
+range: 5
+lvl1: damage: 1d8
+lvl2: damage: 2d8
+lvl3: damage: 3d8
+lvl4: damage: 4d8
+speed reduced by 10
+
+Resistance:
+turns: 20
+add 1d4 to any saving throws
+aura
+
+Sacred flame:
+range: 5
+lvl1: damage: 1d8
+lvl2: damage: 2d8
+lvl3: damage: 3d8
+lvl4: damage: 4d8
+target make dex saving throw, if is fail, it takes dmg
+
+Shatter:
+range: 5
+size: 2
+shape: sphere
+lvl1: damage: 3d8
+lvl1: damage: 4d8
+lvl1: damage: 50d8
+lvl1: damage: 61d8
+target make dex saving throw, if is fail, it takes dmg, or half of it if succesful
+
+Shield of faith:
+range: self
+turns: 20*10
+add +2 to ac
+aura
+
+Shocking grasp:
+range: 1
+lvl1: damage: 1d8
+lvl2: damage: 2d8
+lvl3: damage: 3d8
+lvl4: damage: 4d8
+
+Thunderwave:
+range: self
+size: 3
+shape: cube
+lvl1: damage: 2d8
+lvl2: damage: 3d8
+lvl3: damage: 4d8
+lvl4: damage: 5d8
+target make con saving throw, if is fail, it takes dmg and pushed away from caster, or half of it if succesful and pushed away
+
+Web:
+range: 11
+turns: 20 * 60
+size: 2
+shape: cube
+target make dex saving throw, if is fail, the target is restrained as as it remains in the webs
+web is flammable
