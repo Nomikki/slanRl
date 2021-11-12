@@ -1,5 +1,5 @@
 import { game } from "@/index";
-import { dimmerColor } from "@/utils";
+import { capitalize, dimmerColor } from "@/utils";
 import { Colors } from "@/utils/colors";
 
 class LogText {
@@ -40,7 +40,7 @@ export default class Log {
   }
 
   add(text: string, color = Colors.DEFAULT_TEXT) {
-    this.texts.push(new LogText(text, color));
+    this.texts.push(new LogText(capitalize(text), color));
     if (this.texts.length > this.SIZE_OF_LOG) {
       this.texts.splice(0, 1);
     }

@@ -3,7 +3,7 @@ import { SelectorType, WearableType } from "@/items/pickable";
 import { ArmorType } from "@/rpg/armor";
 import { DamageType } from "@/rpg/weapon";
 import Actor from "@/units/actor";
-import { ensure } from "@/utils";
+import { capitalize, ensure } from "@/utils";
 import { Colors } from "@/utils/colors";
 
 interface MenuBackgroundProps {
@@ -79,7 +79,7 @@ export default class Container {
     let i = 0;
     const menuStartY = 6;
     for (const it of this.inventory) {
-      game.drawText(shortcut + ") " + it.name, 16, menuStartY + i);
+      game.drawText(`${shortcut} ) ${capitalize(it.name)}`, 16, menuStartY + i);
       const weight = ensure(it.pickable).weight;
       game.drawText(`${weight} lb`, 54, menuStartY + i);
       shortcut = String.fromCharCode(shortcut.charCodeAt(0) + 1);
@@ -157,7 +157,7 @@ export default class Container {
           propertiesText += ", armor";
       }
 
-      game.drawText(`${propertiesText}`, 30, menuStartY + i);
+      game.drawText(`${capitalize(propertiesText)}`, 30, menuStartY + i);
 
       i++;
     }

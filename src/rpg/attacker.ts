@@ -102,7 +102,11 @@ export default class Attacker {
 
     let arrowX = owner.x;
     let arrowY = owner.y;
-    const arrowCh = "-";
+    let arrowCh = "-";
+
+    if (Math.abs(dx) < Math.abs(dy)) {
+      arrowCh = "|";
+    }
 
     for (let i = 0; i < distance + 1; i++) {
       await sleep(100);

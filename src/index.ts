@@ -13,7 +13,7 @@ import { getRaceNameByIndex } from "@/rpg/races";
 import Actor from "@/units/actor";
 import { MonsterAI, PlayerAI } from "@/units/ai";
 import { MonsterDestructible, PlayerDestructible } from "@/units/destructible";
-import { debugInit, ensure, float2int } from "@/utils";
+import { capitalize, debugInit, ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
@@ -654,7 +654,11 @@ class Game {
       this.height + 2,
     );
 
-    this.drawText(`${this.player?.name}`, 60, this.height + 1);
+    this.drawText(
+      `${capitalize(ensure(this.player)?.name)}`,
+      60,
+      this.height + 1,
+    );
 
     const padding = 8;
     const offset = 19;
@@ -695,7 +699,11 @@ class Game {
     let a = 0;
     if (pl.equipments && pl.equipments?.items.length > 0) {
       for (const actor of ensure(pl.equipments?.items)) {
-        this.drawText(actor.name, this.width - 20, this.height + 4 + a);
+        this.drawText(
+          capitalize(actor.name),
+          this.width - 20,
+          this.height + 4 + a,
+        );
         a++;
       }
     }

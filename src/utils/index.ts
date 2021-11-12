@@ -155,3 +155,7 @@ export const createListOfProficiencies = (
 export const sleep = (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+export const capitalize = (text: string): string => {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
