@@ -1,4 +1,5 @@
 import { game, GameStatus } from "@/index";
+import { createSpell } from "@/rpg/spellGenerator";
 import Actor from "@/units/actor";
 import { ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
@@ -289,6 +290,7 @@ export class PlayerAI extends AI {
         Colors.DEFAULT_TEXT,
       );
       game.drawText("a: Shoot", 17, 7, Colors.DEFAULT_TEXT);
+      game.drawText("s: Spell", 17, 7, Colors.DEFAULT_TEXT);
       game.drawText("g: Pick up a item.", 17, 8, Colors.DEFAULT_TEXT);
       game.drawText("i: Use item", 17, 9, Colors.DEFAULT_TEXT);
       game.drawText("d: Drop item from inventory", 17, 10, Colors.DEFAULT_TEXT);
@@ -296,6 +298,7 @@ export class PlayerAI extends AI {
       game.drawText("o: Open or close door.", 17, 12, Colors.DEFAULT_TEXT);
       game.drawText("w: Wear/equip", 17, 13, Colors.DEFAULT_TEXT);
       game.drawText("P/p: Pull/push", 17, 14, Colors.DEFAULT_TEXT);
+
       await game.getch();
     };
 
@@ -332,6 +335,41 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
     };
 
+    //this is for testing purpose only
+    const handleSpells = async () => {
+      const spells = ["acid splash", "cure wounds", "lightning", "ruaah"];
+
+      game.renderMenuBackground({
+        title: "test spells",
+        x: 20,
+        y: 4,
+        w: 20,
+        h: 4 + spells.length,
+      });
+
+      let shortcut = "a";
+
+      for (let i = 0; i < spells.length; i++) {
+        game.drawText(
+          `${shortcut}) ${spells[i]}`,
+          22,
+          6 + i,
+          Colors.DEFAULT_TEXT,
+        );
+        shortcut = String.fromCharCode(shortcut.charCodeAt(0) + 1);
+      }
+
+      const ch = await game.getch();
+      const spellIndex = ch.charCodeAt(0) - 97; //97 = a
+
+      if (spellIndex >= spells.length) {
+        game.log.add("Nevermind");
+      } else {
+        game.log.add(`Selected spell: ${spells[spellIndex]}`);
+        createSpell(spells[spellIndex]);
+      }
+    };
+
     switch (ascii) {
       case "S": //save
         handleSave();
@@ -364,6 +402,7 @@ export class PlayerAI extends AI {
       case "a": //shoot
         await handleShooting();
         break;
+
       case "?": //wield
         await handleHelpInfo();
         break;
@@ -374,6 +413,10 @@ export class PlayerAI extends AI {
 
       case "P": //pull
         await handlePull();
+        break;
+
+      case "s": //spells
+        await handleSpells();
         break;
 
       /*
