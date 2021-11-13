@@ -730,7 +730,7 @@ class Game {
 
   renderVersion() {
     const versionText = `Commit ID: ${COMMIT_HASH} | Version: ${VERSION}`;
-    console.log(Colors.VERSION);
+    //console.log(Colors.VERSION);
 
     this.drawText(
       `${versionText}`,
