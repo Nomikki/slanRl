@@ -53,13 +53,12 @@ export const createSpell = async (
   console.log(JSON.stringify(spell, null, 2));
 
   const amounts = spell.amount.split(";");
-  const effectValues = spell.effectValues.split(";");
-
   const amount = parseInt(amounts[level - 1]);
-  const effectValue = effectValues[level - 1];
+  let x = 0;
+  let y = 0;
 
   for (let i = 0; i < amount; i++) {
-    let target;
+    let targets: Actor[] = [];
 
     if (spell.range > 0) {
       const [inRange, tileX, tileY] = await game.pickATile(
@@ -67,136 +66,190 @@ export const createSpell = async (
         caster.y,
         spell.range,
       );
+
+      x = tileX as number;
+      y = tileY as number;
+
       if (inRange) {
-        target = game.getActor(tileX as number, tileY as number);
-        if (target) {
-          //console.log("xy: ", tileX, tileY);
+        if (spell.effectShape === "cube") {
+          const tt = game.getActorsInCube(
+            tileX as number,
+            tileY as number,
+            spell.effectSize,
+            caster,
+          );
+          if (tt as Actor[]) {
+            targets = tt as Actor[];
+          }
+        } else if (spell.effectShape === "cone") {
+          //TODO
+        } else if (spell.effectShape === "sphere") {
+          const tt = game.getActorsInSphere(
+            tileX as number,
+            tileY as number,
+            spell.effectSize,
+            caster,
+          );
+          if (tt as Actor[]) {
+            targets = tt as Actor[];
+          }
+        } else {
+          const tt = game.getActor(tileX as number, tileY as number);
+          if (tt as Actor) targets.push(tt as Actor);
         }
       }
     } else {
-      //self effect
-      target = caster;
+      x = caster.x;
+      y = caster.y;
+      targets.push(caster);
     }
 
-    if (target) {
-      //console.log("effecttype: ", spell.effectType);
+    for (const t of targets as Actor[]) {
+      applySpellTo(t as Actor, caster, spell, level, x, y);
+      game.player?.computeFov();
+      game.render();
+    }
+  }
+};
 
-      const effects = spell.effectType.split(";");
-      for (const effect of effects) {
-        console.log(`effect: ${effect}`);
-        console.log(`effect value: ${effectValue}`);
-        const [dices, eyes, bonus] = random.parseDice(effectValue);
-        let effectValueModBonus = 0;
+const applySpellTo = (
+  target: Actor,
+  caster: Actor,
+  spell: SpellInterface,
+  level: number,
+  x: number,
+  y: number,
+) => {
+  const effectValues = spell.effectValues.split(";");
+  const effectValue = effectValues[level - 1];
 
-        if (spell.effectValue_mod.length > 0) {
-          if (spell.effectValue_mod === "str")
-            effectValueModBonus = ensure(
-              caster.abilities?.getBonus(ABILITIES.STR),
-            );
-          if (spell.effectValue_mod === "dex")
-            effectValueModBonus = ensure(
-              caster.abilities?.getBonus(ABILITIES.DEX),
-            );
-          if (spell.effectValue_mod === "con")
-            effectValueModBonus = ensure(
-              caster.abilities?.getBonus(ABILITIES.CON),
-            );
-          if (spell.effectValue_mod === "int")
-            effectValueModBonus = ensure(
-              caster.abilities?.getBonus(ABILITIES.INT),
-            );
-          if (spell.effectValue_mod === "win")
-            effectValueModBonus = ensure(
-              caster.abilities?.getBonus(ABILITIES.WIS),
-            );
-        }
+  if (target) {
+    const effects = spell.effectType.split(";");
+    for (const effect of effects) {
+      console.log(`effect: ${effect}`);
+      console.log(`effect value: ${effectValue}`);
+      const [dices, eyes, bonus] = random.parseDice(effectValue);
+      let effectValueModBonus = 0;
 
-        let savingThrowSuccess = false;
-        let savingThrowbonus = 0;
-        if (spell.target_saving_throw_type === "str")
-          savingThrowbonus = ensure(target.abilities?.getBonus(ABILITIES.STR));
-        if (spell.target_saving_throw_type === "dex")
-          savingThrowbonus = ensure(target.abilities?.getBonus(ABILITIES.DEX));
-        if (spell.target_saving_throw_type === "con")
-          savingThrowbonus = ensure(target.abilities?.getBonus(ABILITIES.CON));
-        if (spell.target_saving_throw_type === "int")
-          savingThrowbonus = ensure(target.abilities?.getBonus(ABILITIES.INT));
-        if (spell.target_saving_throw_type === "wis")
-          savingThrowbonus = ensure(target.abilities?.getBonus(ABILITIES.WIS));
+      if (spell.effectValue_mod.length > 0) {
+        if (spell.effectValue_mod === "str")
+          effectValueModBonus = ensure(
+            caster.abilities?.getBonus(ABILITIES.STR),
+          );
+        if (spell.effectValue_mod === "dex")
+          effectValueModBonus = ensure(
+            caster.abilities?.getBonus(ABILITIES.DEX),
+          );
+        if (spell.effectValue_mod === "con")
+          effectValueModBonus = ensure(
+            caster.abilities?.getBonus(ABILITIES.CON),
+          );
+        if (spell.effectValue_mod === "int")
+          effectValueModBonus = ensure(
+            caster.abilities?.getBonus(ABILITIES.INT),
+          );
+        if (spell.effectValue_mod === "win")
+          effectValueModBonus = ensure(
+            caster.abilities?.getBonus(ABILITIES.WIS),
+          );
+      }
 
-        const saveDC = random.dice(1, 20, savingThrowbonus);
-        const attackDC = random.dice(
-          1,
-          20,
-          caster.abilities?.getBonus(ABILITIES.INT),
+      let savingThrowSuccess = false;
+      let savingThrowbonus = 0;
+      if (spell.target_saving_throw_type === "str")
+        savingThrowbonus = ensure(target.abilities?.getBonus(ABILITIES.STR));
+      if (spell.target_saving_throw_type === "dex")
+        savingThrowbonus = ensure(target.abilities?.getBonus(ABILITIES.DEX));
+      if (spell.target_saving_throw_type === "con")
+        savingThrowbonus = ensure(target.abilities?.getBonus(ABILITIES.CON));
+      if (spell.target_saving_throw_type === "int")
+        savingThrowbonus = ensure(target.abilities?.getBonus(ABILITIES.INT));
+      if (spell.target_saving_throw_type === "wis")
+        savingThrowbonus = ensure(target.abilities?.getBonus(ABILITIES.WIS));
+
+      const saveDC = random.dice(1, 20, savingThrowbonus);
+      const attackDC = random.dice(
+        1,
+        20,
+        caster.abilities?.getBonus(ABILITIES.INT),
+      );
+
+      if (spell.target_saving_throw_type !== "") {
+        game.log.add(
+          `Attack roll ${attackDC} (1d20 ${caster.abilities?.getBonusWithSign(
+            ABILITIES.INT,
+          )}) against ${saveDC} (${spell.target_saving_throw_type} 1d20 ${
+            savingThrowbonus > 0 ? "+" + savingThrowbonus : savingThrowbonus
+          })`,
         );
 
-        if (spell.target_saving_throw_type !== "") {
-          game.log.add(
-            `Attack roll ${attackDC} (1d20 ${caster.abilities?.getBonusWithSign(
-              ABILITIES.INT,
-            )}) against ${saveDC} (${spell.target_saving_throw_type} 1d20 ${
-              savingThrowbonus > 0 ? "+" + savingThrowbonus : savingThrowbonus
-            })`,
-          );
-
-          if (saveDC >= attackDC) {
-            savingThrowSuccess = true;
-          }
+        if (saveDC >= attackDC) {
+          savingThrowSuccess = true;
         }
+      }
 
-        const value = random.dice(dices, eyes, bonus) + effectValueModBonus;
-        const effectBonusSigned =
-          effectValueModBonus > 0
-            ? `+${effectValueModBonus}`
-            : `${effectValueModBonus}`;
-        const effectValueFinal =
-          effectValue +
-          (spell.effectValue_mod.length > 0
-            ? ` with ${spell.effectValue_mod.toUpperCase()} ${effectBonusSigned}`
-            : "");
+      const value = random.dice(dices, eyes, bonus) + effectValueModBonus;
+      const effectBonusSigned =
+        effectValueModBonus > 0
+          ? `+${effectValueModBonus}`
+          : `${effectValueModBonus}`;
+      const effectValueFinal =
+        effectValue +
+        (spell.effectValue_mod.length > 0
+          ? ` with ${spell.effectValue_mod.toUpperCase()} ${effectBonusSigned}`
+          : "");
 
-        if (effect === "heal") {
-          game.log.add(
-            `${caster.name} cast a ${spell.name} and heals for ${value} hit points (${effectValueFinal}).`,
-          );
+      if (effect === "heal") {
+        game.log.add(
+          `${caster.name} cast a ${spell.name} and heals for ${value} hit points (${effectValueFinal}).`,
+        );
 
-          target.destructible?.heal(value);
-        } else if (
-          effect === "force" ||
-          effect === "acid" ||
-          effect === "lightning"
-        ) {
-          if (spell.target_saving_throw_type !== "") {
-            if (
-              savingThrowSuccess === true &&
-              spell.if_target_saving_throw_success === "half_damage"
-            ) {
-              game.log.add(
-                `${caster.name} cast a ${spell.name} to ${
-                  target.name
-                } for ${float2int(
-                  value / 2,
-                )} hit points (${effectValueFinal} / 2).`,
-              );
-              target.destructible?.takeDamage(target, float2int(value / 2));
-            } else {
-              game.log.add(
-                `${caster.name} cast a ${spell.name} to ${
-                  target.name
-                } for ${float2int(value)} hit points (${effectValueFinal}).`,
-              );
-              target.destructible?.takeDamage(target, float2int(value));
+        target.destructible?.heal(value);
+      } else if (
+        effect === "force" ||
+        effect === "acid" ||
+        effect === "lightning" ||
+        effect === "fire"
+      ) {
+        if (spell.target_saving_throw_type !== "") {
+          const successList = spell.if_target_saving_throw_success.split(";");
+          if (savingThrowSuccess === true) {
+            for (const success of successList) {
+              if (success === "half_damage") {
+                game.log.add(
+                  `${caster.name} cast a ${spell.name} to ${
+                    target.name
+                  } for ${float2int(
+                    value / 2,
+                  )} hit points (${effectValueFinal} / 2).`,
+                );
+                target.destructible?.takeDamage(target, float2int(value / 2));
+              }
             }
           } else {
-            game.log.add(
-              `${caster.name} cast a ${spell.name} to ${target.name} for ${value} hit points (${effectValueFinal}).`,
-            );
-            target.destructible?.takeDamage(target, value);
+            const failList = spell.if_target_saving_throw_fail.split(";");
+            for (const fail of failList) {
+              if (fail === "full_damage") {
+                game.log.add(
+                  `${caster.name} cast a ${spell.name} to ${
+                    target.name
+                  } for ${float2int(value)} hit points (${effectValueFinal}).`,
+                );
+                target.destructible?.takeDamage(target, float2int(value));
+              }
+              if (fail === "pushing_away") {
+                target.pushAwayFrom(x, y, 2);
+              }
+            }
           }
         } else {
-          game.log.add(`unkow effect type ${effect}`, Colors.DISALLOWED);
+          game.log.add(
+            `${caster.name} cast a ${spell.name} to ${target.name} for ${value} hit points (${effectValueFinal}).`,
+          );
+          target.destructible?.takeDamage(target, value);
         }
+      } else {
+        game.log.add(`unkow effect type ${effect}`, Colors.DISALLOWED);
       }
     }
   }

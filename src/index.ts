@@ -841,6 +841,51 @@ class Game {
     return null;
   }
 
+  getActorsInSphere(
+    tileX: number,
+    tileY: number,
+    size: number,
+    ignoreActor: Actor,
+  ): Actor[] | null {
+    const actorList = [];
+
+    for (const actor of this.actors) {
+      if (
+        actor !== ignoreActor &&
+        actor.destructible &&
+        !actor.destructible.isDead() &&
+        actor.getDistance(tileX, tileY) <= size
+      )
+        actorList.push(actor);
+    }
+
+    return actorList;
+  }
+
+  getActorsInCube(
+    tileX: number,
+    tileY: number,
+    size: number,
+    ignoreActor: Actor,
+  ): Actor[] | null {
+    const actorList = [];
+
+    for (const actor of this.actors) {
+      if (
+        actor !== ignoreActor &&
+        actor.destructible &&
+        !actor.destructible.isDead() &&
+        actor.x >= tileX - size &&
+        actor.x <= tileX + size &&
+        actor.y >= tileY - size &&
+        actor.y <= tileY + size
+      )
+        actorList.push(actor);
+    }
+
+    return actorList;
+  }
+
   async pickATile(x: number, y: number, range = 0.0) {
     let px = x;
     let py = y;

@@ -341,7 +341,8 @@ export class PlayerAI extends AI {
         "cure wounds",
         "magic missile",
         "ruaah",
-        "lightning",
+        "thunderwave",
+        "fireball",
       ];
 
       game.renderMenuBackground({

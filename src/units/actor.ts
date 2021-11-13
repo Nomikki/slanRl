@@ -148,4 +148,20 @@ export default class Actor {
       listOfClasses[this.class],
     );
   }
+
+  pushAwayFrom(tileX: number, tileY: number, distance: number) {
+    const d = this.getDistance(tileX, tileY);
+    const dx = float2int((this.x - tileX) / d);
+    const dy = float2int((this.y - tileY) / d);
+
+    //console.log(tileX, tileY);
+    //console.log(dx, dy, d);
+
+    for (let i = 0; i < distance; i++) {
+      if (game.map?.canWalk(this.x + dx, this.y + dy)) {
+        this.x += dx;
+        this.y += dy;
+      }
+    }
+  }
 }
