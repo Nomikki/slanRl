@@ -1,9 +1,8 @@
 import { game, GameStatus } from "@/index";
-import { createSpell } from "@/rpg/spellGenerator";
+import { createSpell, getSpell } from "@/rpg/spellGenerator";
 import Actor from "@/units/actor";
 import { ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
-//import { Menu, MenuItemCode } from "@/utils/menu";
 import Randomizer from "@/utils/random";
 
 export const random = new Randomizer();
@@ -337,7 +336,13 @@ export class PlayerAI extends AI {
 
     //this is for testing purpose only
     const handleSpells = async () => {
-      const spells = ["acid splash", "cure wounds", "lightning", "ruaah"];
+      const spells = [
+        "acid splash",
+        "cure wounds",
+        "magic missile",
+        "ruaah",
+        "lightning",
+      ];
 
       game.renderMenuBackground({
         title: "test spells",
@@ -362,11 +367,13 @@ export class PlayerAI extends AI {
       const ch = await game.getch();
       const spellIndex = ch.charCodeAt(0) - 97; //97 = a
 
-      if (spellIndex >= spells.length) {
+      if (spellIndex < 0 || spellIndex >= spells.length) {
         game.log.add("Nevermind");
       } else {
         game.log.add(`Selected spell: ${spells[spellIndex]}`);
-        createSpell(spells[spellIndex]);
+        const spell = getSpell(spells[spellIndex]);
+
+        if (spell) await createSpell(spell, owner, 1);
       }
     };
 

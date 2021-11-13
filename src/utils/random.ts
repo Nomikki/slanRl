@@ -1,3 +1,5 @@
+import { ensure } from "@/utils";
+
 let _seed = 0;
 
 class Randomizer {
@@ -23,7 +25,7 @@ class Randomizer {
     return Math.floor(min + this.rnd * (max - min));
   }
 
-  dice(dices: number, eyes: number, bonus: 0): number {
+  dice(dices: number, eyes: number, bonus = 0): number {
     let v = 0;
     eyes++;
     for (let i = 0; i < dices; i++) {
@@ -32,6 +34,14 @@ class Randomizer {
     v += +bonus;
     if (v < dices) v = dices;
     return v;
+  }
+
+  parseDice(dicesEyesBonus: string): [number, number, number] {
+    const bonus = dicesEyesBonus.includes("+")
+      ? parseInt(ensure(dicesEyesBonus.split("+").at(1)))
+      : 0;
+    const [dices, eyes] = dicesEyesBonus.split("d");
+    return [parseInt(dices), parseInt(eyes), bonus];
   }
 }
 
