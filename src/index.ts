@@ -540,9 +540,9 @@ class Game {
 
     this.canvas = tempImageCanvas;
     this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
+    this.setScale(12);
     this.ctx.canvas.width = this.mapx * this.fontSize;
     this.ctx.canvas.height = this.mapy * this.fontSize;
-    this.setScale(12);
 
     this.camera.x = 0;
     this.camera.y = 0;
@@ -562,6 +562,7 @@ class Game {
     this.camera.y = oldCameraY;
 
     this.setScale(oldFontSize);
+    //this.fitCanvasToScreen();
     this.render();
   }
 
@@ -803,7 +804,7 @@ class Game {
 
     this.drawText(
       `${versionText}`,
-      this.ctx.canvas.width / this.fontSize - 2,
+      80 - 2,
       this.ctx.canvas.height / this.fontSize - 2,
       Colors.VERSION,
       "right",
