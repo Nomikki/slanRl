@@ -784,20 +784,6 @@ class Game {
     );
 
     this.log.render();
-
-    this.drawText("Weared", this.width - 20, this.height + 3);
-    let a = 0;
-    if (pl.equipments && pl.equipments?.items.length > 0) {
-      for (const actor of ensure(pl.equipments?.items)) {
-        this.drawText(
-          capitalize(actor.name),
-          this.width - 20,
-          this.height + 4 + a,
-        );
-        a++;
-      }
-    }
-
     this.renderVersion();
   }
 

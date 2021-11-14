@@ -1,6 +1,7 @@
+import { game } from "@/index";
 import { WearableType } from "@/items/pickable";
 import Actor from "@/units/actor";
-import { ensure } from "@/utils";
+import { capitalize, ensure } from "@/utils";
 
 export default class Equipments {
   items: Actor[];
@@ -119,6 +120,26 @@ export default class Equipments {
         ensure(owner.attacker).rangeAttack_range = ensure(
           this.getRangeWeapon()?.weapon?.rangeMax,
         );
+      }
+    }
+  }
+
+  render() {
+    game.renderMenuBackground({
+      title: "EQUIPS",
+      x: 59,
+      y: 4,
+      w: 10,
+      h: 30,
+    });
+
+    let a = 0;
+    if (game.player) {
+      if (game.player.equipments && game.player.equipments?.items.length > 0) {
+        for (const actor of ensure(game.player.equipments?.items)) {
+          game.drawText(capitalize(actor.name), 60, 6 + a);
+          a++;
+        }
       }
     }
   }

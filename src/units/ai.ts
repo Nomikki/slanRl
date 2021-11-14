@@ -513,7 +513,10 @@ export class PlayerAI extends AI {
   async choseFromInventory(owner: Actor) {
     game.clear();
     game.render();
-    if (owner.container) owner.container.render();
+    if (owner.container && owner.equipments) {
+      owner.container.render();
+      owner.equipments?.render();
+    }
 
     const ch = await game.getch();
     const actorIndex = ch.charCodeAt(0) - 97; //97 = a
