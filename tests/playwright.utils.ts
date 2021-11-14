@@ -36,13 +36,16 @@ export const initialiseScreenshotSettings = (
 ) => {
   let testIndex = 0;
 
-  return (title: string) => ({
-    path: `test-results/snapshots/${browserName}/${testIndex++}_${title.replace(
-      / /gi,
-      "-",
-    )}_${viewport?.width}x${viewport?.height}.png`,
-    fullPage: true,
-  });
+  const resolution = `${viewport?.width}x${viewport?.height}`;
+
+  return (title: string) => {
+    const testname = title.replace(/[^a-zA-Z0-9]/g, "_");
+
+    return {
+      path: `test-results/snapshots/${browserName}/${resolution}/${testIndex++}_${testname}.png`,
+      fullPage: true,
+    };
+  };
 };
 
 export const resolveSlowMotion = (slowmo?: string) => {

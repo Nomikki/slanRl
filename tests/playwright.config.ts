@@ -7,13 +7,13 @@ import {
 
 const port = 8081;
 
-const browsers: BrowserName[] = ["chromium"];
+const browsers: BrowserName[] = ["chromium", "firefox"];
 
 const resolutions = [
   // { width: 768, height: 576 },
   { width: 1280, height: 720 },
-  //{ width: 1920, height: 1200 },
-  // { width: 3840, height: 2160 },
+  { width: 1920, height: 1200 },
+  { width: 3840, height: 2160 },
 ];
 
 const browserConfig = initialiseBrowserConfig(resolutions);
@@ -26,8 +26,8 @@ export const config: PlaywrightTestConfig = {
   use: {
     headless: true,
     ignoreHTTPSErrors: true,
-    video: "on",
-    // trace: "retain-on-failure",
+    video: "on-first-retry",
+    trace: "on-first-retry",
     launchOptions: {
       slowMo: process.env.SLOW ? resolveSlowMotion(process.env.SLOWMO) : 0,
     },
