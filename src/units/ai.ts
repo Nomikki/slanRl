@@ -297,6 +297,7 @@ export class PlayerAI extends AI {
       game.drawText("o: Open or close door.", 17, 13, Colors.DEFAULT_TEXT);
       game.drawText("w: Wear/equip", 17, 14, Colors.DEFAULT_TEXT);
       game.drawText("P/p: Pull/push", 17, 15, Colors.DEFAULT_TEXT);
+      game.drawText(".: rest / skip turn", 17, 16, Colors.DEFAULT_TEXT);
 
       await game.getch();
     };
@@ -390,6 +391,10 @@ export class PlayerAI extends AI {
       }
     };
 
+    const handleRest = () => {
+      game.gameStatus = GameStatus.NEW_TURN;
+    };
+
     switch (ascii) {
       case "S": //save
         handleSave();
@@ -444,6 +449,9 @@ export class PlayerAI extends AI {
         break;
       case "+":
         handleZoom(1);
+        break;
+      case ".":
+        handleRest();
         break;
 
       /*

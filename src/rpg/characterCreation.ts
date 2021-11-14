@@ -250,12 +250,12 @@ export const prepareNewJourney = async () => {
     finalAbies.int = tempAbies.int + abies.int;
     finalAbies.wis = tempAbies.wis + abies.wis;
 
-    renderPreparingInfo(resiliences, proficiencies, abies);
-
     hpStart = ensure(getClass(listOfClasses[selectedClass])?.healthAtStart);
     hpPerLevel = ensure(
       getClass(listOfClasses[selectedClass])?.healthIncreasePerLevel,
     );
+
+    renderPreparingInfo(resiliences, proficiencies, abies);
 
     selectDirection = 0;
     const ch = await game.getch();

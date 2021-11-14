@@ -256,6 +256,8 @@ class Game {
         this.masterSeed = parseInt(ensure(urlParams.get("seed")));
     }
 
+    history.pushState({}, "Slan Roguelike", `/slanRl/?seed=${this.masterSeed}`);
+
     //choose race, class, abilities and give name
     const [abi, selRace, selClass, hpStart, hpPerLevel, hpIncreasePerLevel] =
       await prepareNewJourney();
@@ -672,7 +674,7 @@ class Game {
     ensure(this.map).render();
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
 
-    this.renderLighting();
+    //this.renderLighting();
 
     this.renderUI();
   }

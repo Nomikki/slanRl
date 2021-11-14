@@ -17,6 +17,7 @@ import Weapon from "@/rpg/weapon";
 import { ConfusedAI, ConfusedMonsterAi, MonsterAI, PlayerAI } from "@/units/ai";
 import Destructible from "@/units/destructible";
 import { createListOfProficiencies, ensure, float2int } from "@/utils";
+import { Colors } from "@/utils/colors";
 
 export default class Actor {
   x: number;
@@ -111,12 +112,12 @@ export default class Actor {
 
   render() {
     const fovValue = game.player?.fov?.getMapped(this.x, this.y);
-    if (fovValue === 2 || (fovValue != 0 && !this.fovOnly)) {
+    if (fovValue === 2 || (!this.fovOnly && fovValue !== 0)) {
       game.drawChar(
         this.ch,
         this.x + game.camera.x,
         this.y + game.camera.y,
-        this.color,
+        fovValue === 2 ? this.color : Colors.WALL_DARK,
       );
     }
   }

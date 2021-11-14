@@ -167,6 +167,7 @@ export default class Map {
   addDoor(x: number, y: number, closed: boolean) {
     const door = new Actor(x, y, closed ? "D" : "+", "door", Colors.DOOR);
     door.blocks = true;
+    door.fovOnly = false;
 
     //add door, if its between walls
     if (
