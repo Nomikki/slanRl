@@ -699,9 +699,11 @@ class Game {
   }
 
   renderUI() {
+    /*
     for (let x = 0; x < this.width; x++) {
       this.drawChar("-", x, this.height, Colors.MENU_BORDER);
     }
+    */
 
     const pl = ensure(this.player);
 
@@ -800,12 +802,11 @@ class Game {
 
   renderVersion() {
     const versionText = `Commit ID: ${COMMIT_HASH} | Version: ${VERSION}`;
-    //console.log(Colors.VERSION);
 
     this.drawText(
       `${versionText}`,
       80 - 2,
-      this.ctx.canvas.height / this.fontSize - 2,
+      this.ctx.canvas.height / this.fontSize - 3,
       Colors.VERSION,
       "right",
     );
