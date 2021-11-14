@@ -129,6 +129,21 @@ const getEffectValueBonus = (mod: string, caster: Actor): number => {
   return 0;
 };
 
+const isDamageEffect = (effect: string): boolean => {
+  if (
+    effect === "force" ||
+    effect === "acid" ||
+    effect === "lightning" ||
+    effect === "fire" ||
+    effect === "cold" ||
+    effect === "radiant" ||
+    effect === "necrotic" ||
+    effect === "poison"
+  )
+    return true;
+  return false;
+};
+
 const applySpellTo = (
   target: Actor,
   caster: Actor,
@@ -218,16 +233,7 @@ const applySpellTo = (
             }
           }
         }
-      } else if (
-        effect === "force" ||
-        effect === "acid" ||
-        effect === "lightning" ||
-        effect === "fire" ||
-        effect === "cold" ||
-        effect === "radiant" ||
-        effect === "necrotic" ||
-        effect === "poison"
-      ) {
+      } else if (isDamageEffect(effect)) {
         //if there's any saving throws, check them first
         if (spell.target_saving_throw_type !== "") {
           const successList = spell.if_target_saving_throw_success.split(";");
