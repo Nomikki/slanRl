@@ -386,7 +386,7 @@ test("run tests", async ({ page, browserName, viewport }) => {
     // ).toMatchSnapshot(`tests/screenshots/${browserName}-screenshot.png`);
   });
 
-  await testStep("go to stairs", async ({ title }) => {
+  await testStep("DIE", async ({ title }) => {
     for (let i = 0; i < 3; i++) {
       await page.keyboard.press("ArrowLeft");
     }
@@ -411,7 +411,7 @@ test("run tests", async ({ page, browserName, viewport }) => {
     for (let i = 0; i < 4; i++) {
       await page.keyboard.press("ArrowLeft");
     }
-    for (let i = 0; i < 21; i++) {
+    for (let i = 0; i < 100; i++) {
       await page.keyboard.press("ArrowDown");
     }
 
@@ -424,8 +424,9 @@ test("run tests", async ({ page, browserName, viewport }) => {
     // ).toMatchSnapshot(`tests/screenshots/${browserName}-screenshot.png`);
   });
 
-  await testStep("go to floor 4", async ({ title }) => {
-    await page.keyboard.press(">");
+  await testStep("open temp-image", async ({ title }) => {
+    await page.click("#temp-image");
+    page.waitForTimeout(2000);
 
     await page.screenshot(screenshotSettings(title));
 
@@ -436,216 +437,233 @@ test("run tests", async ({ page, browserName, viewport }) => {
     // ).toMatchSnapshot(`tests/screenshots/${browserName}-screenshot.png`);
   });
 
-  /* Floor 4 */
-  await testStep("pick and use healthpotion", async ({ title }) => {
-    await page.keyboard.press("ArrowRight");
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowDown");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowDown");
-    for (let i = 0; i < 9; i++) {
-      await page.keyboard.press("ArrowDown");
-    }
-    await page.keyboard.press("g");
-    await page.keyboard.press("i");
-    await page.keyboard.press("x");
+  // await testStep("go to floor 4", async ({ title }) => {
+  //   await page.keyboard.press(">");
 
-    await page.screenshot(screenshotSettings(title));
+  //   await page.screenshot(screenshotSettings(title));
 
-    // expect(
-    //   await page.screenshot({
-    //     fullPage: true,
-    //   }),
-    // ).toMatchSnapshot(`tests/screenshots/${browserName}-screenshot.png`);
-  });
+  //   // expect(
+  //   //   await page.screenshot({
+  //   //     fullPage: true,
+  //   //   }),
+  //   // ).toMatchSnapshot(`tests/screenshots/${browserName}-screenshot.png`);
+  // });
 
-  await testStep("pickup healthpotion", async ({ title }) => {
-    for (let i = 0; i < 3; i++) {
-      await page.keyboard.press("ArrowDown");
-    }
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowRight");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowRight");
+  // /* Floor 4 */
+  // await testStep("pick and use healthpotion", async ({ title }) => {
+  //   await page.keyboard.press("ArrowRight");
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowDown");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowDown");
+  //   for (let i = 0; i < 9; i++) {
+  //     await page.keyboard.press("ArrowDown");
+  //   }
+  //   await page.keyboard.press("g");
+  //   await page.keyboard.press("i");
+  //   await page.keyboard.press("x");
 
-    for (let i = 0; i < 10; i++) {
-      await page.keyboard.press("ArrowRight");
-    }
-    await page.keyboard.press("Enter");
-    for (let i = 0; i < 7; i++) {
-      await page.keyboard.press("ArrowRight");
-    }
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowDown");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowRight");
+  //   await page.screenshot(screenshotSettings(title));
 
-    for (let i = 0; i < 30; i++) {
-      await page.keyboard.press("ArrowRight");
-    }
-    for (let i = 0; i < 4; i++) {
-      await page.keyboard.press("ArrowLeft");
-    }
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
-    await page.keyboard.press("g");
-    await page.screenshot(screenshotSettings(title));
-  });
+  //   // expect(
+  //   //   await page.screenshot({
+  //   //     fullPage: true,
+  //   //   }),
+  //   // ).toMatchSnapshot(`tests/screenshots/${browserName}-screenshot.png`);
+  // });
 
-  await testStep("pickup scroll of map", async ({ title }) => {
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowDown");
-    }
-    for (let i = 0; i < 20; i++) {
-      await page.keyboard.press("ArrowLeft");
-    }
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
-    for (let i = 0; i < 8; i++) {
-      await page.keyboard.press("ArrowLeft");
-    }
-    for (let i = 0; i < 16; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
-    await page.keyboard.press("ArrowLeft");
-    for (let i = 0; i < 21; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowUp");
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
-    for (let i = 0; i < 29; i++) {
-      await page.keyboard.press("ArrowRight");
-    }
-    await page.keyboard.press("ArrowUp");
-    await page.keyboard.press("g");
-    // await page.keyboard.press("i");
+  // await testStep("pickup healthpotion", async ({ title }) => {
+  //   for (let i = 0; i < 3; i++) {
+  //     await page.keyboard.press("ArrowDown");
+  //   }
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowRight");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowRight");
 
-    await page.screenshot(screenshotSettings(title));
-  });
+  //   for (let i = 0; i < 10; i++) {
+  //     await page.keyboard.press("ArrowRight");
+  //   }
+  //   await page.keyboard.press("Enter");
+  //   for (let i = 0; i < 7; i++) {
+  //     await page.keyboard.press("ArrowRight");
+  //   }
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowDown");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowRight");
 
-  await testStep("go to stairs", async ({ title }) => {
-    for (let i = 0; i < 4; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
-    for (let i = 0; i < 22; i++) {
-      await page.keyboard.press("ArrowLeft");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowLeft");
-    for (let i = 0; i < 4; i++) {
-      await page.keyboard.press("ArrowLeft");
-    }
-    for (let i = 0; i < 4; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowUp");
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("ArrowDown");
+  //   for (let i = 0; i < 30; i++) {
+  //     await page.keyboard.press("ArrowRight");
+  //   }
+  //   for (let i = 0; i < 4; i++) {
+  //     await page.keyboard.press("ArrowLeft");
+  //   }
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+  //   await page.keyboard.press("g");
+  //   await page.screenshot(screenshotSettings(title));
+  // });
 
-    for (let i = 0; i < 7; i++) {
-      await page.keyboard.press("ArrowLeft");
-    }
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
-    await page.keyboard.press("g");
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowDown");
-    }
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press("ArrowRight");
-    }
-    await page.keyboard.press(">");
+  // await testStep("pickup scroll of map", async ({ title }) => {
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowDown");
+  //   }
+  //   for (let i = 0; i < 20; i++) {
+  //     await page.keyboard.press("ArrowLeft");
+  //   }
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+  //   for (let i = 0; i < 8; i++) {
+  //     await page.keyboard.press("ArrowLeft");
+  //   }
+  //   for (let i = 0; i < 16; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+  //   await page.keyboard.press("ArrowLeft");
+  //   for (let i = 0; i < 21; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowUp");
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+  //   for (let i = 0; i < 29; i++) {
+  //     await page.keyboard.press("ArrowRight");
+  //   }
+  //   await page.keyboard.press("ArrowUp");
+  //   await page.keyboard.press("g");
+  //   // await page.keyboard.press("i");
 
-    await page.screenshot(screenshotSettings(title));
-  });
+  //   await page.screenshot(screenshotSettings(title));
+  // });
 
-  /* Floor 5 */
-  await testStep("pickup scroll of confusion", async ({ title }) => {
-    for (let i = 0; i < 12; i++) {
-      await page.keyboard.press("ArrowLeft");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowLeft");
-    for (let i = 0; i < 11; i++) {
-      await page.keyboard.press("ArrowLeft");
-    }
-    for (let i = 0; i < 10; i++) {
-      await page.keyboard.press("ArrowDown");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowDown");
-    for (let i = 0; i < 9; i++) {
-      await page.keyboard.press("ArrowDown");
-    }
-    for (let i = 0; i < 4; i++) {
-      await page.keyboard.press("ArrowLeft");
-    }
-    await page.keyboard.press("g");
+  // await testStep("go to stairs", async ({ title }) => {
+  //   for (let i = 0; i < 4; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+  //   for (let i = 0; i < 22; i++) {
+  //     await page.keyboard.press("ArrowLeft");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowLeft");
+  //   for (let i = 0; i < 4; i++) {
+  //     await page.keyboard.press("ArrowLeft");
+  //   }
+  //   for (let i = 0; i < 4; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowUp");
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowDown");
+  //   await page.keyboard.press("ArrowDown");
+  //   await page.keyboard.press("ArrowDown");
+  //   await page.keyboard.press("ArrowDown");
 
-    await page.screenshot(screenshotSettings(title));
-  });
+  //   for (let i = 0; i < 7; i++) {
+  //     await page.keyboard.press("ArrowLeft");
+  //   }
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+  //   await page.keyboard.press("g");
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowDown");
+  //   }
+  //   for (let i = 0; i < 2; i++) {
+  //     await page.keyboard.press("ArrowRight");
+  //   }
 
-  await testStep("pickup healthpotion", async ({ title }) => {
-    for (let i = 0; i < 7; i++) {
-      await page.keyboard.press("ArrowDown");
-    }
-    for (let i = 0; i < 11; i++) {
-      await page.keyboard.press("ArrowRight");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowRight");
-    for (let i = 0; i < 26; i++) {
-      await page.keyboard.press("ArrowRight");
-    }
-    await page.keyboard.press("o");
-    await page.keyboard.press("ArrowRight");
-    for (let i = 0; i < 11; i++) {
-      await page.keyboard.press("ArrowRight");
-    }
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("g");
+  //   await page.screenshot(screenshotSettings(title));
+  // });
 
-    await page.screenshot(screenshotSettings(title));
-  });
+  // await testStep("go to floor 5", async ({ title }) => {
+  //   await page.keyboard.press(">");
 
-  await testStep("go to stairs", async ({ title }) => {
-    for (let i = 0; i < 16; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
-    await page.keyboard.press("ArrowLeft");
+  //   await page.screenshot(screenshotSettings(title));
+  // });
 
-    for (let i = 0; i < 12; i++) {
-      await page.keyboard.press("ArrowUp");
-    }
+  // /* Floor 5 */
+  // await testStep("pickup scroll of confusion", async ({ title }) => {
+  //   for (let i = 0; i < 12; i++) {
+  //     await page.keyboard.press("ArrowLeft");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowLeft");
+  //   for (let i = 0; i < 11; i++) {
+  //     await page.keyboard.press("ArrowLeft");
+  //   }
+  //   for (let i = 0; i < 10; i++) {
+  //     await page.keyboard.press("ArrowDown");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowDown");
+  //   for (let i = 0; i < 9; i++) {
+  //     await page.keyboard.press("ArrowDown");
+  //   }
+  //   for (let i = 0; i < 4; i++) {
+  //     await page.keyboard.press("ArrowLeft");
+  //   }
+  //   await page.keyboard.press("g");
 
-    await page.screenshot(screenshotSettings(title));
-  });
+  //   await page.screenshot(screenshotSettings(title));
+  // });
 
-  await testStep("go to floor 6", async ({ title }) => {
-    await page.keyboard.press(">");
+  // await testStep("pickup healthpotion", async ({ title }) => {
+  //   for (let i = 0; i < 7; i++) {
+  //     await page.keyboard.press("ArrowDown");
+  //   }
+  //   for (let i = 0; i < 11; i++) {
+  //     await page.keyboard.press("ArrowRight");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowRight");
+  //   for (let i = 0; i < 26; i++) {
+  //     await page.keyboard.press("ArrowRight");
+  //   }
+  //   await page.keyboard.press("o");
+  //   await page.keyboard.press("ArrowRight");
+  //   for (let i = 0; i < 11; i++) {
+  //     await page.keyboard.press("ArrowRight");
+  //   }
+  //   await page.keyboard.press("ArrowDown");
+  //   await page.keyboard.press("g");
 
-    await page.screenshot(screenshotSettings(title));
-  });
+  //   await page.screenshot(screenshotSettings(title));
+  // });
 
-  await testStep("save game", async ({ title }) => {
-    await page.keyboard.press("S");
+  // await testStep("go to stairs", async ({ title }) => {
+  //   for (let i = 0; i < 16; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+  //   await page.keyboard.press("ArrowLeft");
 
-    await page.screenshot(screenshotSettings(title));
-  });
+  //   for (let i = 0; i < 12; i++) {
+  //     await page.keyboard.press("ArrowUp");
+  //   }
+
+  //   await page.screenshot(screenshotSettings(title));
+  // });
+
+  // await testStep("go to floor 6", async ({ title }) => {
+  //   await page.keyboard.press(">");
+
+  //   await page.screenshot(screenshotSettings(title));
+  // });
+
+  // await testStep("save game", async ({ title }) => {
+  //   await page.keyboard.press("S");
+
+  //   await page.screenshot(screenshotSettings(title));
+  // });
 });
