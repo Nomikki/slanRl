@@ -80,7 +80,7 @@ class Game {
     this.turns = 0;
 
     this.width = 80;
-    this.height = 40;
+    this.height = 57;
 
     this.actors = [];
 

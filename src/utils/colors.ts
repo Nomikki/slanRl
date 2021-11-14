@@ -46,6 +46,7 @@ export const Colors = {
   DEAD_BODY: colors.log_dead_body,
   DEFAULT_TEXT: colors.log_default_text,
   HILIGHT_TEXT: colors.log_hilight_text,
+  LOG_BACKGROUND: colors.log_background,
 
   DEFEAT: colors.log_defeat,
 
