@@ -49,9 +49,13 @@ export default class Map {
   }
 
   isWall(x: number, y: number): boolean {
-    const index = x + y * this.width;
+    if (x >= 0 && x <= this.width && y >= 0 && y <= this.height) {
+      const index = x + y * this.width;
 
-    return !this.tiles[index].canWalk;
+      return !this.tiles[index].canWalk;
+    }
+
+    return false;
   }
 
   setWall(x: number, y: number) {
@@ -353,12 +357,14 @@ export default class Map {
 
     const root = new bspGenerator(0, 0, this.width, this.height, maxSplitLevel);
     this.tiles = new Array(this.width * this.height).fill(false);
+    //console.log(JSON.stringify(root.rooms, null, 2));
 
     const monsterRooms = [];
 
     //const option = random.getInt(0, 2);
     //console.log("option: " + option);
     const option = random.getInt(0, 100) > 70 ? 1 : 2;
+    //console.log(option);
 
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
@@ -394,6 +400,11 @@ export default class Map {
         x = room.x + 1;
         y = room.y + 1;
 
+        if (w <= 0) w = 1;
+        if (h <= 0) h = 1;
+        if (x <= 0) x = 1;
+        if (y <= 0) y = 1;
+
         this.createRoom(x, y, x + w - 2, y + h - 2, withActors);
         if (!spawnRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
       }
@@ -404,6 +415,11 @@ export default class Map {
         h = random.getInt(this.ROOM_MIN_SIZE, room.h - 2);
         x = random.getInt(room.x, room.x + room.w - w - 0) + 1;
         y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
+
+        if (w <= 0) w = 1;
+        if (h <= 0) h = 1;
+        if (x <= 0) x = 1;
+        if (y <= 0) y = 1;
 
         this.createRoom(x, y, x + w - 2, y + h - 2, withActors);
         if (!spawnRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));

@@ -260,6 +260,7 @@ export default class Pickable {
 
     let succeed = false;
     for (const actor of actorList) {
+      console.log("actor:", actor);
       if (this.effect?.applyTo(actor)) {
         succeed = true;
       }
