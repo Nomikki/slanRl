@@ -182,24 +182,30 @@ export default class Map {
   }
 
   openCloseDoor(x: number, y: number): boolean {
-    const actor = game.getAnyActor(x, y);
-    if (actor && actor.name === "door") {
-      actor.blocks = !actor.blocks;
-      if (actor.blocks) {
-        actor.ch = "D";
-        game.log.add("a door is closed");
-      } else {
-        if (actor.ch === "#") {
-          actor.color = Colors.DOOR;
-          actor.ch = "+";
-          game.log.add("a secret door is opened!", Colors.HILIGHT_TEXT);
-        } else {
-          actor.ch = "+";
-          game.log.add("a door is opened");
+    //const actor = game.getAnyActor(x, y);
+    const actors = game.getAllActors(x, y);
+    if (actors) {
+      for (const actor of actors) {
+        if (actor && actor.name === "door") {
+          actor.blocks = !actor.blocks;
+          if (actor.blocks) {
+            actor.ch = "D";
+            game.log.add("a door is closed");
+          } else {
+            if (actor.ch === "#") {
+              actor.color = Colors.DOOR;
+              actor.ch = "+";
+              game.log.add("a secret door is opened!", Colors.HILIGHT_TEXT);
+            } else {
+              actor.ch = "+";
+              game.log.add("a door is opened");
+            }
+          }
+          return true;
         }
       }
-      return true;
     }
+
     return false;
   }
 

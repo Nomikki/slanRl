@@ -255,8 +255,15 @@ class Game {
       if (urlParams.has("seed"))
         this.masterSeed = parseInt(ensure(urlParams.get("seed")));
     }
-
-    history.pushState({}, "Slan Roguelike", `/slanRl/?seed=${this.masterSeed}`);
+    if (COMMIT_HASH === "dev") {
+      history.pushState({}, "Slan Roguelike", `/?seed=${this.masterSeed}`);
+    } else {
+      history.pushState(
+        {},
+        "Slan Roguelike",
+        `/slanRl/?seed=${this.masterSeed}`,
+      );
+    }
 
     //choose race, class, abilities and give name
     const [abi, selRace, selClass, hpStart, hpPerLevel, hpIncreasePerLevel] =
@@ -897,6 +904,16 @@ class Game {
       }
     }
     return null;
+  }
+
+  getAllActors(x: number, y: number): Actor[] | undefined {
+    const actorList = [];
+
+    for (const actor of this.actors) {
+      if (actor.x === x && actor.y === y) actorList.push(actor);
+    }
+
+    return actorList;
   }
 
   getActorsInSphere(
