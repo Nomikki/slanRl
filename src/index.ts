@@ -252,9 +252,8 @@ class Game {
 
     if (window.location.search) {
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get("seed")) {
+      if (urlParams.has("seed"))
         this.masterSeed = parseInt(ensure(urlParams.get("seed")));
-      }
     }
 
     //choose race, class, abilities and give name
