@@ -39,7 +39,7 @@ export const getSpell = (name: string): SpellInterface | undefined => {
     return spellTemplate;
   }
 
-  console.log(`There is no spell called ${name}`);
+  console.error(`There is no spell called ${name}`);
   return undefined;
 };
 
@@ -54,8 +54,8 @@ export const createSpell = async (
 
   const amounts = spell.amount.split(";");
   const amount = parseInt(amounts[level - 1]);
-  let x = 0;
-  let y = 0;
+  let spellX = 0;
+  let spellY = 0;
 
   for (let i = 0; i < amount; i++) {
     let targets: Actor[] = [];
@@ -67,8 +67,8 @@ export const createSpell = async (
         spell.range,
       );
 
-      x = tileX as number;
-      y = tileY as number;
+      spellX = tileX as number;
+      spellY = tileY as number;
 
       if (inRange) {
         if (spell.effectShape === "cube") {
@@ -99,17 +99,29 @@ export const createSpell = async (
         }
       }
     } else {
-      x = caster.x;
-      y = caster.y;
+      spellX = caster.x;
+      spellY = caster.y;
       targets.push(caster);
     }
 
     for (const t of targets as Actor[]) {
-      applySpellTo(t as Actor, caster, spell, level, x, y);
+      applySpellTo(t as Actor, caster, spell, level, spellX, spellY);
       game.player?.computeFov();
       game.render();
     }
   }
+};
+
+const getEffectValueBonus = (mod: string, caster: Actor): number => {
+  if (mod.length > 0) {
+    if (mod === "str") return ensure(caster.abilities?.getBonus(ABILITIES.STR));
+    if (mod === "dex") return ensure(caster.abilities?.getBonus(ABILITIES.DEX));
+    if (mod === "con") return ensure(caster.abilities?.getBonus(ABILITIES.CON));
+    if (mod === "int") return ensure(caster.abilities?.getBonus(ABILITIES.INT));
+    if (mod === "win") return ensure(caster.abilities?.getBonus(ABILITIES.WIS));
+  }
+
+  return 0;
 };
 
 const applySpellTo = (
@@ -126,33 +138,11 @@ const applySpellTo = (
   if (target) {
     const effects = spell.effectType.split(";");
     for (const effect of effects) {
-      console.log(`effect: ${effect}`);
-      console.log(`effect value: ${effectValue}`);
       const [dices, eyes, bonus] = random.parseDice(effectValue);
-      let effectValueModBonus = 0;
-
-      if (spell.effectValue_mod.length > 0) {
-        if (spell.effectValue_mod === "str")
-          effectValueModBonus = ensure(
-            caster.abilities?.getBonus(ABILITIES.STR),
-          );
-        if (spell.effectValue_mod === "dex")
-          effectValueModBonus = ensure(
-            caster.abilities?.getBonus(ABILITIES.DEX),
-          );
-        if (spell.effectValue_mod === "con")
-          effectValueModBonus = ensure(
-            caster.abilities?.getBonus(ABILITIES.CON),
-          );
-        if (spell.effectValue_mod === "int")
-          effectValueModBonus = ensure(
-            caster.abilities?.getBonus(ABILITIES.INT),
-          );
-        if (spell.effectValue_mod === "win")
-          effectValueModBonus = ensure(
-            caster.abilities?.getBonus(ABILITIES.WIS),
-          );
-      }
+      const effectValueModBonus = getEffectValueBonus(
+        spell.effectValue_mod,
+        caster,
+      );
 
       let savingThrowSuccess = false;
       let savingThrowbonus = 0;
@@ -209,8 +199,10 @@ const applySpellTo = (
         effect === "force" ||
         effect === "acid" ||
         effect === "lightning" ||
-        effect === "fire"
+        effect === "fire" ||
+        effect === "cold"
       ) {
+        //if there's any saving throws, check them first
         if (spell.target_saving_throw_type !== "") {
           const successList = spell.if_target_saving_throw_success.split(";");
           if (savingThrowSuccess === true) {
@@ -243,6 +235,7 @@ const applySpellTo = (
             }
           }
         } else {
+          //no saving throws, so just make damage
           game.log.add(
             `${caster.name} cast a ${spell.name} to ${target.name} for ${value} hit points (${effectValueFinal}).`,
           );

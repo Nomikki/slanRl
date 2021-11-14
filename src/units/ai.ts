@@ -288,7 +288,7 @@ export class PlayerAI extends AI {
         6,
         Colors.DEFAULT_TEXT,
       );
-      game.drawText("a: Shoot", 17, 7, Colors.DEFAULT_TEXT);
+      game.drawText("a: Aim", 17, 7, Colors.DEFAULT_TEXT);
       game.drawText("s: Spell", 17, 8, Colors.DEFAULT_TEXT);
       game.drawText("g: Pick up a item.", 17, 9, Colors.DEFAULT_TEXT);
       game.drawText("i: Use item", 17, 10, Colors.DEFAULT_TEXT);
