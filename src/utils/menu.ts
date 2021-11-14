@@ -20,9 +20,11 @@ export enum MenuItemCode {
 
 export class Menu {
   items: MenuItem[];
+  cursor: number;
 
   constructor() {
     this.items = [];
+    this.cursor = 0;
   }
 
   clear() {

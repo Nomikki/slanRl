@@ -27,6 +27,8 @@ interface MenuBackgroundProps {
 }
 
 export enum GameStatus {
+  MAINMENU,
+  NEWGAME,
   STARTUP,
   IDLE,
   NEW_TURN,
@@ -35,7 +37,7 @@ export enum GameStatus {
 }
 
 class Game {
-  gameStatus: number = GameStatus.STARTUP;
+  gameStatus: number = GameStatus.MAINMENU;
   player?: Actor;
   map?: Map;
   stairs?: Actor;
@@ -65,8 +67,9 @@ class Game {
     this.canvas = ensure(document.querySelector("#screen"));
 
     this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
-    this.ctx.font = "12px system-io";
-    this.fontSize = 12;
+    //this.ctx.font = "12px system-io";
+    //this.fontSize = 12;
+
     this.setScale(12);
     this.ctx.textAlign = "center";
 
@@ -92,12 +95,11 @@ class Game {
     };
 
     tempImage.addEventListener("click", zoomTempImage);
+    window.addEventListener("resize", this.fitCanvasToScreen);
   }
 
   setScale(scale: number) {
     this.fontSize = float2int(scale);
-    //this.ctx.font = `${this.fontSize}px system-ui`;
-
     this.ctx.canvas.width = 80 * scale;
     this.ctx.canvas.height = 60 * scale;
   }
@@ -109,6 +111,25 @@ class Game {
     } else if (ch === "-") {
       this.fontSize--;
       this.setScale(this.fontSize);
+    }
+  }
+
+  fitCanvasToScreen() {
+    const { width, height } = window.visualViewport;
+    const fitRatio = 80 / 60;
+    const visualRatio = width / height;
+
+    const minimumWidth = (width / (80 * 12)) * 12;
+    const minimumHeight = (height / (60 * 12)) * 12;
+
+    if (game.gameStatus === GameStatus.MAINMENU) {
+      game.setScale(visualRatio < fitRatio ? minimumWidth : minimumHeight);
+      game.renderStartMenu();
+    } else if (game.gameStatus === GameStatus.NEWGAME) {
+      //
+    } else {
+      game.setScale(visualRatio < fitRatio ? minimumWidth : minimumHeight);
+      game.render();
     }
   }
 
@@ -225,7 +246,16 @@ class Game {
   }
 
   async newGame() {
+    game.gameStatus = GameStatus.NEWGAME;
+
     this.masterSeed = parseInt(SEED) || float2int(Math.random() * 0x7ffffff);
+
+    if (window.location.search) {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("seed")) {
+        this.masterSeed = parseInt(ensure(urlParams.get("seed")));
+      }
+    }
 
     //choose race, class, abilities and give name
     const [abi, selRace, selClass, hpStart, hpPerLevel, hpIncreasePerLevel] =
@@ -401,6 +431,22 @@ class Game {
     }
   }
 
+  renderStartMenu() {
+    this.clear();
+    this.renderVersion();
+    if (this.menu) {
+      this.drawChar(
+        ">",
+        this.width / 2 - 12,
+        10 + this.menu.cursor,
+        Colors.MENU_CURSOR,
+      );
+      for (let i = 0; i < this.menu.items.length; i++) {
+        this.drawText(this.menu.items[i].label, this.width / 2 - 10, 10 + i);
+      }
+    }
+  }
+
   async load() {
     if (window.localStorage.getItem("version") !== VERSION)
       window.localStorage.clear();
@@ -411,29 +457,22 @@ class Game {
       this.menu.addItem(MenuItemCode.CONTINUE, "Continue");
     this.menu.addItem(MenuItemCode.NEW_GAME, "New Game");
 
-    let cursor = 0;
     let selectedItem = -1;
     while (true) {
-      this.clear();
-      this.renderVersion();
-
-      this.drawChar(">", this.width / 2 - 12, 10 + cursor, Colors.MENU_CURSOR);
-      for (let i = 0; i < this.menu.items.length; i++) {
-        this.drawText(this.menu.items[i].label, this.width / 2 - 10, 10 + i);
-      }
+      this.renderStartMenu();
 
       const ch = await this.getch();
-      if (ch === "ArrowDown") cursor++;
-      if (ch === "ArrowUp") cursor--;
+      if (ch === "ArrowDown") this.menu.cursor++;
+      if (ch === "ArrowUp") this.menu.cursor--;
       if (ch === "Enter") {
-        selectedItem = this.menu.items[cursor].code;
+        selectedItem = this.menu.items[this.menu.cursor].code;
         break;
       }
 
       this.handleZoomKeys(ch);
 
-      cursor = cursor % this.menu.items.length;
-      if (cursor < 0) cursor = this.menu.items.length - 1;
+      this.menu.cursor = this.menu.cursor % this.menu.items.length;
+      if (this.menu.cursor < 0) this.menu.cursor = this.menu.items.length - 1;
     }
 
     if (selectedItem != -1) {
@@ -489,7 +528,7 @@ class Game {
 
     const oldCameraX = this.camera.x;
     const oldCameraY = this.camera.y;
-
+    const oldFontSize = this.fontSize;
     this.width = this.mapx;
     this.height = this.mapy;
 
@@ -503,6 +542,7 @@ class Game {
     this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
     this.ctx.canvas.width = this.mapx * this.fontSize;
     this.ctx.canvas.height = this.mapy * this.fontSize;
+    this.setScale(12);
 
     this.camera.x = 0;
     this.camera.y = 0;
@@ -520,6 +560,9 @@ class Game {
 
     this.camera.x = oldCameraX;
     this.camera.y = oldCameraY;
+
+    this.setScale(oldFontSize);
+    this.render();
   }
 
   drawChar(ch: string, x: number, y: number, color = Colors.BACKGROUND) {
@@ -586,6 +629,8 @@ class Game {
 
   async run() {
     debugInit();
+
+    this.fitCanvasToScreen();
 
     while (true) {
       await this.load();
