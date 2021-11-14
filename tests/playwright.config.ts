@@ -7,14 +7,20 @@ import {
 
 const port = 8081;
 
-const browsers: BrowserName[] = ["chromium", "firefox"];
+const browsers: BrowserName[] = process.env.BROWSER
+  ? [process.env.BROWSER as BrowserName]
+  : ["chromium", "firefox"];
 
-const resolutions = [
-  { width: 768, height: 576 },
-  { width: 1280, height: 720 },
-  { width: 1920, height: 1200 },
-  { width: 3840, height: 2160 },
-];
+const resolutions = process.env.BROWSER
+  ? [{ width: 1280, height: 720 }]
+  : [
+      { width: 720, height: 1280 },
+      { width: 768, height: 576 },
+      { width: 1280, height: 320 },
+      { width: 1280, height: 720 },
+      { width: 1920, height: 1200 },
+      { width: 3840, height: 2160 },
+    ];
 
 const browserConfig = initialiseBrowserConfig(resolutions);
 
