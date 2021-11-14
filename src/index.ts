@@ -682,7 +682,7 @@ class Game {
     ensure(this.map).render();
     for (let i = 0; i < this.actors.length; i++) this.actors[i].render();
 
-    //this.renderLighting();
+    this.renderLighting();
 
     this.renderUI();
   }
