@@ -16,10 +16,10 @@ export default [
   },
   {
     name: "blur",
-    effectValues: "",
+    effectValues: "aura",
     amount: "1",
     effectValue_mod: "",
-    effectType: "aura;illusion",
+    effectType: "illusion",
     effectShape: "",
     effectSize: 1,
     range: 0,
@@ -142,7 +142,7 @@ export default [
 
   {
     name: "haste",
-    effectType: "aura;transmutation",
+    effectType: "aura",
     effectValues: "",
     amount: "1",
     effectValue_mod: "",
@@ -174,13 +174,13 @@ export default [
 
   {
     name: "inflict wounds",
-    effectType: "",
+    effectType: "necrotic",
     effectValues: "3d10;4d10;5d10;6d10",
     amount: "1",
     effectValue_mod: "",
     effectShape: "",
     effectSize: 1,
-    range: 4,
+    range: 1,
     target_saving_throw_type: "",
     if_target_saving_throw_success: "",
     if_target_saving_throw_fail: "",
@@ -244,7 +244,7 @@ export default [
     effectValue_mod: "",
     effectShape: "",
     effectSize: 1,
-    range: 4,
+    range: 2,
     target_saving_throw_type: "con",
     if_target_saving_throw_success: "",
     if_target_saving_throw_fail: "full_damage",
@@ -254,7 +254,7 @@ export default [
 
   {
     name: "ray of frost",
-    effectType: "cold;reduce_speed",
+    effectType: "cold;reduce_speed:5",
     effectValues: "1d8;2d8;3d8;4d8",
     amount: "1",
     effectValue_mod: "",
@@ -270,7 +270,7 @@ export default [
 
   {
     name: "resistance",
-    effectType: "aura;add_value_to_saving_throws",
+    effectType: "aura",
     effectValues: "1d4",
     amount: "1",
     effectValue_mod: "",
@@ -280,13 +280,13 @@ export default [
     target_saving_throw_type: "",
     if_target_saving_throw_success: "",
     if_target_saving_throw_fail: "",
-    toCaster: "",
+    toCaster: "add_value_to_saving_throws",
     turns: 20,
   },
 
   {
     name: "sacred flame",
-    effectType: "",
+    effectType: "radiant",
     effectValues: "1d8;2d8;3d8;4d8",
     amount: "1",
     effectValue_mod: "",
@@ -334,7 +334,7 @@ export default [
 
   {
     name: "shocking grasp",
-    effectType: "lightning",
+    effectType: "lightning;disadvantages:1",
     effectValues: "1d8;2d8;3d8;4d8",
     amount: "1",
     effectValue_mod: "",
@@ -344,7 +344,7 @@ export default [
     target_saving_throw_type: "",
     if_target_saving_throw_success: "",
     if_target_saving_throw_fail: "",
-    toCaster: "advantages",
+    toCaster: "",
     turns: 0,
   },
 

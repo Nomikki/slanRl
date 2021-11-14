@@ -109,6 +109,11 @@ export const createSpell = async (
       game.player?.computeFov();
       game.render();
     }
+    if (targets.length === 0) {
+      applySpellTo(caster, caster, spell, level, spellX, spellY);
+      game.player?.computeFov();
+      game.render();
+    }
   }
 };
 
@@ -195,12 +200,33 @@ const applySpellTo = (
         );
 
         target.destructible?.heal(value);
+      } else if (effect === "transmutation") {
+        const toCaster = spell.toCaster.split(";");
+        for (const c of toCaster) {
+          if (c === "teleport_to_selected_location") {
+            if (game.map?.canWalk(x, y)) {
+              caster.x = x;
+              caster.y = y;
+              game.log.add(`${caster.name} teleported!`);
+              game.player?.computeFov();
+              game.camera.compute(
+                ensure(game.player?.x),
+                ensure(game.player?.y),
+              );
+            } else {
+              game.log.add("Can't teleport there");
+            }
+          }
+        }
       } else if (
         effect === "force" ||
         effect === "acid" ||
         effect === "lightning" ||
         effect === "fire" ||
-        effect === "cold"
+        effect === "cold" ||
+        effect === "radiant" ||
+        effect === "necrotic" ||
+        effect === "poison"
       ) {
         //if there's any saving throws, check them first
         if (spell.target_saving_throw_type !== "") {
@@ -216,6 +242,8 @@ const applySpellTo = (
                   )} hit points (${effectValueFinal} / 2).`,
                 );
                 target.destructible?.takeDamage(target, float2int(value / 2));
+              } else if (success === "") {
+                game.log.add(`${target.name} dodged the spell!`);
               }
             }
           } else {

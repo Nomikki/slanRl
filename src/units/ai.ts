@@ -290,7 +290,7 @@ export class PlayerAI extends AI {
       );
       game.drawText("a: Aim", 17, 7, Colors.DEFAULT_TEXT);
       game.drawText("s: Spell", 17, 8, Colors.DEFAULT_TEXT);
-      game.drawText("g: Pick up a item.", 17, 9, Colors.DEFAULT_TEXT);
+      game.drawText("g: Pick up an item.", 17, 9, Colors.DEFAULT_TEXT);
       game.drawText("i: Use item", 17, 10, Colors.DEFAULT_TEXT);
       game.drawText("d: Drop item from inventory", 17, 11, Colors.DEFAULT_TEXT);
       game.drawText(">: Use stairs", 17, 12, Colors.DEFAULT_TEXT);
@@ -340,9 +340,13 @@ export class PlayerAI extends AI {
         "acid splash",
         "cure wounds",
         "magic missile",
-        "ruaah",
+        "fire bolt",
+        "poison spray",
         "thunderwave",
         "fireball",
+        "sacred flame",
+        "shatter",
+        "misty step",
       ];
 
       game.renderMenuBackground({
