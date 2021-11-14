@@ -406,12 +406,16 @@ test("run tests", async ({ page, browserName, viewport }) => {
     for (let i = 0; i < 27; i++) {
       await page.keyboard.press("ArrowLeft");
     }
+    for (let i = 0; i < 10; i++) {
+      await page.keyboard.press("d");
+      await page.keyboard.press("a");
+    }
     await page.keyboard.press("o");
     await page.keyboard.press("ArrowLeft");
     for (let i = 0; i < 4; i++) {
       await page.keyboard.press("ArrowLeft");
     }
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 39; i++) {
       await page.keyboard.press("ArrowDown");
     }
 
@@ -425,8 +429,12 @@ test("run tests", async ({ page, browserName, viewport }) => {
   });
 
   await testStep("open temp-image", async ({ title }) => {
-    await page.click("#temp-image");
-    page.waitForTimeout(2000);
+    await page.$eval("#temp-image", async el => {
+      if (!el.classList.contains("zoomed")) {
+        el.classList.add("zoomed");
+      }
+    });
+    await page.waitForTimeout(2000);
 
     await page.screenshot(screenshotSettings(title));
 
