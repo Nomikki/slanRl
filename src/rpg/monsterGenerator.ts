@@ -28,6 +28,7 @@ interface MonsterInterface {
   hp: number;
   ac: number;
   xp: number;
+  movingSpeed: number;
 
   abilities: AbilitiesIntercace;
   attacks: AttacksInterface[];
@@ -46,6 +47,7 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   let defense = 0;
   let ch = "?";
   let color = colors.default_monster;
+  let movingSpeed = 1;
 
   let abi = new Abilities(2, 2, 2, 2, 2);
 
@@ -126,6 +128,8 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
       monsterTemplate.abilities.int,
       monsterTemplate.abilities.wis,
     );
+
+    movingSpeed = monsterTemplate.movingSpeed;
   }
 
   const monster = new Actor(x, y, ch, name, color);
@@ -139,6 +143,7 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   monster.attacker = new Attacker(power, "1d1");
   monster.ai = new MonsterAI();
   monster.abilities = abi;
+  monster.ai.movingSpeed = movingSpeed;
 
   return monster;
 };

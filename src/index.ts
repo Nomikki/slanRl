@@ -808,12 +808,12 @@ class Game {
       }
       this.gameStatus = GameStatus.IDLE;
 
-      await this.player?.update();
+      await this.player?.update(ensure(this.player.ai?.movingSpeed));
 
       if (this.gameStatus === GameStatus.NEW_TURN) {
         for (const actor of this.actors) {
           if (actor !== this.player) {
-            await actor.update();
+            await actor.update(ensure(this.player?.ai?.movingSpeed));
           }
         }
         this.turns++;

@@ -5,6 +5,7 @@ export default [
     name: "bat",
     "size:": "tiny",
     type: "beast",
+    movingSpeed: 2,
 
     ch: "b",
     color: colors.monster_bat,
@@ -39,6 +40,7 @@ export default [
     hp: 3,
     ac: 12,
     xp: 10,
+    movingSpeed: 1,
 
     abilities: {
       str: 8,
@@ -61,6 +63,7 @@ export default [
     name: "lizard",
     "size:": "tiny",
     type: "beast",
+    movingSpeed: 1,
 
     ch: "l",
     color: colors.monster_lizard,
@@ -89,6 +92,7 @@ export default [
     name: "kobold",
     "size:": "small",
     type: "humanoid",
+    movingSpeed: 1,
 
     ch: "k",
     color: colors.monster_kobold,
@@ -122,6 +126,7 @@ export default [
     name: "rat",
     "size:": "tiny",
     type: "beast",
+    movingSpeed: 1.5,
 
     ch: "r",
     color: colors.monster_rat,
@@ -149,6 +154,7 @@ export default [
     name: "giant rat",
     "size:": "small",
     type: "beast",
+    movingSpeed: 1.5,
 
     ch: "R",
     color: colors.monster_giant_rat,
@@ -177,6 +183,7 @@ export default [
     size: "medium",
     type: "undead",
     ch: "G",
+    movingSpeed: 0.75,
     color: colors.monster_ghoul,
     hp: 22,
     ac: 12,
@@ -207,6 +214,7 @@ export default [
     name: "orc",
     size: "medium",
     type: "humanoid",
+    movingSpeed: 0.9,
     ch: "o",
     color: colors.monster_orc,
     hp: 15,
@@ -238,6 +246,7 @@ export default [
     name: "troll",
     size: "large",
     type: "giant",
+    movingSpeed: 0.9,
     ch: "t",
     color: colors.monster_troll,
     hp: 84,

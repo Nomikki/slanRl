@@ -69,23 +69,58 @@ export default class Map {
   }
 
   addMonster(x: number, y: number) {
-    const monsterListSmall = [
-      "bat",
-      "rat",
-      "jackal",
-      "lizard",
-      "kobold",
-      "giant rat",
-    ];
+    //its just placeholder code
 
-    const monsterListBig = ["giant rat", "orc", "ghoul"];
+    if (this.depth === 1) {
+      const monsterListSmall = [
+        "bat",
+        "rat",
+        "jackal",
+        "lizard",
+        "kobold",
+        "giant rat",
+      ];
 
-    if (random.getInt(0, 100) > 5) {
-      const rng = random.getInt(0, monsterListSmall.length);
-      game.actors.push(createMonster(monsterListSmall[rng], x, y));
-    } else {
-      const rng = random.getInt(0, monsterListBig.length);
-      game.actors.push(createMonster(monsterListBig[rng], x, y));
+      const monsterListBig = ["giant rat", "orc", "ghoul"];
+
+      if (random.getInt(0, 100) > 5) {
+        const rng = random.getInt(0, monsterListSmall.length);
+        game.actors.push(createMonster(monsterListSmall[rng], x, y));
+      } else {
+        const rng = random.getInt(0, monsterListBig.length);
+        game.actors.push(createMonster(monsterListBig[rng], x, y));
+      }
+    } else if (this.depth === 2) {
+      const monsterListSmall = [
+        "rat",
+        "jackal",
+        "lizard",
+        "kobold",
+        "kobold",
+        "giant rat",
+      ];
+
+      const monsterListBig = ["giant rat", "orc", "ghoul", "troll"];
+
+      if (random.getInt(0, 100) > 5) {
+        const rng = random.getInt(0, monsterListSmall.length);
+        game.actors.push(createMonster(monsterListSmall[rng], x, y));
+      } else {
+        const rng = random.getInt(0, monsterListBig.length);
+        game.actors.push(createMonster(monsterListBig[rng], x, y));
+      }
+    } else if (this.depth >= 3) {
+      const monsterListSmall = ["gian rat", "jackal", "kobold"];
+
+      const monsterListBig = ["giant rat", "orc", "ghoul", "troll"];
+
+      if (random.getInt(0, 100) > 15) {
+        const rng = random.getInt(0, monsterListSmall.length);
+        game.actors.push(createMonster(monsterListSmall[rng], x, y));
+      } else {
+        const rng = random.getInt(0, monsterListBig.length);
+        game.actors.push(createMonster(monsterListBig[rng], x, y));
+      }
     }
   }
 

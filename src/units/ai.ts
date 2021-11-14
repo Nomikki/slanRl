@@ -7,7 +7,9 @@ import Randomizer from "@/utils/random";
 
 export const random = new Randomizer();
 
-export default class AI {}
+export default class AI {
+  movingSpeed = 1;
+}
 
 export class PlayerAI extends AI {
   xpLevel: number;
@@ -15,6 +17,7 @@ export class PlayerAI extends AI {
   constructor() {
     super();
     this.xpLevel = 1;
+    super.movingSpeed = 1;
   }
 
   getNextLevelXP() {
@@ -55,60 +58,6 @@ export class PlayerAI extends AI {
         `Your battle skills grow stronger! You reached level ${this.xpLevel}`,
         Colors.LEVEL_UP,
       );
-
-      /*
-
-      game.menu = new Menu();
-      game.menu.clear();
-      game.menu.addItem(MenuItemCode.CONSTITUTION, "Constitution (+20 hp)");
-      game.menu.addItem(MenuItemCode.STRENGTH, "Strenght (+1 attack)");
-      game.menu.addItem(MenuItemCode.AGILITY, "Agility (+1 defense)");
-
-      let cursor = 0;
-      let selectedItem = -1;
-      while (true) {
-        game.clear();
-        game.renderUI();
-        game.drawChar(
-          ">",
-          game.width / 2 - 12,
-          10 + cursor,
-          Colors.MENU_CURSOR,
-        );
-        for (let i = 0; i < game.menu.items.length; i++) {
-          game.drawText(game.menu.items[i].label, game.width / 2 - 10, 10 + i);
-        }
-
-        const ch = await game.getch();
-        if (ch === "ArrowDown") cursor++;
-        if (ch === "ArrowUp") cursor--;
-        if (ch === "Enter") {
-          selectedItem = game.menu.items[cursor].code;
-          break;
-        }
-
-        cursor = cursor % game.menu.items.length;
-        if (cursor < 0) cursor = game.menu.items.length - 1;
-      }
-
-      if (selectedItem != -1) {
-
-        
-        if (selectedItem === MenuItemCode.CONSTITUTION) {
-          ensure(owner.destructible).hp += 20;
-          ensure(owner.destructible).maxHP += 20;
-        }
-
-        if (selectedItem === MenuItemCode.STRENGTH) {
-          ensure(owner.attacker).power += 1;
-        }
-
-        if (selectedItem === MenuItemCode.AGILITY) {
-          ensure(owner.destructible).defense += 1;
-        }
-        
-      }
-    */
 
       game.render();
     }
@@ -532,26 +481,35 @@ export class PlayerAI extends AI {
 
 export class MonsterAI extends AI {
   moveCount: number;
+  actionPoints: number;
   readonly TRACKING_TURNS: number = 3;
 
   constructor() {
     super();
     this.moveCount = 0;
+    this.actionPoints = 0;
+    this.movingSpeed = 1.5;
   }
 
-  async update(owner: Actor) {
-    const player = game.player;
+  async update(owner: Actor, playerSpeed: number) {
+    this.actionPoints += (1.0 / playerSpeed) * this.movingSpeed;
 
-    if ((owner.destructible && owner.destructible.isDead()) || !player) return;
+    while (this.actionPoints >= 1) {
+      const player = game.player;
 
-    if (game.player?.fov?.isInFov(owner.x, owner.y)) {
-      this.moveCount = this.TRACKING_TURNS;
-    } else {
-      this.moveCount--;
-    }
+      if ((owner.destructible && owner.destructible.isDead()) || !player)
+        return;
 
-    if (this.moveCount > 0) {
-      this.moveOrAttack(owner, player.x, player.y);
+      if (game.player?.fov?.isInFov(owner.x, owner.y)) {
+        this.moveCount = this.TRACKING_TURNS;
+      } else {
+        this.moveCount--;
+      }
+
+      if (this.moveCount > 0) {
+        this.moveOrAttack(owner, player.x, player.y);
+      }
+      this.actionPoints -= 1;
     }
   }
 

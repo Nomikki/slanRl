@@ -122,9 +122,9 @@ export default class Actor {
     }
   }
 
-  async update() {
+  async update(speed: number) {
     if (this.ai) {
-      await this.ai.update(this);
+      await this.ai.update(this, speed);
     }
   }
 
