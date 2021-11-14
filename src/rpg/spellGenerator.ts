@@ -110,7 +110,7 @@ export const createSpell = async (
       game.render();
     }
     if (targets.length === 0) {
-      applySpellTo(caster, caster, spell, level, spellX, spellY);
+      applySpellTo(undefined, caster, spell, level, spellX, spellY);
       game.player?.computeFov();
       game.render();
     }
@@ -145,7 +145,7 @@ const isDamageEffect = (effect: string): boolean => {
 };
 
 const applySpellTo = (
-  target: Actor,
+  target: Actor | undefined,
   caster: Actor,
   spell: SpellInterface,
   level: number,
@@ -215,24 +215,6 @@ const applySpellTo = (
         );
 
         target.destructible?.heal(value);
-      } else if (effect === "transmutation") {
-        const toCaster = spell.toCaster.split(";");
-        for (const c of toCaster) {
-          if (c === "teleport_to_selected_location") {
-            if (game.map?.canWalk(x, y)) {
-              caster.x = x;
-              caster.y = y;
-              game.log.add(`${caster.name} teleported!`);
-              game.player?.computeFov();
-              game.camera.compute(
-                ensure(game.player?.x),
-                ensure(game.player?.y),
-              );
-            } else {
-              game.log.add("Can't teleport there");
-            }
-          }
-        }
       } else if (isDamageEffect(effect)) {
         //if there's any saving throws, check them first
         if (spell.target_saving_throw_type !== "") {
@@ -277,6 +259,29 @@ const applySpellTo = (
         }
       } else {
         game.log.add(`unkow effect type ${effect}`, Colors.DISALLOWED);
+      }
+    }
+  } else {
+    const effects = spell.effectType.split(";");
+    for (const effect of effects) {
+      if (effect === "transmutation") {
+        const toCaster = spell.toCaster.split(";");
+        for (const c of toCaster) {
+          if (c === "teleport_to_selected_location") {
+            if (game.map?.canWalk(x, y)) {
+              caster.x = x;
+              caster.y = y;
+              game.log.add(`${caster.name} teleported!`);
+              game.player?.computeFov();
+              game.camera.compute(
+                ensure(game.player?.x),
+                ensure(game.player?.y),
+              );
+            } else {
+              game.log.add("Can't teleport there");
+            }
+          }
+        }
       }
     }
   }
