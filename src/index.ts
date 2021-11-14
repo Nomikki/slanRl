@@ -119,8 +119,8 @@ class Game {
     const fitRatio = 80 / 60;
     const visualRatio = width / height;
 
-    const minimumWidth = (width / (80 * 12)) * 12;
-    const minimumHeight = (height / (60 * 12)) * 12;
+    const minimumWidth = float2int((width / (80 * 12)) * 12);
+    const minimumHeight = float2int((height / (60 * 12)) * 12);
 
     if (game.gameStatus === GameStatus.MAINMENU) {
       game.setScale(visualRatio < fitRatio ? minimumWidth : minimumHeight);
@@ -597,7 +597,6 @@ class Game {
     let lvalue = opacity.toString(16);
     if (lvalue.length === 0) lvalue = "00";
     if (lvalue.length < 2) lvalue = "0" + lvalue;
-
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = color + lvalue;
     this.ctx.fillRect(
