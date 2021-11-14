@@ -4,6 +4,7 @@ import Equipments from "@/items/equipments";
 import Pickable, {
   AiChangeEffect,
   HealthEffect,
+  MapClearEffect,
   TargetSelector,
   Wearable,
 } from "@/items/pickable";
@@ -72,12 +73,14 @@ export default class Actor {
   }
 
   create(actorTemplate: Actor) {
-    let fx: AiChangeEffect | HealthEffect | Wearable | void = undefined;
+    let fx: AiChangeEffect | HealthEffect | Wearable | MapClearEffect | void =
+      undefined;
     this.blocks = false;
+
+    //console.log(actorTemplate);
 
     if (actorTemplate.pickable?.effectName === "Wearable") {
       fx = new Wearable(actorTemplate.pickable.effect.type);
-      //console.log(actorTemplate);
     }
 
     if (actorTemplate.pickable?.effectName === "AiChangeEffect") {
@@ -87,6 +90,9 @@ export default class Actor {
         ),
         actorTemplate.pickable.effect.message,
       );
+    }
+    if (actorTemplate.pickable?.effectName === "MapClearEffect") {
+      fx = new MapClearEffect(actorTemplate.pickable.effect.message);
     }
     if (actorTemplate?.pickable?.effectName === "HealthEffect")
       fx = new HealthEffect(actorTemplate.pickable?.effect.amount, undefined);

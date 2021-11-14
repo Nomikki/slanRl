@@ -198,8 +198,10 @@ export const createItem = (props: {
         itemTemplate.effect.amount,
         itemTemplate.message,
       );
-    if (itemTemplate.effect.type === "map clear")
+    if (itemTemplate.effect.type === "map clear") {
+      //console.log("map clear?", itemTemplate);
       effect = new MapClearEffect(itemTemplate.message);
+    }
     if (itemTemplate.effect.type === "change ai")
       effect = new AiChangeEffect(
         new ConfusedMonsterAi(itemTemplate.effect.amount),
@@ -216,6 +218,11 @@ export const createItem = (props: {
   }
 
   const item = new Actor(props.x, props.y, ch, props.name, color);
+
+  //if (pickable && pickable.effect === MapClearEffect)
+  {
+    //console.log(pickable);
+  }
 
   item.blocks = blocks;
   item.pickable = pickable;
