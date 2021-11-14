@@ -380,6 +380,7 @@ class Game {
 
         if (actor.name === "door") {
           this.actors[i].blocks = actor.blocks;
+          this.actors[i].fovOnly = actor.fovOnly;
         }
 
         if (actor.destructible) {
