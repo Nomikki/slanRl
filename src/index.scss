@@ -42,31 +42,6 @@ body {
   }
 }
 
-#info {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 12px;
-  color: ui("info");
-  position: absolute;
-  left: 10px;
-
-  & span {
-    color: color("white");
-  }
-}
-
-#version {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 12px;
-  color: ui("text");
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-
-  & span {
-    color: ui("version");
-  }
-}
-
 .hidden {
   display: none;
 }

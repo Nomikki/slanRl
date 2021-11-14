@@ -382,6 +382,14 @@ export class PlayerAI extends AI {
       }
     };
 
+    const handleZoom = (direction: number) => {
+      const v = game.fontSize + direction;
+      if (v > 5) {
+        game.setScale(v);
+        game.render();
+      }
+    };
+
     switch (ascii) {
       case "S": //save
         handleSave();
@@ -429,6 +437,13 @@ export class PlayerAI extends AI {
 
       case "s": //spells
         await handleSpells();
+        break;
+
+      case "-":
+        handleZoom(-1);
+        break;
+      case "+":
+        handleZoom(1);
         break;
 
       /*

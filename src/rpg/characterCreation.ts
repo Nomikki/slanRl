@@ -288,6 +288,8 @@ export const prepareNewJourney = async () => {
         break;
     }
 
+    game.handleZoomKeys(ch);
+
     if (readyToStart) break;
 
     if (phase === phases.choose_race) {

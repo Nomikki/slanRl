@@ -41,7 +41,7 @@ class Game {
   stairs?: Actor;
   canvas: Element;
   ctx: CanvasRenderingContext2D;
-  fontSize: number;
+  fontSize = 12;
   log: Log;
 
   lastKey: string;
@@ -65,8 +65,9 @@ class Game {
     this.canvas = ensure(document.querySelector("#screen"));
 
     this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
-    this.ctx.font = "12px system-ui";
+    this.ctx.font = "12px system-io";
     this.fontSize = 12;
+    this.setScale(12);
     this.ctx.textAlign = "center";
 
     this.log = new Log();
@@ -93,11 +94,32 @@ class Game {
     tempImage.addEventListener("click", zoomTempImage);
   }
 
+  setScale(scale: number) {
+    this.fontSize = float2int(scale);
+    //this.ctx.font = `${this.fontSize}px system-ui`;
+
+    this.ctx.canvas.width = 80 * scale;
+    this.ctx.canvas.height = 60 * scale;
+  }
+
+  handleZoomKeys(ch: string) {
+    if (ch === "+") {
+      this.fontSize++;
+      this.setScale(this.fontSize);
+    } else if (ch === "-") {
+      this.fontSize--;
+      this.setScale(this.fontSize);
+    }
+  }
+
   async term() {
     this.log = new Log();
     this.actors = [];
     this.map = new Map(this.mapx, this.mapy);
     this.player = undefined;
+
+    this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
+    this.ctx.textAlign = "center";
   }
 
   async init(withActors: boolean, createPlayer = true) {
@@ -408,6 +430,8 @@ class Game {
         break;
       }
 
+      this.handleZoomKeys(ch);
+
       cursor = cursor % this.menu.items.length;
       if (cursor < 0) cursor = this.menu.items.length - 1;
     }
@@ -550,7 +574,7 @@ class Game {
     align = "left",
   ) {
     this.ctx.textAlign = align as CanvasTextAlign;
-
+    this.ctx.font = `${this.fontSize}px system-ui`;
     this.ctx.fillStyle = Colors.BACKGROUND;
     this.ctx.fillStyle = color;
     this.ctx.fillText(
