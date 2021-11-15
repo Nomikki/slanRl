@@ -34,7 +34,7 @@ export default [
 
   {
     name: "scroll of fireball",
-    message: "Everything burns",
+    message: "Everything burns.",
     ch: "#",
     color: colors.pickup_scroll_of_fireball,
     weight: 0.05,
@@ -49,7 +49,7 @@ export default [
   },
   {
     name: "scroll of confusion",
-    message: "confused af",
+    message: "Confused af.",
     ch: "#",
     color: colors.pickup_scroll_of_confusion,
     weight: 0.05,

@@ -2,7 +2,7 @@ export default [
   {
     name: "bard",
     flavourText:
-      "Whether poet, scholar, or scroundrel, a bard weaves magic through words and music manipulate minds, and heal wounds. The bard is a master of song, speech and the magic they contain.",
+      "Whether poet, scholar, or scroundrel, a bard weaves magic through words and music to manipulate minds and heal wounds. The bard is a master of song, speech and the magic they contain.",
 
     healthAtStart: 8,
     healthIncreasePerLevel: 5,
@@ -107,7 +107,7 @@ export default [
   {
     name: "rogue",
     flavourText:
-      "Rogues rely on skill, stealth, and thei foes' vulnarabilities to get the upper hand in any situation. They have a knack for finding the solution to just about any problem.",
+      "Rogues rely on skill, stealth, and their foes' vulnarabilities to get the upper hand in any situation. They have a knack for finding the solution to just about any problem.",
 
     healthAtStart: 8,
     healthIncreasePerLevel: 5,

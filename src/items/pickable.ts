@@ -95,7 +95,7 @@ export class TargetSelector {
         break;
     }
     if (listOfActors.length === 0) {
-      game.log.add("No enemy is close enough");
+      game.log.add("No enemy is close enough.");
     }
   }
 }
@@ -248,7 +248,7 @@ export default class Pickable {
   }
 
   async use(owner: Actor, wearer: Actor) {
-    game.log.add(`You use a ${owner.name}`);
+    game.log.add(`You use a ${owner.name}.`);
 
     const actorList = Array<Actor>();
 
@@ -282,7 +282,7 @@ export default class Pickable {
       game.sendToBack(owner);
       owner.x = wearer.x;
       owner.y = wearer.y;
-      game.log.add(`${wearer.name} drops a ${owner.name}`);
+      game.log.add(`${wearer.name} drops a ${owner.name}.`);
     }
   }
 
@@ -301,13 +301,14 @@ export default class Pickable {
       //then, take off wielded item
       //and add it to inventory
       if (wearer.container && takeOff) {
-        game.log.add(`take off a ${takeOff.name}`);
+        game.log.add(`${wearer.name}removes a ${takeOff.name}.`);
         wearer.container.add(takeOff);
       }
 
       //and finally, add item to equipments
+      //note from the grammar police: should be "wields" or "equips" for weapons.
       wearer.equipments.add(owner);
-      game.log.add(`${wearer.name} wear a ${owner.name}`);
+      game.log.add(`${wearer.name} wears a ${owner.name}.`);
       wearer.equipments.update(wearer);
     }
   }
