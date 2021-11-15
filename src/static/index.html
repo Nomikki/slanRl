@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset=”utf-8" />
+    <title>Slan Roguelike</title>
+  </head>
 
-<head>
-  <meta charset=”utf-8" />
-  <title>Slan Roguelike</title>
-</head>
+  <body>
+    <div id="game">
+      <canvas id="screen" width="960" height="720"></canvas>
+    </div>
+    <div id="temp-image" class="hidden">
+      <canvas id="temp-image-canvas" width="960" height="720"></canvas>
+    </div>
 
-<body>
-  <div id="game">
-    <canvas id="screen" width="960" height="720"></canvas>
-  </div>
-  <div id="temp-image" class="hidden">
-    <canvas id="temp-image-canvas" width="960" height="720"></canvas>
-  </div>
-
-</body>
-
+    <div id="github" class="hidden">
+      <button id="login" class="hidden">GitHub Login</button>
+      <button id="save" class="hidden">Save to Gists</button>
+      <button id="load" class="hidden">Load from Gists</button>
+      <button id="logout" class="hidden">Logout from GitHub</button>
+    </div>
+  </body>
 </html>

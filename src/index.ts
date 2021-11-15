@@ -17,6 +17,7 @@ import { capitalize, debugInit, ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
+import GitHub from "./github";
 
 interface MenuBackgroundProps {
   title: string;
@@ -36,7 +37,7 @@ export enum GameStatus {
   DEFEAT,
 }
 
-class Game {
+export class Game {
   gameStatus: number = GameStatus.MAINMENU;
   player?: Actor;
   map?: Map;
@@ -62,6 +63,8 @@ class Game {
   mapy = 80;
 
   camera: Camera;
+
+  github: typeof GitHub;
 
   constructor() {
     this.canvas = ensure(document.querySelector("#screen"));
@@ -93,6 +96,9 @@ class Game {
     const zoomTempImage = () => {
       tempImage.classList.toggle("zoomed");
     };
+
+    this.github = GitHub;
+    this.github.setGame(this);
 
     tempImage.addEventListener("click", zoomTempImage);
     window.addEventListener("resize", this.fitCanvasToScreen);

@@ -34,7 +34,7 @@ const config: Configuration = {
       BUILD_TIME: JSON.stringify(buildTime.split("T")[1].split(".")[0]), // format: 15:15:48
       BUILD_DATETIME: JSON.stringify(buildTime), // format: 2021-10-19T15:15:48.944Z
       COMMIT_HASH: JSON.stringify(process.env.COMMIT_HASH || "dev"),
-      PRODUCTION: JSON.stringify(true),
+      PRODUCTION: JSON.stringify(isProd),
       SEED: JSON.stringify(process.env.SEED),
       VERSION: JSON.stringify(process.env.VERSION || `v${version}` || "dev"),
     }),
