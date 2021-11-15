@@ -190,7 +190,7 @@ export default class Map {
         if (actor && actor.name === "door") {
           door = actor; //door found
         } else if (actor) {
-          game.log.add("There's something and its blocking!");
+          game.log.add("There's something and it's blocking!");
           return true;
         }
       }
@@ -200,15 +200,15 @@ export default class Map {
       door.blocks = !door.blocks;
       if (door.blocks) {
         door.ch = "D";
-        game.log.add("a door is closed");
+        game.log.add("A door is closed.");
       } else {
         if (door.ch === "#") {
           door.color = Colors.DOOR;
           door.ch = "+";
-          game.log.add("a secret door is opened!", Colors.HILIGHT_TEXT);
+          game.log.add("A secret door is opened!", Colors.HILIGHT_TEXT);
         } else {
           door.ch = "+";
-          game.log.add("a door is opened");
+          game.log.add("A door is opened.");
         }
       }
       return true;
@@ -250,7 +250,7 @@ export default class Map {
         item = createItem({ name: "health potion", x, y });
       } else {
         item = createItem({ name: "nutella bun", x, y });
-        console.log("Jossain haisoo nutella!");
+        console.log("There is a faint smell of nutella in the air!");
       }
     } else if (rng < 70 + 10) {
       item = createItem({ name: "scroll of lighting bolt", x, y });

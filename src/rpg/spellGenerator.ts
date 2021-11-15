@@ -188,8 +188,7 @@ const applySpellTo = (
         game.log.add(
           `Attack roll ${attackDC} (1d20 ${caster.abilities?.getBonusWithSign(
             ABILITIES.INT,
-          )}) against ${saveDC} (${spell.target_saving_throw_type} 1d20 ${
-            savingThrowbonus > 0 ? "+" + savingThrowbonus : savingThrowbonus
+          )}) against ${saveDC} (${spell.target_saving_throw_type} 1d20 ${savingThrowbonus > 0 ? "+" + savingThrowbonus : savingThrowbonus
           })`,
         );
 
@@ -223,8 +222,7 @@ const applySpellTo = (
             for (const success of successList) {
               if (success === "half_damage") {
                 game.log.add(
-                  `${caster.name} cast a ${spell.name} to ${
-                    target.name
+                  `${caster.name} cast a ${spell.name} to ${target.name
                   } for ${float2int(
                     value / 2,
                   )} hit points (${effectValueFinal} / 2).`,
@@ -239,8 +237,7 @@ const applySpellTo = (
             for (const fail of failList) {
               if (fail === "full_damage") {
                 game.log.add(
-                  `${caster.name} cast a ${spell.name} to ${
-                    target.name
+                  `${caster.name} cast a ${spell.name} to ${target.name
                   } for ${float2int(value)} hit points (${effectValueFinal}).`,
                 );
                 target.destructible?.takeDamage(target, float2int(value));
@@ -278,7 +275,7 @@ const applySpellTo = (
                 ensure(game.player?.y),
               );
             } else {
-              game.log.add("Can't teleport there");
+              game.log.add("Can't teleport there.");
             }
           }
         }

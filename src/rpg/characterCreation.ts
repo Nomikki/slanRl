@@ -68,7 +68,7 @@ export const prepareNewJourney = async () => {
 
     game.drawText(
       toughnessIncrease > 0
-        ? `hp increase: ${toughnessIncrease} per level`
+        ? `Hp increase: ${toughnessIncrease} per level`
         : "",
       10,
       18,

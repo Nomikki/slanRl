@@ -111,7 +111,7 @@ export class PlayerAI extends AI {
 
     const handleSave = async () => {
       game.save();
-      game.log.add("Game saved...", Colors.GAME_SAVED);
+      game.log.add("Game saved.", Colors.GAME_SAVED);
     };
 
     const handleNextLevel = () => {
@@ -166,7 +166,7 @@ export class PlayerAI extends AI {
     const handleWield = async () => {
       const wieldedItem = await this.choseFromInventory(owner);
       if (wieldedItem) {
-        //game.log.add(`You wield up the ${wieldedItem.name}`, Colors.PICKED_UP);
+        //game.log.add(`You wield the ${wieldedItem.name}`, Colors.PICKED_UP);
         await ensure(wieldedItem.pickable).wear(wieldedItem, owner);
         game.gameStatus = GameStatus.NEW_TURN;
       } else {
@@ -178,7 +178,7 @@ export class PlayerAI extends AI {
       //if enemies are too close, cant shoot
       const closestMonster = game.getClosestMonster(owner.x, owner.y, 2);
       if (closestMonster) {
-        game.log.add("Can't shoot. You are in melee fight.");
+        game.log.add("Can't shoot in melee combat.");
         return;
       }
 
@@ -210,7 +210,7 @@ export class PlayerAI extends AI {
           game.gameStatus = GameStatus.NEW_TURN;
         }
       } else {
-        game.log.add("Can't shoot. You need ranged weapon first.");
+        game.log.add("Shooting requires a ranged weapon.");
       }
     };
 
@@ -232,7 +232,7 @@ export class PlayerAI extends AI {
       });
 
       game.drawText(
-        "Use ARROW KEYS to move and attacks",
+        "Use arrow keys to move and attack",
         17,
         6,
         Colors.DEFAULT_TEXT,

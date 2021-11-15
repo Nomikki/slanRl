@@ -38,7 +38,7 @@ export default class Attacker {
       let bonus = false;
 
       if (hitOrMiss === 1) {
-        game.log.add(`${target.name} miss attack by ${attacker.name}`);
+        game.log.add(`${attacker.name} attacks ${target.name} and misses.`);
         return;
       }
 
@@ -63,10 +63,8 @@ export default class Attacker {
         const eyes = numberOfEyes;
 
         game.log.add(
-          `${attacker.name} attacks ${
-            target.name
-          } for ${diceDmg} hit points (${dices}d${eyes}${
-            attackModifier > 0 ? "+" : "-"
+          `${attacker.name} attacks ${target.name
+          } for ${diceDmg} hit points (${dices}d${eyes}${attackModifier > 0 ? "+" : "-"
           }${Math.abs(attackModifier)}).`,
           attacker === game.player ? Colors.PLAYER_ATTACK : Colors.ENEMY_ATTACK,
         );
@@ -90,7 +88,7 @@ export default class Attacker {
           }
         }
       } else {
-        game.log.add(`${target.name} miss attack by ${attacker.name}`);
+        game.log.add(`${attacker.name} attacks ${target.name} and misses.`);
       }
     }
   }

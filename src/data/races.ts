@@ -2,7 +2,7 @@ export default [
   {
     name: "dwarf",
     flavourText:
-      "Kingdoms richs in ancient grandeur, halls carved into the roots of mountains, the echoing of picks and hammers in deep mines and blazing forges, and a commitment to clan and tradition - these common threads unite all dwarves.",
+      "Kingdoms richs in ancient grandeur, halls carved into the roots of mountains, the echoing of picks and hammers in deep mines and blazing forges, and a commitment to clan and tradition – these common threads unite all dwarves.",
 
     toughnessIncrease: 1,
     abilityIncrease: {
@@ -58,7 +58,7 @@ export default [
   {
     name: "halfling",
     flavourText:
-      "The diminutive halflings survive in a world full of larger creatures by avoiding notire or, barring that, avoiding offense. Standing about 3 feet tall, they appear relatively harmless and so have managed to survive for centuries in the shadow os empires and on the edges of wars.",
+      "The diminutive halflings survive in a world full of larger creatures by avoiding notice or, barring that, avoiding offense. Standing about 3 feet tall, they appear relatively harmless and so have managed to survive for centuries in the shadows of empires and on the edges of wars.",
 
     toughnessIncrease: 0,
     abilityIncrease: {
@@ -76,7 +76,7 @@ export default [
   {
     name: "human",
     flavourText:
-      "Humans are the most adaptable and ambitious people among the common races. They have widely varying tastes, morals, and customs in different lands where they have settled. Wheyn they settle, though, they stay: they build cities to last for the ages.",
+      "Humans are the most adaptable and ambitious people among the common races. They have widely varying tastes, morals, and customs in different lands where they have settled. When they settle, though, they stay: they build cities to last for the ages.",
 
     toughnessIncrease: 0,
     abilityIncrease: {
