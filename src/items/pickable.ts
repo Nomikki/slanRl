@@ -301,7 +301,7 @@ export default class Pickable {
       //then, take off wielded item
       //and add it to inventory
       if (wearer.container && takeOff) {
-        game.log.add(`${wearer.name}removes a ${takeOff.name}.`);
+        game.log.add(`${wearer.name} removes a ${takeOff.name}.`);
         wearer.container.add(takeOff);
       }
 
