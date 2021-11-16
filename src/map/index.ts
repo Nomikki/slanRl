@@ -114,7 +114,7 @@ export default class Map {
         game.actors.push(createMonster(monsterListBig[rng], x, y));
       }
     } else if (this.depth >= 3) {
-      const monsterListSmall = ["gian rat", "jackal", "kobold"];
+      const monsterListSmall = ["giant rat", "jackal", "kobold"];
 
       const monsterListBig = ["giant rat", "orc", "ghoul", "troll"];
 
@@ -369,23 +369,16 @@ export default class Map {
     this.ambienceColor =
       Colors.AMBIENCE_COLOR[random.getInt(0, Colors.AMBIENCE_COLOR.length)];
 
-    const root = new bspGenerator(0, 0, this.width, this.height, maxSplitLevel);
     this.tiles = new Array(this.width * this.height).fill(false);
-    //console.log(JSON.stringify(root.rooms, null, 2));
 
     const monsterRooms = [];
-
-    //const option = random.getInt(0, 2);
-    //console.log("option: " + option);
-    const option = random.getInt(0, 100) > 70 ? 1 : 2;
-    //console.log(option);
-
     for (let i = 0; i < this.width * this.height; i++) {
       this.tiles[i] = new Tile();
-
-      //we can use path/room data directly from bsp if we want.
-      //if (option === 0) this.tiles[i].canWalk = !this.root.map[i];
     }
+
+    const root = new bspGenerator(0, 0, this.width, this.height, maxSplitLevel);
+
+    const option = random.getInt(0, 100) > 70 ? 1 : 2;
 
     //lets create every room one by one
     let lastx = 0;
@@ -398,11 +391,7 @@ export default class Map {
     //take one room and make it spawn room
     const spawnRoomIndex = random.getInt(0, root.rooms.length - 1);
     const stairsRoomIndex = random.getInt(0, root.rooms.length - 1);
-    /*
-    console.log(
-      "spwanroom index: " + spawnRoomIndex + " / " + (root.rooms.length - 1),
-    );
-    */
+
     for (let i = 0; i < root.rooms.length; i++) {
       const room = root.rooms[i];
       const spawnRoom = i === spawnRoomIndex ? true : false;

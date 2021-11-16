@@ -255,15 +255,12 @@ class Game {
       if (urlParams.has("seed"))
         this.masterSeed = parseInt(ensure(urlParams.get("seed")));
     }
-    if (COMMIT_HASH === "dev") {
-      history.pushState({}, "Slan Roguelike", `/?seed=${this.masterSeed}`);
-    } else {
-      history.pushState(
-        {},
-        "Slan Roguelike",
-        `/slanRl/?seed=${this.masterSeed}`,
-      );
-    }
+
+    history.pushState(
+      {},
+      "Slan Roguelike",
+      `${COMMIT_HASH !== "dev" ? "/slanRl" : ""}/?seed=${this.masterSeed}`,
+    );
 
     //choose race, class, abilities and give name
     const [abi, selRace, selClass, hpStart, hpPerLevel, hpIncreasePerLevel] =
