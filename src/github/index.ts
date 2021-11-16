@@ -4,9 +4,9 @@ import { ensure } from "@/utils";
 import axios from "axios";
 
 const client_id = PRODUCTION ? "29d912f29a2274f9cb81" : "93b9deac9ac0b91c370a";
-const client_secret = PRODUCTION
-  ? "67f64eb89fd743e9c6b28f73c3cac4c7f498cc1e"
-  : "f944ee449a7d0ee483e1ce00e2bd6481b96cdc02";
+
+const backendUrl = PRODUCTION ? "https://roguelike.saunalanit.org/api" : "/api";
+
 const [redirect_uri] = window.location.href.split("?");
 const scopes = ["gist"].join(" ");
 
@@ -14,6 +14,7 @@ class GitHub {
   url: URLSearchParams;
   code?: string;
   game?: Game;
+  username?: string;
 
   constructor() {
     const githubLogin = ensure(document.querySelector("#login"));
@@ -46,8 +47,6 @@ class GitHub {
       history.pushState({}, "Slan Roguelike", redirect_uri);
 
       const data = {
-        client_id,
-        client_secret,
         code: this.code,
       };
 
@@ -59,7 +58,7 @@ class GitHub {
       };
 
       const response = await axios.post(
-        "https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token",
+        `${backendUrl}/access_token`,
         data,
         options,
       );
@@ -70,7 +69,26 @@ class GitHub {
       });
 
       this.toggleButtons();
+      this.fetchProfile();
     }
+  }
+
+  async fetchProfile() {
+    const options = {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "no-cache",
+        Authorization: `${sessionStorage.getItem(
+          "token_type",
+        )} ${sessionStorage.getItem("access_token")}`,
+      },
+    };
+
+    const response = await axios.get(`${backendUrl}/user`, options);
+
+    this.username = response.data.login;
+
+    sessionStorage.setItem("username", response.data.login);
   }
 
   loginToGitHub() {
@@ -122,9 +140,7 @@ class GitHub {
     const method = slanGist?.id ? "patch" : "post";
 
     const response = await axios[method](
-      `https://cors-anywhere.herokuapp.com/https://api.github.com/gists${
-        slanGist?.id ? `/${slanGist?.id}` : ""
-      }`,
+      `${backendUrl}/gists${slanGist?.id ? `/${slanGist?.id}` : ""}`,
       data,
       options,
     );
@@ -145,12 +161,7 @@ class GitHub {
       },
     };
 
-    const gists = (
-      await axios.get(
-        "https://cors-anywhere.herokuapp.com/https://api.github.com/gists",
-        options,
-      )
-    ).data;
+    const gists = (await axios.get(`${backendUrl}/gists`, options)).data;
 
     console.log("gists", gists);
 
@@ -158,8 +169,6 @@ class GitHub {
       ({ description }: { description: string }) =>
         description === "Slan Roguelike - Cloud save",
     );
-
-    console.log("slanGist", slanGist);
 
     return slanGist;
   }
@@ -183,7 +192,7 @@ class GitHub {
 
     const cloudSaves = (
       await axios.get(
-        `https://cors-anywhere.herokuapp.com/${slanGist.files["slanRl-localStorage.json"].raw_url}`,
+        `${backendUrl}/file?file=${slanGist.files["slanRl-localStorage.json"].raw_url}`,
         options,
       )
     ).data;

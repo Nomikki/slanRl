@@ -7,6 +7,8 @@ import { version } from "./package.json";
 
 const buildTime = new Date().toISOString();
 
+const backendUrl = "http://localhost:4000";
+
 type Environment = "development" | "production" | "none";
 type WebpackPlugin = { apply(...args: unknown[]): void };
 
@@ -55,6 +57,14 @@ const config: Configuration = {
     port: process.env.PORT || 8080,
     open: !isTest,
     hot: !isTest,
+
+    proxy: {
+      "/socket.io": {
+        target: backendUrl,
+        ws: true,
+      },
+      "/api": backendUrl,
+    },
   },
   stats: !isTest,
   infrastructureLogging: {

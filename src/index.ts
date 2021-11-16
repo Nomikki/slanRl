@@ -18,6 +18,9 @@ import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
 import GitHub from "./github";
+import { connectSocket } from "./socket";
+
+const socket = connectSocket();
 
 interface MenuBackgroundProps {
   title: string;
@@ -36,6 +39,16 @@ export enum GameStatus {
   VICTORY,
   DEFEAT,
 }
+
+const gameStatuses = [
+  "MAINMENU",
+  "NEWGAME",
+  "STARTUP",
+  "IDLE",
+  "NEW TURN",
+  "VICTORY",
+  "DEFEAT",
+];
 
 export class Game {
   gameStatus: number = GameStatus.MAINMENU;
@@ -65,6 +78,7 @@ export class Game {
   camera: Camera;
 
   github: typeof GitHub;
+  socket: typeof socket = socket;
 
   constructor() {
     this.canvas = ensure(document.querySelector("#screen"));
@@ -102,6 +116,57 @@ export class Game {
 
     tempImage.addEventListener("click", zoomTempImage);
     window.addEventListener("resize", this.fitCanvasToScreen);
+
+    this.addSocketEvents();
+  }
+
+  getStats() {
+    return {
+      playername: sessionStorage.getItem("username") || "anonymous",
+      gamestatus: this.gameStatus,
+      depth: this.depth,
+      turns: this.turns,
+      seed: this.masterSeed,
+    };
+  }
+
+  addSocketEvents() {
+    interface Score {
+      playername: string;
+      depth: number;
+      turns: number;
+      gamestatus: number;
+      seed: number;
+    }
+
+    this.socket
+      .on("status", () => {
+        this.socket.emit("score", this.getStats());
+      })
+      .on("stats", data => {
+        const { currentPlayers, live, top } = data;
+
+        const stats = ensure(document.querySelector("#stats"));
+        stats.classList.remove("hidden");
+        stats.innerHTML = `Total players:  ${currentPlayers}`;
+
+        if (Object.keys(top).length > 0) {
+          stats.innerHTML = `${stats.innerHTML}\n----\nTop Scores:\n`;
+          Object.keys(top).forEach(key => {
+            const { playername, depth, turns, seed }: Score = top[key];
+            stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}\n`;
+          });
+        }
+
+        if (Object.keys(live).length > 0) {
+          stats.innerHTML = `${stats.innerHTML}\n----\nLive Scores:\n`;
+          Object.keys(live).forEach(key => {
+            const { playername, depth, turns, gamestatus, seed }: Score =
+              live[key];
+            stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}, ${gameStatuses[gamestatus]}\n`;
+          });
+        }
+      });
   }
 
   setScale(scale: number) {
@@ -513,6 +578,8 @@ export class Game {
       window.localStorage.setItem("actors", JSON.stringify(this.actors));
       window.localStorage.setItem("version", VERSION);
     }
+
+    this.github.toggleButtons();
   }
 
   clear(color = Colors.BACKGROUND) {
@@ -840,6 +907,7 @@ export class Game {
           this.height / 2,
           Colors.DEFEAT,
         );
+        this.socket.emit("dead", this.getStats());
         this.log.add("DEFEAT", Colors.DEFEAT);
         this.player?.fov?.showAll();
         this.saveImage();
