@@ -139,16 +139,28 @@ export class Game {
       seed: number;
     }
 
+    const stats = ensure(document.querySelector("#stats"));
+
     this.socket
+      .on("connect", () => {
+        this.github.toggleButtons();
+      })
+      .on("disconnect", () => {
+        this.github.toggleButtons();
+        stats.classList.add("hidden");
+      })
+      .on("error", () => {
+        this.github.toggleButtons();
+        stats.classList.add("hidden");
+      })
       .on("status", () => {
         this.socket.emit("score", this.getStats());
       })
       .on("stats", data => {
         const { currentPlayers, live, top } = data;
 
-        const stats = ensure(document.querySelector("#stats"));
         stats.classList.remove("hidden");
-        stats.innerHTML = `Total players:  ${currentPlayers}`;
+        stats.innerHTML = `Players online: ${currentPlayers}`;
 
         if (Object.keys(top).length > 0) {
           stats.innerHTML = `${stats.innerHTML}\n----\nTop Scores:\n`;
@@ -579,7 +591,9 @@ export class Game {
       window.localStorage.setItem("version", VERSION);
     }
 
-    this.github.toggleButtons();
+    if (this.socket.connected) {
+      this.github.toggleButtons();
+    }
   }
 
   clear(color = Colors.BACKGROUND) {
@@ -726,15 +740,27 @@ export class Game {
 
   waitingKeypress() {
     return new Promise<void>(resolve => {
-      document.addEventListener("keydown", onKeyHandler);
-      function onKeyHandler(e: KeyboardEvent) {
-        e.preventDefault();
-        if (e.keyCode !== 0) {
-          document.removeEventListener("keydown", onKeyHandler);
-          game.lastKey = e.key;
-          resolve();
+      const onKeyHandler = async (e: KeyboardEvent) => {
+        let preventKey = false;
+        if (
+          (window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) &&
+          e.keyCode == 83
+        ) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.log.add("Game saved.", Colors.GAME_SAVED);
+          await this.save();
+          preventKey = true;
         }
-      }
+        if (e.keyCode !== 0 && !preventKey) {
+          game.lastKey = e.key;
+        }
+        document.removeEventListener("keydown", onKeyHandler);
+        resolve();
+        return;
+      };
+
+      document.addEventListener("keydown", onKeyHandler);
     });
   }
 

@@ -30,7 +30,6 @@ class GitHub {
     this.url = new URLSearchParams(window.location.search);
 
     this.parseUrl();
-    this.toggleButtons();
   }
 
   focusOnScreen() {
@@ -39,6 +38,7 @@ class GitHub {
 
   setGame(game: Game) {
     this.game = game;
+    this.toggleButtons();
   }
 
   async parseUrl() {
@@ -234,17 +234,24 @@ class GitHub {
     const gistLoad = ensure(document.querySelector("#load"));
     const githubLogout = ensure(document.querySelector("#logout"));
 
-    if (sessionStorage.getItem("access_token")) {
-      githubLogin.classList.add("hidden");
-      if (localStorage.getItem("version")) {
-        gistSave.classList.remove("hidden");
+    if (this.game?.socket.connected) {
+      if (sessionStorage.getItem("access_token")) {
+        githubLogin.classList.add("hidden");
+        if (localStorage.getItem("version")) {
+          gistSave.classList.remove("hidden");
+        } else {
+          gistSave.classList.add("hidden");
+        }
+        gistLoad.classList.remove("hidden");
+        githubLogout.classList.remove("hidden");
       } else {
+        githubLogin.classList.remove("hidden");
         gistSave.classList.add("hidden");
+        gistLoad.classList.add("hidden");
+        githubLogout.classList.add("hidden");
       }
-      gistLoad.classList.remove("hidden");
-      githubLogout.classList.remove("hidden");
     } else {
-      githubLogin.classList.remove("hidden");
+      githubLogin.classList.add("hidden");
       gistSave.classList.add("hidden");
       gistLoad.classList.add("hidden");
       githubLogout.classList.add("hidden");
