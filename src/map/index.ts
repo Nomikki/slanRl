@@ -3,7 +3,7 @@ import { createItem } from "@/items/itemGenerator";
 import bspGenerator from "@/map/bsp_generator";
 import { createMonster } from "@/rpg/monsterGenerator";
 import Actor from "@/units/actor";
-import { float2int } from "@/utils";
+import { ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Randomizer from "@/utils/random";
 import Rectangle from "@/utils/rectangle";
@@ -207,16 +207,35 @@ export default class Map {
     return false;
   }
 
+  isThereSecretDoor(area: Rectangle): boolean {
+    for (const c of game.actors) {
+      if (
+        c.x >= area.x &&
+        c.x <= area.x + area.w + 2 &&
+        c.y >= area.y &&
+        c.y <= area.y + area.h + 2
+      ) {
+        if (c.ch === "#" && c.name === "door") return true;
+      }
+    }
+    return false;
+  }
+
   addDoor(x: number, y: number, closed: boolean) {
     const door = new Actor(x, y, closed ? "D" : "+", "door", Colors.DOOR);
     door.blocks = true;
     door.fovOnly = false;
+    let createDoor = false;
 
     //add door, if its between walls
-    if (
-      (this.isWall(x - 1, y) == true && this.isWall(x + 1, y) == true) ||
-      (this.isWall(x, y - 1) == true && this.isWall(x, y + 1) == true)
-    ) {
+    if (this.isWall(x - 1, y) == true && this.isWall(x + 1, y) == true) {
+      createDoor = true;
+    }
+    if (this.isWall(x, y - 1) == true && this.isWall(x, y + 1) == true) {
+      createDoor = true;
+    }
+
+    if (createDoor) {
       game.actors.push(door);
       game.sendToBack(door);
     } else {
@@ -229,6 +248,15 @@ export default class Map {
       door.ch = "#";
       door.color = Colors.WALL;
     }
+  }
+
+  addItemWithName(name: string, x: number, y: number): Actor | undefined {
+    const item = createItem({ name, x, y });
+    if (item) {
+      game.actors.push(item);
+      return item;
+    }
+    return undefined;
   }
 
   additem(x: number, y: number) {
@@ -345,6 +373,19 @@ export default class Map {
     */
   }
 
+  howManyWalls(x: number, y: number): number {
+    if (x > 0 && y > 0 && x < this.width - 1 && y < this.height - 1) {
+      let count = 0;
+      if (this.isWall(x - 1, y)) count++;
+      if (this.isWall(x + 1, y)) count++;
+      if (this.isWall(x, y - 1)) count++;
+      if (this.isWall(x, y + 1)) count++;
+      return count;
+    }
+
+    return 0;
+  }
+
   generate(withActors: boolean, seed: number, depth: number) {
     this.levelSeed = seed;
     this.depth = depth;
@@ -443,6 +484,31 @@ export default class Map {
 
       for (const door of this.templateDoors) {
         this.addDoor(door.x, door.y, true);
+      }
+
+      for (const room of monsterRooms) {
+        if (room.w >= 3 || room.h >= 3) {
+          const torches = [];
+          if (this.howManyWalls(room.x, room.y) > 1)
+            torches.push(this.addItemWithName("torch", room.x, room.y));
+          if (this.howManyWalls(room.x + room.w, room.y) > 1)
+            torches.push(
+              this.addItemWithName("torch", room.x + room.w, room.y),
+            );
+          if (this.howManyWalls(room.x, room.y + room.h) > 1)
+            torches.push(
+              this.addItemWithName("torch", room.x, room.y + room.h),
+            );
+          if (this.howManyWalls(room.x + room.w, room.y + room.h) > 1)
+            torches.push(
+              this.addItemWithName("torch", room.x + room.w, room.y + room.h),
+            );
+          //if there's secret, one torch is reversed
+          if (this.isThereSecretDoor(room)) {
+            ensure(torches[random.getInt(0, torches.length - 1)]).ch = "í";
+            console.log("prup!");
+          }
+        }
       }
     }
   }

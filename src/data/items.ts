@@ -92,4 +92,20 @@ export default [
       amount: -20,
     },
   },
+  {
+    name: "torch",
+    message:
+      "A torch is a stick with combustible material at one end, which is ignited and used as a light source.",
+    ch: "ì",
+    color: colors.pickup_torch,
+    weight: 0.05,
+    selector: {
+      type: "none",
+      range: 5,
+    },
+    effect: {
+      type: "lighting",
+      amount: 10,
+    },
+  },
 ];

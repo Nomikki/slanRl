@@ -14,6 +14,7 @@ export const Colors = {
   SCROLL_OF_FIREBALL: colors.pickup_scroll_of_fireball,
   SCROLL_OF_CONFUSION: colors.pickup_scroll_of_confusion,
   SCROLL_OF_MAP: colors.pickup_scroll_of_map,
+  TORCH: colors.pickup_torch,
 
   ARMOR_ITEM: colors.pickup_armor_item,
   WEAPON_ITEM: colors.pickup_weapon_item,
