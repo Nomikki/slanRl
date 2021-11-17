@@ -30,22 +30,12 @@ export class PlayerAI extends AI {
   async pickDirection() {
     const ch = await game.getch();
 
-    let dx = 0;
-    let dy = 0;
-    if (ch === "ArrowLeft") {
-      dx = -1;
-    }
-    if (ch === "ArrowRight") {
-      dx = 1;
-    }
-    if (ch === "ArrowUp") {
-      dy = -1;
-    }
-    if (ch === "ArrowDown") {
-      dy = 1;
-    }
+    if (ch === "ArrowLeft") return [-1, 0];
+    else if (ch === "ArrowRight") return [1, 0];
+    else if (ch === "ArrowUp") return [0, -1];
+    else if (ch === "ArrowDown") return [0, 1];
 
-    return [dx, dy];
+    return [0, 0];
   }
 
   async update(owner: Actor) {
@@ -260,7 +250,7 @@ export class PlayerAI extends AI {
       game.drawText("i: Use item", 17, 10, Colors.DEFAULT_TEXT);
       game.drawText("d: Drop item from inventory", 17, 11, Colors.DEFAULT_TEXT);
       game.drawText(">: Use stairs", 17, 12, Colors.DEFAULT_TEXT);
-      game.drawText("o: Open or close door.", 17, 13, Colors.DEFAULT_TEXT);
+      game.drawText("o/O: Open or close door.", 17, 13, Colors.DEFAULT_TEXT);
       game.drawText("w: Wear/equip", 17, 14, Colors.DEFAULT_TEXT);
       game.drawText("P/p: Pull/push", 17, 15, Colors.DEFAULT_TEXT);
       game.drawText(".: rest / skip turn", 17, 16, Colors.DEFAULT_TEXT);

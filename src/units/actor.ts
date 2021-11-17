@@ -78,10 +78,8 @@ export default class Actor {
     this.blocks = false;
 
     //console.log(actorTemplate);
-
-    if (actorTemplate.pickable?.effectName === "Wearable") {
+    if (actorTemplate.pickable?.effectName === "Wearable")
       fx = new Wearable(actorTemplate.pickable.effect.type);
-    }
 
     if (actorTemplate.pickable?.effectName === "AiChangeEffect") {
       fx = new AiChangeEffect(
@@ -91,9 +89,9 @@ export default class Actor {
         actorTemplate.pickable.effect.message,
       );
     }
-    if (actorTemplate.pickable?.effectName === "MapClearEffect") {
+    if (actorTemplate.pickable?.effectName === "MapClearEffect")
       fx = new MapClearEffect(actorTemplate.pickable.effect.message);
-    }
+
     if (actorTemplate?.pickable?.effectName === "HealthEffect")
       fx = new HealthEffect(actorTemplate.pickable?.effect.amount, undefined);
 
@@ -129,15 +127,11 @@ export default class Actor {
   }
 
   async update(speed: number) {
-    if (this.ai) {
-      await this.ai.update(this, speed);
-    }
+    if (this.ai) await this.ai.update(this, speed);
   }
 
   computeFov() {
-    if (this.fov) {
-      this.fov.compute(this.x, this.y, 10);
-    }
+    if (this.fov) this.fov.compute(this.x, this.y, 10);
   }
 
   getDistance(x: number, y: number) {
@@ -160,9 +154,6 @@ export default class Actor {
     const d = this.getDistance(tileX, tileY);
     const dx = float2int((this.x - tileX) / d);
     const dy = float2int((this.y - tileY) / d);
-
-    //console.log(tileX, tileY);
-    //console.log(dx, dy, d);
 
     for (let i = 0; i < distance; i++) {
       if (game.map?.canWalk(this.x + dx, this.y + dy)) {

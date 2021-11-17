@@ -65,10 +65,7 @@ class Game {
 
   constructor() {
     this.canvas = ensure(document.querySelector("#screen"));
-
     this.ctx = ensure((this.canvas as HTMLCanvasElement).getContext("2d"));
-    //this.ctx.font = "12px system-io";
-    //this.fontSize = 12;
 
     this.setScale(12);
     this.ctx.textAlign = "center";
@@ -149,7 +146,10 @@ class Game {
     if (withActors) {
       let i = 0;
       if (createPlayer) {
-        i = this.actors.push(new Actor(2, 2, "@", "hero", Colors.HERO)) - 1;
+        i =
+          this.actors.push(
+            new Actor(2, 2, "@", "placeholder hero", Colors.HERO),
+          ) - 1;
         this.player = this.actors[i];
         this.player.destructible = new PlayerDestructible(
           30,
@@ -282,14 +282,14 @@ class Game {
     const raceName = getRaceNameByIndex(selRace as number);
     const className = getClassNameByIndex(selClass as number);
 
-    const newName = `${this.player?.name} the ${raceName} ${className}`;
-    pl.name = newName;
+    pl.name = `${this.player?.name} the ${raceName} ${className}`;
     const hpBonus = (abi as Abilities).getBonus(ABILITIES.CON) as number;
-    ensure(pl.destructible).maxHP = (hpStart as number) + hpBonus;
-    ensure(pl.destructible).hp = ensure(pl.destructible)?.maxHP;
+    const destr = ensure(pl.destructible);
+    destr.maxHP = (hpStart as number) + hpBonus;
+    destr.hp = destr.maxHP;
 
-    ensure(pl.destructible).hpPerLevel = hpPerLevel as number;
-    ensure(pl.destructible).hpPerLevelBonuses = hpIncreasePerLevel as number;
+    destr.hpPerLevel = hpPerLevel as number;
+    destr.hpPerLevelBonuses = hpIncreasePerLevel as number;
 
     await this.save();
   }
@@ -388,6 +388,8 @@ class Game {
         }
 
         if (actor.destructible) {
+          const destr = ensure(this.actors[i].destructible);
+
           if (actor.destructible.type === "player") {
             this.player = this.actors[i];
             this.actors[i].destructible = new PlayerDestructible(
@@ -397,19 +399,14 @@ class Game {
             );
 
             this.actors[i].ai = new PlayerAI();
-            ensure(this.actors[i].destructible).xp = actor.destructible.xp;
-            ensure(this.actors[i].destructible).hpPerLevel =
-              actor.destructible.hpPerLevel;
-            ensure(this.actors[i].destructible).hpPerLevelBonuses =
-              actor.destructible.hpPerLevelBonuses;
 
-            ensure(this.actors[i].destructible).hp = actor.destructible.hp;
-            ensure(this.actors[i].destructible).maxHP =
-              actor.destructible.maxHP;
-            ensure(this.actors[i].destructible).defense =
-              actor.destructible.defense;
-            ensure(this.actors[i].destructible).corpseName =
-              actor.destructible.corpseName;
+            destr.xp = actor.destructible.xp;
+            destr.hpPerLevel = actor.destructible.hpPerLevel;
+            destr.hpPerLevelBonuses = actor.destructible.hpPerLevelBonuses;
+            destr.hp = actor.destructible.hp;
+            destr.maxHP = actor.destructible.maxHP;
+            destr.defense = actor.destructible.defense;
+            destr.corpseName = actor.destructible.corpseName;
           }
           if (actor.destructible.type === "monster") {
             this.actors[i].destructible = new MonsterDestructible(
@@ -419,14 +416,11 @@ class Game {
               0,
             );
 
-            ensure(this.actors[i].destructible).xp = actor.destructible.xp;
-            ensure(this.actors[i].destructible).hp = actor.destructible.hp;
-            ensure(this.actors[i].destructible).maxHP =
-              actor.destructible.maxHP;
-            ensure(this.actors[i].destructible).defense =
-              actor.destructible.defense;
-            ensure(this.actors[i].destructible).corpseName =
-              actor.destructible.corpseName;
+            destr.xp = actor.destructible.xp;
+            destr.hp = actor.destructible.hp;
+            destr.maxHP = actor.destructible.maxHP;
+            destr.defense = actor.destructible.defense;
+            destr.corpseName = actor.destructible.corpseName;
 
             if (actor.destructible.hp <= 0) this.actors[i].blocks = false;
 
@@ -482,13 +476,8 @@ class Game {
     }
 
     if (selectedItem != -1) {
-      if (selectedItem === MenuItemCode.NEW_GAME) {
-        await this.newGame();
-      }
-
-      if (selectedItem === MenuItemCode.CONTINUE) {
-        await this.continueGame();
-      }
+      if (selectedItem === MenuItemCode.NEW_GAME) await this.newGame();
+      if (selectedItem === MenuItemCode.CONTINUE) await this.continueGame();
     }
   }
 
@@ -568,7 +557,6 @@ class Game {
     this.camera.y = oldCameraY;
 
     this.setScale(oldFontSize);
-    //this.fitCanvasToScreen();
     this.render();
   }
 
@@ -704,12 +692,6 @@ class Game {
   }
 
   renderUI() {
-    /*
-    for (let x = 0; x < this.width; x++) {
-      this.drawChar("-", x, this.height, Colors.MENU_BORDER);
-    }
-    */
-
     const pl = ensure(this.player);
 
     const hp = ensure(pl.destructible?.hp);

@@ -52,9 +52,7 @@ export const createMonster = (name: string, x: number, y: number): Actor => {
   let abi = new Abilities(2, 2, 2, 2, 2);
 
   const isMonster = (name: string): boolean => {
-    for (const n of monsters) {
-      if (n.name === name) return true;
-    }
+    for (const n of monsters) if (n.name === name) return true;
     return false;
   };
 

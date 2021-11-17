@@ -43,9 +43,7 @@ export const getRace = (name: string): RacesInterface | undefined => {
 
 export const createListOfRaces = (): string[] => {
   const raceList = [];
-  for (const c of racesJson) {
-    raceList.push(c.name);
-  }
+  for (const c of racesJson) raceList.push(c.name);
   return raceList;
 };
 
@@ -53,10 +51,7 @@ export const createListOfProficiencies_byRace = (race: string): string[] => {
   const tempRace = ensure(getRaceUsingFind(race));
 
   const proficiencies = [];
-  for (const c of tempRace.proficiencies) {
-    proficiencies.push(c.type);
-  }
-
+  for (const c of tempRace.proficiencies) proficiencies.push(c.type);
   return proficiencies;
 };
 

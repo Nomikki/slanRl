@@ -36,9 +36,7 @@ export const getClass = (name: string): ClassInterface | undefined => {
 
 export const createListOfClasses = (): string[] => {
   const classList = [];
-  for (const c of classesJson) {
-    classList.push(c.name);
-  }
+  for (const c of classesJson) classList.push(c.name);
   return classList;
 };
 
@@ -48,9 +46,7 @@ export const createListOfProficiencies_byClass = (
   const tempClass = ensure(getClassUsingFind(className));
 
   const proficiencies = [];
-  for (const c of tempClass.proficiencies) {
-    proficiencies.push(c.type);
-  }
+  for (const c of tempClass.proficiencies) proficiencies.push(c.type);
 
   return proficiencies;
 };

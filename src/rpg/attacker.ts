@@ -63,8 +63,10 @@ export default class Attacker {
         const eyes = numberOfEyes;
 
         game.log.add(
-          `${attacker.name} attacks ${target.name
-          } for ${diceDmg} hit points (${dices}d${eyes}${attackModifier > 0 ? "+" : "-"
+          `${attacker.name} attacks ${
+            target.name
+          } for ${diceDmg} hit points (${dices}d${eyes}${
+            attackModifier > 0 ? "+" : "-"
           }${Math.abs(attackModifier)}).`,
           attacker === game.player ? Colors.PLAYER_ATTACK : Colors.ENEMY_ATTACK,
         );
@@ -73,14 +75,10 @@ export default class Attacker {
 
         target.destructible.takeDamage(target, finalDamage);
 
-        //console.log(damageType);
-
         if (damageType === DamageType.BLUDGEONING && bonus === true) {
           const distance = attacker.getDistance(target.x, target.y);
           const dx = float2int((target.x - attacker.x) / distance);
           const dy = float2int((target.y - attacker.y) / distance);
-
-          //console.log(dx, dy);
 
           if (game.map?.canWalk(target.x + dx, target.y + dy)) {
             target.x += dx;
@@ -104,9 +102,7 @@ export default class Attacker {
     let arrowY = owner.y;
     let arrowCh = "-";
 
-    if (Math.abs(dx) < Math.abs(dy)) {
-      arrowCh = "|";
-    }
+    if (Math.abs(dx) < Math.abs(dy)) arrowCh = "|";
 
     for (let i = 0; i < distance + 1; i++) {
       await sleep(100);
