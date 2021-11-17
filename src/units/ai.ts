@@ -96,14 +96,31 @@ export class PlayerAI extends AI {
   }
 
   async handleActionKey(owner: Actor, ascii: string) {
-    const handleOpen = async () => {
-      game.log.add("Which direction?");
-      game.render();
+    const handleOpen = async (withDirection: boolean) => {
+      //katsotaan ympärille montako ovea löytyy, jos vain yksi, avaa se.
+      const doors = [];
+      const door1 = game.map?.findDoor(owner.x - 1, owner.y);
+      const door2 = game.map?.findDoor(owner.x + 1, owner.y);
+      const door3 = game.map?.findDoor(owner.x, owner.y - 1);
+      const door4 = game.map?.findDoor(owner.x, owner.y + 1);
 
-      const [dx, dy] = await this.pickDirection();
+      if (door1) doors.push(door1);
+      if (door2) doors.push(door2);
+      if (door3) doors.push(door3);
+      if (door4) doors.push(door4);
 
-      if (!game?.map?.openCloseDoor(owner.x + dx, owner.y + dy)) {
-        game.log.add("There is no any door.");
+      if (doors.length === 1 && withDirection === false) {
+        doors[0].doorOpenOrClose();
+      } else if (doors.length > 0) {
+        //jos ovia enemmän kuin yksi, kysy:
+        game.log.add("Which direction?");
+        game.render();
+
+        const [dx, dy] = await this.pickDirection();
+
+        if (!game?.map?.openCloseDoor(owner.x + dx, owner.y + dy)) {
+          game.log.add("There is no any door.");
+        }
       }
       game.player?.computeFov();
       game.gameStatus = GameStatus.NEW_TURN;
@@ -366,7 +383,10 @@ export class PlayerAI extends AI {
         break;
 
       case "o": //open
-        await handleOpen();
+        await handleOpen(false);
+        break;
+      case "O": //open with diretion
+        await handleOpen(true);
         break;
 
       case "w": //wield

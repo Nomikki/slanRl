@@ -171,4 +171,21 @@ export default class Actor {
       }
     }
   }
+
+  doorOpenOrClose() {
+    this.blocks = !this.blocks;
+    if (this.blocks) {
+      this.ch = "D";
+      game.log.add("A door is closed.");
+    } else {
+      if (this.ch === "#") {
+        this.color = Colors.DOOR;
+        this.ch = "+";
+        game.log.add("A secret door is opened!", Colors.HILIGHT_TEXT);
+      } else {
+        this.ch = "+";
+        game.log.add("A door is opened.");
+      }
+    }
+  }
 }

@@ -181,8 +181,7 @@ export default class Map {
     return true;
   }
 
-  openCloseDoor(x: number, y: number): boolean {
-    //const actor = game.getAnyActor(x, y);
+  findDoor(x: number, y: number): Actor | undefined {
     const actors = game.getAllActors(x, y);
     let door = undefined;
     if (actors) {
@@ -191,26 +190,17 @@ export default class Map {
           door = actor; //door found
         } else if (actor) {
           game.log.add("There's something and it's blocking!");
-          return true;
+          return undefined;
         }
       }
     }
+    return door;
+  }
 
+  openCloseDoor(x: number, y: number): boolean {
+    const door = this.findDoor(x, y);
     if (door) {
-      door.blocks = !door.blocks;
-      if (door.blocks) {
-        door.ch = "D";
-        game.log.add("A door is closed.");
-      } else {
-        if (door.ch === "#") {
-          door.color = Colors.DOOR;
-          door.ch = "+";
-          game.log.add("A secret door is opened!", Colors.HILIGHT_TEXT);
-        } else {
-          door.ch = "+";
-          game.log.add("A door is opened.");
-        }
-      }
+      door.doorOpenOrClose();
       return true;
     }
 
