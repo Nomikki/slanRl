@@ -388,8 +388,6 @@ class Game {
         }
 
         if (actor.destructible) {
-          const destr = ensure(this.actors[i].destructible);
-
           if (actor.destructible.type === "player") {
             this.player = this.actors[i];
             this.actors[i].destructible = new PlayerDestructible(
@@ -400,6 +398,7 @@ class Game {
 
             this.actors[i].ai = new PlayerAI();
 
+            const destr = ensure(this.actors[i].destructible);
             destr.xp = actor.destructible.xp;
             destr.hpPerLevel = actor.destructible.hpPerLevel;
             destr.hpPerLevelBonuses = actor.destructible.hpPerLevelBonuses;
@@ -416,6 +415,7 @@ class Game {
               0,
             );
 
+            const destr = ensure(this.actors[i].destructible);
             destr.xp = actor.destructible.xp;
             destr.hp = actor.destructible.hp;
             destr.maxHP = actor.destructible.maxHP;
