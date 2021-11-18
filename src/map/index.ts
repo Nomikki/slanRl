@@ -504,7 +504,7 @@ export default class Map {
               this.addItemWithName("torch", room.x + room.w, room.y + room.h),
             );
           //if there's secret, one torch is reversed
-          if (this.isThereSecretDoor(room)) {
+          if (torches.length > 0 && this.isThereSecretDoor(room)) {
             ensure(torches[random.getInt(0, torches.length - 1)]).ch = "í";
             console.log("prup!");
           }
