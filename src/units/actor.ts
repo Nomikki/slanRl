@@ -33,6 +33,7 @@ export default class Actor {
 
   fov?: Fov;
   fovOnly = true;
+  fovLen: number;
   blocks = true; //can we walk on this actor?
 
   // Destructible: Something that can take damage and potentially break or die
@@ -70,6 +71,7 @@ export default class Actor {
 
     this.race = 0;
     this.class = 0;
+    this.fovLen = 10;
   }
 
   create(actorTemplate: Actor) {
@@ -131,7 +133,14 @@ export default class Actor {
   }
 
   computeFov() {
-    if (this.fov) this.fov.compute(this.x, this.y, 10);
+    if (this.fov) {
+      this.fov.computeLights();
+
+      //this.fovLen = this.fov.getLightValue(this.x, this.y) - 10;
+      this.fov.compute(this.x, this.y, 10);
+
+      //console.log(this.fovLen < 4 ? 4 : this.fovLen);
+    }
   }
 
   getDistance(x: number, y: number) {

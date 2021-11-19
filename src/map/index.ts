@@ -24,6 +24,8 @@ export default class Map {
   stairsX = 0;
   stairsY = 0;
 
+  //darkLevel: number;
+
   levelSeed = 0;
   depth = 0;
 

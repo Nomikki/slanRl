@@ -1,11 +1,30 @@
 import { game } from "@/index";
-import { float2int } from "@/utils";
+import { ensure, float2int, hexToRGB } from "@/utils";
+
+export class LightingColor {
+  r = 0;
+  g = 0;
+  b = 0;
+
+  constructor(r: number, g: number, b: number) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+  }
+}
+
+interface positionInterface {
+  x: number;
+  y: number;
+}
 
 export default class Fov {
   width: number;
   height: number;
   mapped: number[];
   light: number[];
+  lightColor: LightingColor[] = [];
+  lightPositions: positionInterface[];
 
   constructor(w: number, h: number) {
     this.width = w;
@@ -13,6 +32,16 @@ export default class Fov {
 
     this.mapped = new Array(this.width * this.height).fill(0);
     this.light = new Array(this.width * this.height).fill(0);
+
+    for (let i = 0; i < this.width * this.height; i++) {
+      this.lightColor.push(new LightingColor(0, 0, 0));
+    }
+    this.lightPositions = [];
+    /*
+    this.lightColor = new Array(this.width * this.height).fill(
+      new LightingColor(0, 0, 0),
+    );
+    */
   }
 
   clear() {
@@ -55,6 +84,127 @@ export default class Fov {
     }
   }
 
+  computeLightSource(source: positionInterface) {
+    let dx = 0;
+    let dy = 0;
+    let px = 0;
+    let py = 0;
+
+    if (!this.lightColor) return;
+
+    //console.log(this.lightColor);
+
+    for (let a = 0; a < 360; a++) {
+      dx = Math.sin((a / 3.1415) * 180.0);
+      dy = Math.cos((a / 3.1415) * 180.0);
+
+      px = source.x + 0.5;
+      py = source.y + 0.5;
+
+      const len = 8;
+
+      for (let l = 1; l < len; l++) {
+        if (px <= 0 || px >= this.width || py <= 0 || py >= this.height) {
+          break;
+        }
+
+        const id = float2int(float2int(px) + float2int(py) * this.width);
+
+        //console.log(px, py);
+        const c = 1.0 / (l + 1);
+        this.lightColor[id].r += 255 * c * 0.02;
+        this.lightColor[id].g += 200 * c * 0.02;
+        this.lightColor[id].b += 128 * c * 0.02;
+        if (this.lightColor[id].r > 255) this.lightColor[id].r = 255;
+        if (this.lightColor[id].g > 255) this.lightColor[id].g = 255;
+        if (this.lightColor[id].b > 255) this.lightColor[id].b = 255;
+
+        if (this.lightColor[id].r > 255) this.lightColor[id].r = 255;
+        if (this.lightColor[id].g > 255) this.lightColor[id].g = 255;
+        if (this.lightColor[id].b > 255) this.lightColor[id].b = 255;
+
+        if (game.map?.isWall(float2int(px), float2int(py))) {
+          this.lightColor[id].r = 0;
+          this.lightColor[id].g = 0;
+          this.lightColor[id].b = 0;
+
+          break;
+        }
+
+        px += dx;
+        py += dy;
+      }
+    }
+  }
+
+  computeLights() {
+    //for (const c of this.lightColor) c.r = c.g = c.b = 0;
+
+    //little optimization;
+    /*
+      dont compute lights if there is no need update
+      Only if amount of light or sources or positions is changed
+    */
+    let lightsAmount = 0;
+
+    for (const c of game.actors) {
+      if (c.name === "torch") lightsAmount++;
+    }
+
+    let needUpdate = false;
+
+    if (lightsAmount !== this.lightPositions.length) {
+      this.lightPositions = [];
+      needUpdate = true;
+      for (const c of game.actors) {
+        if (c.name === "torch") {
+          const p: positionInterface = {
+            x: c.x,
+            y: c.y,
+          };
+
+          this.lightPositions.push(p);
+        }
+      }
+    }
+
+    let a = 0;
+    for (let i = 0; i < game.actors.length; i++) {
+      if (game.actors[i].name === "torch") {
+        if (
+          game.actors[i].x !== this.lightPositions[a].x ||
+          game.actors[i].y !== this.lightPositions[a].y
+        ) {
+          needUpdate = true;
+          break;
+        }
+        a++;
+      }
+    }
+
+    if (needUpdate) {
+      const [ambR, ambG, ambB] = hexToRGB(ensure(game.map?.ambienceColor));
+
+      for (const c of this.lightColor) {
+        c.r = float2int(ambR * 0.1);
+        c.g = float2int(ambG * 0.1);
+        c.b = float2int(ambB * 0.1);
+      }
+
+      for (const c of this.lightPositions) {
+        this.computeLightSource(c);
+      }
+    }
+
+    /*
+    if (game.player) {
+      this.computeLightSource(game.player);
+    }
+    */
+
+    //console.log(this.lightColor);
+  }
+
   /* Just a placeholder */
   compute(x: number, y: number, len: number) {
     this.clear();
@@ -74,6 +224,8 @@ export default class Fov {
       px = x + 0.5;
       py = y + 0.5;
 
+      let powerOfLight = len / 2;
+
       for (let l = 0; l < len; l++) {
         px += dx;
         py += dy;
@@ -91,6 +243,13 @@ export default class Fov {
         if (!game.map?.canWalk(float2int(px), float2int(py))) {
           break;
         }
+
+        powerOfLight = this.getLightValue(float2int(px), float2int(py)) / 255;
+        if (powerOfLight < 0.1 && l > len / 2) {
+          this.mapped[id] = 0;
+        }
+        //powerOfLight--;
+        //if (powerOfLight < 0) break;
       }
     }
   }
@@ -101,10 +260,28 @@ export default class Fov {
     else return 2;
   }
 
-  getLight(x: number, y: number): number {
+  getAmbienceLight(x: number, y: number): number {
     if (x >= 0 && y >= 0 && x < this.width && y < this.height)
       return this.light[x + y * this.width];
     else return 0;
+  }
+
+  getLight(x: number, y: number): LightingColor {
+    if (x >= 0 && y >= 0 && x < this.width && y < this.height)
+      return this.lightColor[x + y * this.width];
+    else return { r: 0, g: 0, b: 0 };
+  }
+
+  getLightValue(x: number, y: number): number {
+    if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
+      const r = this.lightColor[x + y * this.width].r;
+      const g = this.lightColor[x + y * this.width].g;
+      const b = this.lightColor[x + y * this.width].b;
+
+      return float2int((r + g + b) / 3);
+    }
+
+    return 0;
   }
 
   isInFov(x: number, y: number): boolean {

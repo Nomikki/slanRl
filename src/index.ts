@@ -13,7 +13,7 @@ import { getRaceNameByIndex } from "@/rpg/races";
 import Actor from "@/units/actor";
 import { MonsterAI, PlayerAI } from "@/units/ai";
 import { MonsterDestructible, PlayerDestructible } from "@/units/destructible";
-import { capitalize, debugInit, ensure, float2int } from "@/utils";
+import { capitalize, debugInit, ensure, float2int, rgbToHex } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
@@ -600,7 +600,7 @@ class Game {
       this.fontSize,
     );
 
-    this.ctx.fillStyle = "#FFFFFF";
+    this.ctx.fillStyle = "#FFFFFFFF";
   }
 
   drawText(
@@ -675,17 +675,34 @@ class Game {
   renderLighting() {
     for (let y = 0; y < this.mapy; y++) {
       for (let x = 0; x < this.mapx; x++) {
-        const lightValue = ensure(this.player?.fov?.getLight(x, y));
-
         const cx = x + this.camera.x;
         const cy = y + this.camera.y;
 
+        const lightValue = ensure(this.player?.fov?.getLight(x, y));
+        const rgbLight = rgbToHex(
+          float2int(lightValue.r),
+          float2int(lightValue.g),
+          float2int(lightValue.b),
+        );
+
+        const AmbienceFogValue = ensure(
+          this.player?.fov?.getAmbienceLight(x, y),
+        );
+
+        const ambienceOpacity =
+          AmbienceFogValue > 255 ? 255 : float2int(AmbienceFogValue as number);
+
+        if (this.player?.fov?.getMapped(x, y) == 2) {
+          this.drawRectangle(cx, cy, rgbLight, 64);
+        }
+
         ////"#33AACC",
+
         this.drawRectangle(
           cx,
           cy,
           this.map?.ambienceColor,
-          lightValue > 255 ? 255 : float2int((lightValue as number) * 0.15),
+          float2int(ambienceOpacity * 0.15),
         );
       }
     }
@@ -789,6 +806,7 @@ class Game {
     while (true) {
       if (this.gameStatus === GameStatus.STARTUP) {
         this.player?.computeFov();
+
         this.camera.compute(ensure(this.player?.x), ensure(this.player?.y));
         this.render();
       }
