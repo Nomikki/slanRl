@@ -1,5 +1,5 @@
 import { game, GameStatus } from "@/index";
-import { keyPress } from "@/keymappings";
+import { keyBindingsForHelp, keyPress } from "@/keymappings";
 import { createSpell, getSpell } from "@/rpg/spellGenerator";
 import Actor from "@/units/actor";
 import { ensure, float2int } from "@/utils";
@@ -273,16 +273,12 @@ export class PlayerAI extends AI {
         6,
         Colors.DEFAULT_TEXT,
       );
-      game.drawText("A: Aim", 17, 7, Colors.DEFAULT_TEXT);
-      game.drawText("r: Spell", 17, 8, Colors.DEFAULT_TEXT);
-      game.drawText("g: Pick up an item.", 17, 9, Colors.DEFAULT_TEXT);
-      game.drawText("i: Use item", 17, 10, Colors.DEFAULT_TEXT);
-      game.drawText("D: Drop item from inventory", 17, 11, Colors.DEFAULT_TEXT);
-      game.drawText(">: Use stairs", 17, 12, Colors.DEFAULT_TEXT);
-      game.drawText("o/O: Open or close door.", 17, 13, Colors.DEFAULT_TEXT);
-      game.drawText("W: Wear/equip", 17, 14, Colors.DEFAULT_TEXT);
-      game.drawText("P/p: Pull/push", 17, 15, Colors.DEFAULT_TEXT);
-      game.drawText("./x: rest / skip turn", 17, 16, Colors.DEFAULT_TEXT);
+      const bindings = keyBindingsForHelp();
+      for (let i = 0; i < bindings.length; i++) {
+        const { keys, description } = bindings[i];
+        game.drawText(keys.join(" / "), 17, 7 + i, Colors.DEFAULT_TEXT);
+        game.drawText(`: ${description}`, 19, 7 + i, Colors.DEFAULT_TEXT);
+      }
 
       await game.getch();
     };

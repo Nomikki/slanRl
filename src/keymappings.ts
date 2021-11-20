@@ -1,96 +1,117 @@
 export interface KeyBindings {
   [name: string]: {
-    key: string[];
+    keys: string[];
     description: string;
+    showInHelp: boolean;
   };
 }
 
 export const keyBindings: KeyBindings = {
   MOVE_UP: {
-    key: ["ArrowUp", "w"],
+    keys: ["ArrowUp", "w"],
     description: "Move up",
+    showInHelp: false,
   },
   MOVE_UP_RIGHT: {
-    key: ["e"],
+    keys: ["e"],
     description: "Move up right",
+    showInHelp: false,
   },
   MOVE_RIGHT: {
-    key: ["ArrowRight", "d"],
+    keys: ["ArrowRight", "d"],
     description: "Move right",
+    showInHelp: false,
   },
   MOVE_DOWN_RIGHT: {
-    key: ["c"],
+    keys: ["c"],
     description: "Move down right",
+    showInHelp: false,
   },
   MOVE_DOWN: {
-    key: ["ArrowDown", "s"],
+    keys: ["ArrowDown", "s"],
     description: "Move down",
+    showInHelp: false,
   },
   MOVE_DOWN_LEFT: {
-    key: ["z"],
+    keys: ["z"],
     description: "Move down left",
+    showInHelp: false,
   },
   MOVE_LEFT: {
-    key: ["ArrowLeft", "a"],
+    keys: ["ArrowLeft", "a"],
     description: "Move left",
+    showInHelp: false,
   },
   MOVE_UP_LEFT: {
-    key: ["q"],
+    keys: ["q"],
     description: "Move up left",
+    showInHelp: false,
   },
   AIM: {
-    key: ["A"],
+    keys: ["A"],
     description: "Aim",
+    showInHelp: true,
   },
   SPELL: {
-    key: ["r"],
+    keys: ["r"],
     description: "Spell",
+    showInHelp: true,
   },
   PICK: {
-    key: ["g"],
+    keys: ["g"],
     description: "Pick up an item",
+    showInHelp: true,
   },
   INVENTORY: {
-    key: ["i"],
+    keys: ["i"],
     description: "Use item",
+    showInHelp: true,
   },
   DROP: {
-    key: ["D"],
+    keys: ["D"],
     description: "Drop item from inventory",
+    showInHelp: true,
   },
   GO_DOWN: {
-    key: [">"],
+    keys: [">"],
     description: "Go Down",
+    showInHelp: true,
   },
   OPEN_DOORS: {
-    key: ["o"],
-    description: "Open or close doors",
+    keys: ["o"],
+    description: "Open or close door close to you",
+    showInHelp: true,
   },
   OPEN_DOOR: {
-    key: ["O"],
-    description: "Open or close door",
+    keys: ["O"],
+    description: "Open or close door in one direction",
+    showInHelp: true,
   },
   WEAR_EQUIP: {
-    key: ["W"],
+    keys: ["W"],
     description: "Wear/equip",
+    showInHelp: true,
   },
   PUSH: {
-    key: ["p"],
+    keys: ["p"],
     description: "Push",
+    showInHelp: true,
   },
   PULL: {
-    key: ["P"],
+    keys: ["P"],
     description: "Pull",
+    showInHelp: true,
   },
   REST: {
-    key: [".", "x"],
+    keys: [".", "x"],
     description: "Rest / skip turn",
+    showInHelp: true,
   },
 };
 
 export const keyPress = (pressedKey: string) => {
-  const binding = Object.values(keyBindings).find(({ key }) =>
-    key.includes(pressedKey),
+  const binding = Object.values(keyBindings).find(({ keys }) =>
+    keys.includes(pressedKey),
   );
   const keyOf = Object.keys(keyBindings).find(
     key => keyBindings[key] === binding,
@@ -98,3 +119,6 @@ export const keyPress = (pressedKey: string) => {
 
   return keyOf || pressedKey;
 };
+
+export const keyBindingsForHelp = () =>
+  Object.values(keyBindings).filter(({ showInHelp }) => !!showInHelp);
