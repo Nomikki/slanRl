@@ -411,6 +411,8 @@ export class Game {
           ensure(this.actors[i].fov).mapped = actor.fov.mapped;
         }
 
+        this.actors[i].emitLight = actor.emitLight;
+
         if (actor.container) {
           this.actors[i].container = await new Container(26);
 
