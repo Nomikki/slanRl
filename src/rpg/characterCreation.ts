@@ -6,14 +6,17 @@ import { createListOfProficiencies, ensure, wordWrap } from "@/utils";
 import { Colors } from "@/utils/colors";
 
 enum phases {
-  choose_race = 0,
-  choose_class = 1,
-  choose_abilities = 2,
+  choose_name = 0,
+  choose_race = 1,
+  choose_class = 2,
+  choose_abilities = 3,
   phases_max,
 }
 
 export const prepareNewJourney = async () => {
-  let phase = phases.choose_race;
+  let phase = phases.choose_name;
+
+  let heroName = "my hero";
   let selectedRace = 0;
   let selectedClass = 0;
   let selectedAbilities = 0;
@@ -42,11 +45,12 @@ export const prepareNewJourney = async () => {
     game.renderVersion();
     game.drawText("New game", 10, 1, Colors.HILIGHT_TEXT);
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       const color = phase === i ? Colors.HILIGHT_TEXT : Colors.DEFAULT_TEXT;
-      if (i == 0) game.drawText("Choose race", 10, 10, color);
-      if (i == 1) game.drawText("Choose class", 20, 10, color);
-      if (i == 2) game.drawText("Set abilities", 30, 10, color);
+      if (i == 0) game.drawText(`name: ${heroName}`, 10, 5, color);
+      if (i == 1) game.drawText("Choose race", 10, 10, color);
+      if (i == 2) game.drawText("Choose class", 20, 10, color);
+      if (i == 3) game.drawText("Set abilities", 30, 10, color);
     }
 
     game.drawText(
@@ -240,6 +244,8 @@ export const prepareNewJourney = async () => {
         getClass(listOfClasses[selectedClass])?.flavourText,
       );
       wordWrappedFlavourText = ensure(wordWrap(flavourText, 48));
+    } else {
+      wordWrappedFlavourText = [];
     }
 
     const abies = ensure(getRace(listOfRaces[selectedRace])?.abilityIncrease);
@@ -296,6 +302,18 @@ export const prepareNewJourney = async () => {
 
     if (readyToStart) break;
 
+    if (phase === phases.choose_name) {
+      if (ch === "Backspace" && heroName.length > 0) {
+        heroName = heroName.substr(0, heroName.length - 1);
+      } else {
+        const regEx = /^[a-z0-9]+$/i;
+
+        if (regEx.test(ch) && ch.length === 1 && heroName.length < 16) {
+          heroName = heroName + ch;
+        }
+      }
+    }
+
     if (phase === phases.choose_race) {
       selectedRace += selectDirection;
       if (selectedRace < 0) selectedRace = listOfRaces.length - 1;
@@ -315,6 +333,10 @@ export const prepareNewJourney = async () => {
     }
   }
 
+  if (heroName === "") {
+    heroName = "Unnamed";
+  }
+
   return [
     finalAbies,
     selectedRace,
@@ -322,5 +344,6 @@ export const prepareNewJourney = async () => {
     hpStart,
     hpPerLevel,
     toughnessIncrease,
+    heroName,
   ];
 };

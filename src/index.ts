@@ -345,8 +345,15 @@ export class Game {
     );
 
     //choose race, class, abilities and give name
-    const [abi, selRace, selClass, hpStart, hpPerLevel, hpIncreasePerLevel] =
-      await prepareNewJourney();
+    const [
+      abi,
+      selRace,
+      selClass,
+      hpStart,
+      hpPerLevel,
+      hpIncreasePerLevel,
+      name,
+    ] = await prepareNewJourney();
 
     //after everything is setted up
     this.turns = 0;
@@ -364,7 +371,7 @@ export class Game {
     const raceName = getRaceNameByIndex(selRace as number);
     const className = getClassNameByIndex(selClass as number);
 
-    pl.name = `${this.player?.name} the ${raceName} ${className}`;
+    pl.name = `${name} the ${raceName} ${className}`;
     const hpBonus = (abi as Abilities).getBonus(ABILITIES.CON) as number;
     const destr = ensure(pl.destructible);
     destr.maxHP = (hpStart as number) + hpBonus;
