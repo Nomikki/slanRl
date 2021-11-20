@@ -166,7 +166,7 @@ export const keyBindings: KeyBindings = {
     showInHelp: false,
     phases: ["game"],
   },
-  FocusEvent: {
+  FOV: {
     keys: ["f"],
     description: "FOV",
     showInHelp: false,
