@@ -3,7 +3,7 @@ export interface KeyBindings {
     keys: string[];
     description: string;
     showInHelp: boolean;
-    phases: string[];
+    phases: "all" | string[];
   };
 }
 
@@ -12,49 +12,49 @@ export const keyBindings: KeyBindings = {
     keys: ["ArrowUp", "w"],
     description: "Move up",
     showInHelp: false,
-    phases: ["all"],
+    phases: "all",
   },
   MOVE_UP_RIGHT: {
     keys: ["e"],
     description: "Move up right",
     showInHelp: false,
-    phases: ["all"],
+    phases: "all",
   },
   MOVE_RIGHT: {
     keys: ["ArrowRight", "d"],
     description: "Move right",
     showInHelp: false,
-    phases: ["all"],
+    phases: "all",
   },
   MOVE_DOWN_RIGHT: {
     keys: ["c"],
     description: "Move down right",
     showInHelp: false,
-    phases: ["all"],
+    phases: "all",
   },
   MOVE_DOWN: {
     keys: ["ArrowDown", "s"],
     description: "Move down",
     showInHelp: false,
-    phases: ["all"],
+    phases: "all",
   },
   MOVE_DOWN_LEFT: {
     keys: ["z"],
     description: "Move down left",
     showInHelp: false,
-    phases: ["all"],
+    phases: "all",
   },
   MOVE_LEFT: {
     keys: ["ArrowLeft", "a"],
     description: "Move left",
     showInHelp: false,
-    phases: ["all"],
+    phases: "all",
   },
   MOVE_UP_LEFT: {
     keys: ["q"],
     description: "Move up left",
     showInHelp: false,
-    phases: ["all"],
+    phases: "all",
   },
 
   AIM: {
@@ -134,13 +134,13 @@ export const keyBindings: KeyBindings = {
     keys: ["Escape"],
     description: "Escape",
     showInHelp: false,
-    phases: ["all"],
+    phases: "all",
   },
   SELECT: {
     keys: ["Enter"],
     description: "Select",
     showInHelp: false,
-    phases: ["all"],
+    phases: "all",
   },
   BACK: {
     keys: ["Backspace"],
@@ -160,19 +160,37 @@ export const keyBindings: KeyBindings = {
     showInHelp: false,
     phases: ["game"],
   },
+  HELP: {
+    keys: ["?"],
+    description: "Show help",
+    showInHelp: false,
+    phases: ["game"],
+  },
+  FocusEvent: {
+    keys: ["f"],
+    description: "FOV",
+    showInHelp: false,
+    phases: [],
+  },
 };
 
 export const keyPress = (phase: string, pressedKey: string) => {
   const binding = Object.values(keyBindings)
-    .filter(({ phases }) => phases.includes(phase) || phases.includes("all"))
+    .filter(({ phases }) => phases === "all" || phases.includes(phase))
     .find(({ keys }) => keys.includes(pressedKey));
-  const keyOf = Object.keys(keyBindings).find(
+  const keyBinding = Object.keys(keyBindings).find(
     key => keyBindings[key] === binding,
   );
 
-  console.log("keyOf", keyOf, "pressedKey", pressedKey);
+  console.log(
+    `phase ${phase}, pressedKey ${pressedKey}, keyBinding ${keyBinding} = ${JSON.stringify(
+      binding,
+      null,
+      2,
+    )}`,
+  );
 
-  return keyOf || pressedKey;
+  return keyBinding || pressedKey;
 };
 
 export const keyBindingsForHelp = () =>

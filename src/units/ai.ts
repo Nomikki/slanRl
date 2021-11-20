@@ -377,57 +377,57 @@ export class PlayerAI extends AI {
     };
 
     switch (keyPress("game", ascii)) {
-      case "GO_DOWN": //go down
+      case "GO_DOWN":
         handleNextLevel();
         break;
 
-      case "PICK": //pickup item
+      case "PICK":
         handlePickup();
         break;
 
-      case "INVENTORY": //use item
+      case "INVENTORY":
         await handleUseItem();
         break;
 
-      case "DROP": //drop item
+      case "DROP":
         await handleDropItem();
         break;
 
-      case "OPEN_DOORS": //open
+      case "OPEN_DOORS":
         await handleOpen(false);
         break;
-      case "OPEN_DOOR": //open with diretion
+      case "OPEN_DOOR":
         await handleOpen(true);
         break;
 
-      case "WEAR_EQUIP": //wield
+      case "WEAR_EQUIP":
         await handleWield();
         break;
 
-      case "AIM": //shoot
+      case "AIM":
         await handleShooting();
         break;
 
-      case "?": //wield
+      case "HELP":
         await handleHelpInfo();
         break;
 
-      case "PUSH": //push
+      case "PUSH":
         await handlePush();
         break;
 
-      case "PULL": //pull
+      case "PULL":
         await handlePull();
         break;
 
-      case "SPELL": //spells
+      case "SPELL":
         await handleSpells();
         break;
 
-      case "-":
+      case "ZOOM_OUT":
         handleZoom(-1);
         break;
-      case "+":
+      case "ZOOM_IN":
         handleZoom(1);
         break;
       case "REST":
@@ -435,7 +435,7 @@ export class PlayerAI extends AI {
         break;
 
       /*
-      case "f":
+      case "FOV":
         handleFov();
         break;
         */
