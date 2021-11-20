@@ -17,7 +17,7 @@ import { createListOfRaces } from "@/rpg/races";
 import Weapon from "@/rpg/weapon";
 import { ConfusedAI, ConfusedMonsterAi, MonsterAI, PlayerAI } from "@/units/ai";
 import Destructible from "@/units/destructible";
-import Lifetime from "@/units/Lifetime";
+import Lifetime from "@/units/lifetime";
 import { createListOfProficiencies, ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
 
