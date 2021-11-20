@@ -264,7 +264,7 @@ export default [
     attacks: [
       {
         name: "bite",
-        damage: "1d16",
+        damage: "1d6",
         damageType: "piercing",
       },
       {
