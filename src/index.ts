@@ -678,32 +678,36 @@ class Game {
         const cx = x + this.camera.x;
         const cy = y + this.camera.y;
 
-        const lightValue = ensure(this.player?.fov?.getLight(x, y));
-        const rgbLight = rgbToHex(
-          float2int(lightValue.r),
-          float2int(lightValue.g),
-          float2int(lightValue.b),
-        );
+        if (cx > 0 && cy > 0 && cx < this.width && cy < this.height) {
+          if (this.player?.fov?.getMapped(x, y) == 2) {
+            const lightValue = ensure(this.player?.fov?.getLight(x, y));
+            const rgbLight = rgbToHex(
+              float2int(lightValue.r),
+              float2int(lightValue.g),
+              float2int(lightValue.b),
+            );
 
-        const AmbienceFogValue = ensure(
-          this.player?.fov?.getAmbienceLight(x, y),
-        );
+            const AmbienceFogValue = ensure(
+              this.player?.fov?.getAmbienceLight(x, y),
+            );
 
-        const ambienceOpacity =
-          AmbienceFogValue > 255 ? 255 : float2int(AmbienceFogValue as number);
+            const ambienceOpacity =
+              AmbienceFogValue > 255
+                ? 255
+                : float2int(AmbienceFogValue as number);
 
-        if (this.player?.fov?.getMapped(x, y) == 2) {
-          this.drawRectangle(cx, cy, rgbLight, 64);
+            this.drawRectangle(cx, cy, rgbLight, 64);
+
+            ////"#33AACC",
+
+            this.drawRectangle(
+              cx,
+              cy,
+              this.map?.ambienceColor,
+              float2int(ambienceOpacity * 0.15),
+            );
+          }
         }
-
-        ////"#33AACC",
-
-        this.drawRectangle(
-          cx,
-          cy,
-          this.map?.ambienceColor,
-          float2int(ambienceOpacity * 0.15),
-        );
       }
     }
   }
