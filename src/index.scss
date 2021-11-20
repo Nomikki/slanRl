@@ -1,5 +1,5 @@
-@import "@/css/_functions.scss";
-@import "@/css/colors.scss";
+@import "./css/_functions.scss";
+@import "./css/colors.scss";
 
 html,
 body {
@@ -7,6 +7,10 @@ body {
   margin: 0;
   padding: 0;
   display: flex;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  width: 100vw;
+  height: 100vh;
 }
 
 #game {
@@ -44,4 +48,16 @@ body {
 
 .hidden {
   display: none;
+}
+
+#stats {
+  max-height: 500px;
+  overflow: auto;
+  position: fixed;
+  top: 20px;
+  right: 10px;
+  background: #036;
+  border: 1px dashed #fff;
+  color: #fff;
+  padding: 6px;
 }

@@ -17,6 +17,10 @@ import { capitalize, debugInit, ensure, float2int, rgbToHex } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
+import GitHub from "./github";
+import { connectSocket } from "./socket";
+
+const socket = connectSocket();
 
 interface MenuBackgroundProps {
   title: string;
@@ -36,7 +40,17 @@ export enum GameStatus {
   DEFEAT,
 }
 
-class Game {
+const gameStatuses = [
+  "MAINMENU",
+  "NEWGAME",
+  "STARTUP",
+  "IDLE",
+  "NEW TURN",
+  "VICTORY",
+  "DEFEAT",
+];
+
+export class Game {
   gameStatus: number = GameStatus.MAINMENU;
   player?: Actor;
   map?: Map;
@@ -62,6 +76,9 @@ class Game {
   mapy = 80;
 
   camera: Camera;
+
+  github: typeof GitHub;
+  socket: typeof socket = socket;
 
   constructor() {
     this.canvas = ensure(document.querySelector("#screen"));
@@ -91,8 +108,74 @@ class Game {
       tempImage.classList.toggle("zoomed");
     };
 
+    this.github = GitHub;
+    this.github.setGame(this);
+
     tempImage.addEventListener("click", zoomTempImage);
     window.addEventListener("resize", this.fitCanvasToScreen);
+
+    this.addSocketEvents();
+  }
+
+  getStats() {
+    return {
+      playername: sessionStorage.getItem("username") || "anonymous",
+      gamestatus: this.gameStatus,
+      depth: this.depth,
+      turns: this.turns,
+      seed: this.masterSeed,
+    };
+  }
+
+  addSocketEvents() {
+    interface Score {
+      playername: string;
+      depth: number;
+      turns: number;
+      gamestatus: number;
+      seed: number;
+    }
+
+    const stats = ensure(document.querySelector("#stats"));
+
+    this.socket
+      .on("connect", () => {
+        this.github.toggleButtons();
+      })
+      .on("disconnect", () => {
+        this.github.toggleButtons();
+        stats.classList.add("hidden");
+      })
+      .on("error", () => {
+        this.github.toggleButtons();
+        stats.classList.add("hidden");
+      })
+      .on("status", () => {
+        this.socket.emit("score", this.getStats());
+      })
+      .on("stats", data => {
+        const { currentPlayers, live, top } = data;
+
+        stats.classList.remove("hidden");
+        stats.innerHTML = `Players online: ${currentPlayers}`;
+
+        if (Object.keys(top).length > 0) {
+          stats.innerHTML = `${stats.innerHTML}\n----\nTop Scores:\n`;
+          Object.keys(top).forEach(key => {
+            const { playername, depth, turns, seed }: Score = top[key];
+            stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}\n`;
+          });
+        }
+
+        if (Object.keys(live).length > 0) {
+          stats.innerHTML = `${stats.innerHTML}\n----\nLive Scores:\n`;
+          Object.keys(live).forEach(key => {
+            const { playername, depth, turns, gamestatus, seed }: Score =
+              live[key];
+            stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}, ${gameStatuses[gamestatus]}\n`;
+          });
+        }
+      });
   }
 
   setScale(scale: number) {
@@ -496,6 +579,10 @@ class Game {
       window.localStorage.setItem("actors", JSON.stringify(this.actors));
       window.localStorage.setItem("version", VERSION);
     }
+
+    if (this.socket.connected) {
+      this.github.toggleButtons();
+    }
   }
 
   clear(color = Colors.BACKGROUND) {
@@ -641,15 +728,27 @@ class Game {
 
   waitingKeypress() {
     return new Promise<void>(resolve => {
-      document.addEventListener("keydown", onKeyHandler);
-      function onKeyHandler(e: KeyboardEvent) {
-        e.preventDefault();
-        if (e.keyCode !== 0) {
-          document.removeEventListener("keydown", onKeyHandler);
-          game.lastKey = e.key;
-          resolve();
+      const onKeyHandler = async (e: KeyboardEvent) => {
+        let preventKey = false;
+        if (
+          (window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) &&
+          e.keyCode == 83
+        ) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.log.add("Game saved.", Colors.GAME_SAVED);
+          await this.save();
+          preventKey = true;
         }
-      }
+        if (e.keyCode !== 0 && !preventKey) {
+          game.lastKey = e.key;
+        }
+        document.removeEventListener("keydown", onKeyHandler);
+        resolve();
+        return;
+      };
+
+      document.addEventListener("keydown", onKeyHandler);
     });
   }
 
@@ -838,6 +937,7 @@ class Game {
           this.height / 2,
           Colors.DEFEAT,
         );
+        this.socket.emit("dead", this.getStats());
         this.log.add("DEFEAT", Colors.DEFEAT);
         this.player?.fov?.showAll();
         this.saveImage();

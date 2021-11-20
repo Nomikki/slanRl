@@ -1,11 +1,16 @@
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import path from "path";
+import openBrowser from "react-dev-utils/openBrowser";
 import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import webpack, { Configuration } from "webpack";
 import { version } from "./package.json";
 
 const buildTime = new Date().toISOString();
+
+const frontendPort = parseInt(process.env.PORT || "8080");
+
+const backendUrl = "http://localhost:4000";
 
 type Environment = "development" | "production" | "none";
 type WebpackPlugin = { apply(...args: unknown[]): void };
@@ -34,7 +39,7 @@ const config: Configuration = {
       BUILD_TIME: JSON.stringify(buildTime.split("T")[1].split(".")[0]), // format: 15:15:48
       BUILD_DATETIME: JSON.stringify(buildTime), // format: 2021-10-19T15:15:48.944Z
       COMMIT_HASH: JSON.stringify(process.env.COMMIT_HASH || "dev"),
-      PRODUCTION: JSON.stringify(true),
+      PRODUCTION: JSON.stringify(isProd),
       SEED: JSON.stringify(process.env.SEED),
       VERSION: JSON.stringify(process.env.VERSION || `v${version}` || "dev"),
     }),
@@ -52,9 +57,25 @@ const config: Configuration = {
     }) as WebpackPlugin,
   ],
   devServer: {
-    port: process.env.PORT || 8080,
-    open: !isTest,
+    port: frontendPort,
+    open: false,
     hot: !isTest,
+
+    proxy: {
+      "/socket.io": {
+        target: backendUrl,
+        ws: true,
+      },
+      "/api": backendUrl,
+    },
+
+    onAfterSetupMiddleware: () => {
+      if (!isTest) {
+        setTimeout(() => {
+          openBrowser(`http://localhost:${frontendPort}`);
+        });
+      }
+    },
   },
   stats: !isTest,
   infrastructureLogging: {
