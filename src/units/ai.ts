@@ -113,10 +113,10 @@ export class PlayerAI extends AI {
       const door2 = game.map?.findDoor(owner.x + 1, owner.y);
       const door3 = game.map?.findDoor(owner.x, owner.y - 1);
       const door4 = game.map?.findDoor(owner.x, owner.y + 1);
-      const door5 = game.map?.findDoor(owner.x, owner.y + 1);
-      const door6 = game.map?.findDoor(owner.x, owner.y + 1);
-      const door7 = game.map?.findDoor(owner.x, owner.y + 1);
-      const door8 = game.map?.findDoor(owner.x, owner.y + 1);
+      const door5 = game.map?.findDoor(owner.x - 1, owner.y - 1);
+      const door6 = game.map?.findDoor(owner.x + 1, owner.y - 1);
+      const door7 = game.map?.findDoor(owner.x - 1, owner.y + 1);
+      const door8 = game.map?.findDoor(owner.x + 1, owner.y + 1);
 
       if (door1) doors.push(door1);
       if (door2) doors.push(door2);
