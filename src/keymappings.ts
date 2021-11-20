@@ -149,7 +149,7 @@ export const keyBindings: KeyBindings = {
     phases: ["menu"],
   },
   ZOOM_IN: {
-    keys: ["Enter"],
+    keys: ["+"],
     description: "Zoom in",
     showInHelp: false,
     phases: ["game"],
