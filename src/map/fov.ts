@@ -16,6 +16,11 @@ export class LightingColor {
 interface positionInterface {
   x: number;
   y: number;
+  colorR: number;
+  colorG: number;
+  colorB: number;
+
+  size: number;
 }
 
 export default class Fov {
@@ -101,7 +106,7 @@ export default class Fov {
       px = source.x + 0.5;
       py = source.y + 0.5;
 
-      const len = 8;
+      const len = source.size;
 
       for (let l = 1; l < len; l++) {
         if (px <= 0 || px >= this.width || py <= 0 || py >= this.height) {
@@ -112,9 +117,9 @@ export default class Fov {
 
         //console.log(px, py);
         const c = 1.0 / (l + 1);
-        this.lightColor[id].r += 255 * c * 0.02;
-        this.lightColor[id].g += 200 * c * 0.02;
-        this.lightColor[id].b += 128 * c * 0.02;
+        this.lightColor[id].r += source.colorR * c * 0.02;
+        this.lightColor[id].g += source.colorG * c * 0.02;
+        this.lightColor[id].b += source.colorB * c * 0.02;
         if (this.lightColor[id].r > 255) this.lightColor[id].r = 255;
         if (this.lightColor[id].g > 255) this.lightColor[id].g = 255;
         if (this.lightColor[id].b > 255) this.lightColor[id].b = 255;
@@ -148,7 +153,7 @@ export default class Fov {
     let lightsAmount = 0;
 
     for (const c of game.actors) {
-      if (c.name === "torch") lightsAmount++;
+      if (c.emitLight === true) lightsAmount++;
     }
 
     let needUpdate = false;
@@ -157,10 +162,15 @@ export default class Fov {
       this.lightPositions = [];
       needUpdate = true;
       for (const c of game.actors) {
-        if (c.name === "torch") {
+        const [r, g, b] = hexToRGB(c.color);
+        if (c.emitLight === true) {
           const p: positionInterface = {
             x: c.x,
             y: c.y,
+            colorR: r,
+            colorG: g,
+            colorB: b,
+            size: c.fovLen,
           };
 
           this.lightPositions.push(p);
@@ -170,7 +180,7 @@ export default class Fov {
 
     let a = 0;
     for (let i = 0; i < game.actors.length; i++) {
-      if (game.actors[i].name === "torch") {
+      if (game.actors[i].emitLight === true) {
         if (
           game.actors[i].x !== this.lightPositions[a].x ||
           game.actors[i].y !== this.lightPositions[a].y

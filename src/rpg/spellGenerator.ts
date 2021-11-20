@@ -1,9 +1,10 @@
 //import colors from "@/css/colors.module.scss";
 import spellJson from "@/data/spells";
-import { game } from "@/index";
+import { game, GameStatus } from "@/index";
 import { ABILITIES } from "@/rpg/abilities";
 import Actor from "@/units/actor";
 import { random } from "@/units/ai";
+import Lifetime from "@/units/Lifetime";
 import { ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
 //import { Colors } from "@/utils/colors";
@@ -36,11 +37,101 @@ export const getSpell = (name: string): SpellInterface | undefined => {
 
   if (isSpell(name)) {
     const spellTemplate = ensure(getSpellUsingFind(name));
+    game.gameStatus = GameStatus.NEW_TURN;
     return spellTemplate;
   }
 
   console.error(`There is no spell called ${name}`);
   return undefined;
+};
+
+const createSpellActor = (
+  ch: string,
+  color: string,
+  x: number,
+  y: number,
+  turns: number,
+) => {
+  const actor = new Actor(x, y, ch, "", color);
+  actor.lifetime = new Lifetime(turns);
+  actor.emitLight = true;
+  actor.blocks = false;
+  actor.fovLen = turns + 1;
+  actor.color = color;
+  //game.actors.push(actor);
+  game.sendToBack(actor);
+};
+
+export const createSpellParticles = (
+  x: number,
+  y: number,
+  size: number,
+  shape: string,
+  color: string,
+  ch: string,
+  turns: number,
+) => {
+  if (shape === "cube") {
+    for (let dx = x - size; dx < x + size; dx++) {
+      for (let dy = y - size; dy < y + size; dy++) {
+        createSpellActor(
+          ch.charAt(random.getInt(0, ch.length - 1)),
+          color,
+          dx,
+          dy,
+          turns,
+        );
+      }
+    }
+  } else if (shape === "sphere") {
+    for (let a = 0; a < 360; a++) {
+      const dx = Math.sin((a / 180.0) * 3.1415);
+      const dy = Math.cos((a / 180.0) * 3.1415);
+      let px = x;
+      let py = y;
+
+      for (let l = 0; l < size; l++) {
+        px += dx;
+        py += dy;
+
+        let fail = false;
+
+        if (game.map?.isWall(float2int(px), float2int(py))) fail = true;
+
+        if (!fail) {
+          const actr = game.getAllActors(float2int(px), float2int(py));
+          if (actr) {
+            for (const c of actr) {
+              if (c.emitLight) {
+                fail = true;
+                break;
+              }
+            }
+          }
+        }
+        if (!fail) {
+          createSpellActor(
+            ch.charAt(random.getInt(0, ch.length - 1)),
+            color,
+            float2int(px),
+            float2int(py),
+            turns,
+          );
+        }
+      }
+    }
+  } else {
+    createSpellActor(
+      ch.charAt(random.getInt(0, ch.length - 1)),
+      color,
+      x,
+      y,
+      turns,
+    );
+    //console.log(x, y, size, shape);
+  }
+
+  game.player?.computeFov();
 };
 
 export const createSpell = async (
@@ -114,6 +205,50 @@ export const createSpell = async (
       game.player?.computeFov();
       game.render();
     }
+
+    let fxColor = "#000000";
+    let fcCharacter = "?";
+
+    if (spell.effectType === "acid") {
+      fxColor = "#AAFFAA";
+      fcCharacter = "*oOUGB?";
+    } else if (spell.effectType === "force") {
+      fxColor = "#FFAAFF";
+      fcCharacter = "*";
+    } else if (spell.effectType === "lightning") {
+      fxColor = "#AAFFFF";
+      fcCharacter = '*/\\,.!"={}';
+    } else if (spell.effectType === "fire") {
+      fxColor = "#FFAA40";
+      fcCharacter = "~/-\\|Ss";
+    } else if (spell.effectType === "cold") {
+      fxColor = "#FFFFFF";
+      fcCharacter = "*/\\-|Xx";
+    } else if (spell.effectType === "radiant") {
+      fxColor = "#FFFFAA";
+      fcCharacter = "/\\-|";
+    } else if (spell.effectType === "nectoric") {
+      fxColor = "#AA00AA";
+      fcCharacter = "*.,;:oO";
+    } else if (spell.effectType === "poison") {
+      fxColor = "#00FF00";
+      fcCharacter = "oO~s%";
+    } else if (spell.effectType === "heal") {
+      fxColor = "#FFAAAA";
+      fcCharacter = "<>oO~s%";
+    }
+
+    console.log(spell.effectType);
+
+    createSpellParticles(
+      spellX,
+      spellY,
+      spell.effectSize,
+      spell.effectShape,
+      fxColor,
+      fcCharacter,
+      2,
+    );
   }
 };
 
@@ -139,8 +274,9 @@ const isDamageEffect = (effect: string): boolean => {
     effect === "radiant" ||
     effect === "necrotic" ||
     effect === "poison"
-  )
+  ) {
     return true;
+  }
   return false;
 };
 
@@ -188,7 +324,8 @@ const applySpellTo = (
         game.log.add(
           `Attack roll ${attackDC} (1d20 ${caster.abilities?.getBonusWithSign(
             ABILITIES.INT,
-          )}) against ${saveDC} (${spell.target_saving_throw_type} 1d20 ${savingThrowbonus > 0 ? "+" + savingThrowbonus : savingThrowbonus
+          )}) against ${saveDC} (${spell.target_saving_throw_type} 1d20 ${
+            savingThrowbonus > 0 ? "+" + savingThrowbonus : savingThrowbonus
           })`,
         );
 
@@ -222,7 +359,8 @@ const applySpellTo = (
             for (const success of successList) {
               if (success === "half_damage") {
                 game.log.add(
-                  `${caster.name} cast a ${spell.name} to ${target.name
+                  `${caster.name} cast a ${spell.name} to ${
+                    target.name
                   } for ${float2int(
                     value / 2,
                   )} hit points (${effectValueFinal} / 2).`,
@@ -237,7 +375,8 @@ const applySpellTo = (
             for (const fail of failList) {
               if (fail === "full_damage") {
                 game.log.add(
-                  `${caster.name} cast a ${spell.name} to ${target.name
+                  `${caster.name} cast a ${spell.name} to ${
+                    target.name
                   } for ${float2int(value)} hit points (${effectValueFinal}).`,
                 );
                 target.destructible?.takeDamage(target, float2int(value));

@@ -8,8 +8,6 @@ import Fov from "@/map/fov";
 import { ABILITIES, Abilities } from "@/rpg/abilities";
 import Attacker from "@/rpg/attacker";
 import { prepareNewJourney } from "@/rpg/characterCreation";
-import { getClassNameByIndex } from "@/rpg/classes";
-import { getRaceNameByIndex } from "@/rpg/races";
 import Actor from "@/units/actor";
 import { MonsterAI, PlayerAI } from "@/units/ai";
 import { MonsterDestructible, PlayerDestructible } from "@/units/destructible";
@@ -18,6 +16,8 @@ import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
 import GitHub from "./github";
+import { getClassNameByIndex } from "./rpg/classes";
+import { getRaceNameByIndex } from "./rpg/races";
 import { connectSocket } from "./socket";
 
 interface MenuBackgroundProps {
@@ -368,10 +368,12 @@ export class Game {
     pl.class = ensure(selClass as number);
     pl.getProfiencies();
 
+    /*
     const raceName = getRaceNameByIndex(selRace as number);
     const className = getClassNameByIndex(selClass as number);
-
     pl.name = `${name} the ${raceName} ${className}`;
+    */
+    pl.name = `${name}`;
     const hpBonus = (abi as Abilities).getBonus(ABILITIES.CON) as number;
     const destr = ensure(pl.destructible);
     destr.maxHP = (hpStart as number) + hpBonus;
@@ -856,8 +858,11 @@ export class Game {
       this.height + 2,
     );
 
+    const raceName = getRaceNameByIndex(ensure(this.player?.race));
+    const className = getClassNameByIndex(ensure(this.player?.class));
+
     this.drawText(
-      `${capitalize(ensure(this.player)?.name)}`,
+      `${capitalize(ensure(this.player)?.name)} the ${raceName} ${className}`,
       60,
       this.height + 1,
     );

@@ -51,6 +51,7 @@ interface ItemInterface {
   ch: string;
   color: string;
   weight: number;
+  emitLight: boolean;
 
   selector: Selector;
   effect: Effect;
@@ -80,6 +81,7 @@ export const createItem = (props: {
   let ch = "?";
   let color = colors.default_item;
   let blocks = false;
+  let emitLight = false;
 
   let pickable = undefined;
   let armor = undefined;
@@ -171,6 +173,7 @@ export const createItem = (props: {
     const itemTemplate = ensure(getItemsUsingFind(props.name));
     ch = itemTemplate.ch;
     color = itemTemplate.color;
+    emitLight = itemTemplate.emitLight;
 
     blocks = false;
 
@@ -228,6 +231,7 @@ export const createItem = (props: {
   item.pickable = pickable;
   item.armor = armor;
   item.weapon = weapon;
+  item.emitLight = emitLight;
 
   return item;
 };

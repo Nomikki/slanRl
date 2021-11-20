@@ -7,6 +7,7 @@ export default [
     ch: "!",
     color: colors.pickup_healthpotion,
     weight: 0.1,
+    emitLight: false,
     selector: {
       type: "none",
       range: 0,
@@ -22,6 +23,7 @@ export default [
     ch: "@",
     color: colors.pickup_nutellabun,
     weight: 0.1,
+    emitLight: false,
     selector: {
       type: "none",
       range: 0,
@@ -38,6 +40,7 @@ export default [
     ch: "#",
     color: colors.pickup_scroll_of_fireball,
     weight: 0.05,
+    emitLight: false,
     selector: {
       type: "selected range",
       range: 3,
@@ -53,6 +56,7 @@ export default [
     ch: "#",
     color: colors.pickup_scroll_of_confusion,
     weight: 0.05,
+    emitLight: false,
     selector: {
       type: "selected monster",
       range: 5,
@@ -68,6 +72,7 @@ export default [
     ch: "#",
     color: colors.pickup_scroll_of_map,
     weight: 0.05,
+    emitLight: false,
     selector: {
       type: "none",
       range: 0,
@@ -83,6 +88,7 @@ export default [
     ch: "#",
     color: colors.pickup_scroll_of_lightning,
     weight: 0.05,
+    emitLight: false,
     selector: {
       type: "closest monster",
       range: 5,
@@ -99,6 +105,7 @@ export default [
     ch: "ì",
     color: colors.pickup_torch,
     weight: 0.05,
+    emitLight: true,
     selector: {
       type: "none",
       range: 5,

@@ -17,6 +17,7 @@ import { createListOfRaces } from "@/rpg/races";
 import Weapon from "@/rpg/weapon";
 import { ConfusedAI, ConfusedMonsterAi, MonsterAI, PlayerAI } from "@/units/ai";
 import Destructible from "@/units/destructible";
+import Lifetime from "@/units/Lifetime";
 import { createListOfProficiencies, ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
 
@@ -61,6 +62,9 @@ export default class Actor {
 
   //Weapon: This item can be used as weapon.
   weapon?: Weapon;
+
+  lifetime?: Lifetime;
+  emitLight = false;
 
   constructor(x: number, y: number, ch: string, name: string, color: string) {
     this.x = float2int(x);
@@ -130,16 +134,18 @@ export default class Actor {
 
   async update(speed: number) {
     if (this.ai) await this.ai.update(this, speed);
+    if (this.lifetime) {
+      this.lifetime.update();
+      if (this.lifetime.turns <= 0) {
+        game.removeActor(this);
+      }
+    }
   }
 
   computeFov() {
     if (this.fov) {
-      this.fov.computeLights();
-
-      //this.fovLen = this.fov.getLightValue(this.x, this.y) - 10;
       this.fov.compute(this.x, this.y, 10);
-
-      //console.log(this.fovLen < 4 ? 4 : this.fovLen);
+      this.fov.computeLights();
     }
   }
 
