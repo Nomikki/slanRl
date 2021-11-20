@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset=”utf-8" />
+    <title>Slan Roguelike</title>
+  <link rel="icon" href="favicon.png?b92731e469c181096e58"><script defer src="index.js?b92731e469c181096e58"></script><link href="index.css?b92731e469c181096e58" rel="stylesheet"></head>
 
-<head>
-  <meta charset=”utf-8" />
-  <title>Slan Roguelike</title>
-<link rel="icon" href="favicon.png?01df8f729ee25012ef14"><script defer src="index.js?01df8f729ee25012ef14"></script><link href="index.css?01df8f729ee25012ef14" rel="stylesheet"></head>
+  <body>
+    <div id="game">
+      <canvas id="screen" width="960" height="720"></canvas>
+    </div>
+    <div id="temp-image" class="hidden">
+      <canvas id="temp-image-canvas" width="960" height="720"></canvas>
+    </div>
 
-<body>
-  <div id="game">
-    <canvas id="screen" width="960" height="720"></canvas>
-  </div>
-  <div id="temp-image" class="hidden">
-    <canvas id="temp-image-canvas" width="960" height="720"></canvas>
-  </div>
-
-</body>
-
+    <div id="github" class="hidden">
+      <button id="login" class="hidden">GitHub Login</button>
+      <button id="save" class="hidden">Save to Gists</button>
+      <button id="load" class="hidden">Load from Gists</button>
+      <button id="logout" class="hidden">Logout from GitHub</button>
+      <pre id="stats" class="hidden"></pre>
+    </div>
+  </body>
 </html>
