@@ -107,7 +107,8 @@ export class PlayerAI extends AI {
 
   async handleActionKey(owner: Actor, ascii: string) {
     const handleOpen = async (withDirection: boolean) => {
-      //katsotaan ympärille montako ovea löytyy, jos vain yksi, avaa se.
+      //look around and sum how many doors are there. If only one, open it.
+      //not cleanest code /o\
       const doors = [];
       const door1 = game.map?.findDoor(owner.x - 1, owner.y);
       const door2 = game.map?.findDoor(owner.x + 1, owner.y);
@@ -130,7 +131,7 @@ export class PlayerAI extends AI {
       if (doors.length === 1 && withDirection === false) {
         doors[0].doorOpenOrClose();
       } else if (doors.length > 0) {
-        //jos ovia enemmän kuin yksi, kysy:
+        //if there is more than one door
         game.log.add("Which direction?");
         game.render();
 

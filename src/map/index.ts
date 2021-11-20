@@ -410,7 +410,6 @@ export default class Map {
     }
 
     const root = new bspGenerator(0, 0, this.width, this.height, maxSplitLevel);
-
     const option = random.getInt(0, 100) > 70 ? 1 : 2;
 
     //lets create every room one by one
@@ -423,7 +422,12 @@ export default class Map {
 
     //take one room and make it spawn room
     const spawnRoomIndex = random.getInt(0, root.rooms.length - 1);
-    const stairsRoomIndex = random.getInt(0, root.rooms.length - 1);
+    let stairsRoomIndex = random.getInt(0, root.rooms.length - 1);
+    while (true) {
+      if (stairsRoomIndex === spawnRoomIndex)
+        stairsRoomIndex = random.getInt(0, root.rooms.length - 1);
+      else break;
+    }
 
     for (let i = 0; i < root.rooms.length; i++) {
       const room = root.rooms[i];
