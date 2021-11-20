@@ -269,8 +269,6 @@ export const prepareNewJourney = async () => {
     let readyToStart = false;
 
     switch (ch) {
-      case "q":
-        break;
       case "SELECT":
         phase++;
         if (phase >= phases.phases_max) readyToStart = true;
