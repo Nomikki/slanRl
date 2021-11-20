@@ -140,7 +140,7 @@ export const keyBindings: KeyBindings = {
     keys: ["Enter"],
     description: "Select",
     showInHelp: false,
-    phases: ["menu"],
+    phases: ["all"],
   },
   BACK: {
     keys: ["Backspace"],
