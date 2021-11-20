@@ -50,7 +50,7 @@ export const prepareNewJourney = async () => {
     }
 
     game.drawText(
-      "Enter) Next   Backspace) Back   Use arrow keys to navigate",
+      "Enter) Next   Backspace) Back   Use arrow keys (or WASD) to navigate",
       11,
       game.height,
       Colors.DEFAULT_TEXT,
@@ -273,15 +273,19 @@ export const prepareNewJourney = async () => {
         if (phase < 0) phase = 0;
         break;
       case "ArrowUp":
+      case "w":
         selectDirection = -1;
         break;
       case "ArrowDown":
+      case "s":
         selectDirection = 1;
         break;
       case "ArrowLeft":
+      case "a":
         if (phase === phases.choose_abilities) usePoints(-1);
         break;
       case "ArrowRight":
+      case "d":
         if (phase === phases.choose_abilities) usePoints(1);
         break;
       default:

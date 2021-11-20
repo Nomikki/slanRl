@@ -544,8 +544,8 @@ export class Game {
       this.renderStartMenu();
 
       const ch = await this.getch();
-      if (ch === "ArrowDown") this.menu.cursor++;
-      if (ch === "ArrowUp") this.menu.cursor--;
+      if (ch === "ArrowDown" || ch == "s") this.menu.cursor++;
+      if (ch === "ArrowUp" || ch == "w") this.menu.cursor--;
       if (ch === "Enter") {
         selectedItem = this.menu.items[this.menu.cursor].code;
         break;
@@ -1090,10 +1090,26 @@ export class Game {
       }
 
       const ch = await this.getch();
-      if (ch === "ArrowLeft") px--;
-      if (ch === "ArrowRight") px++;
-      if (ch === "ArrowUp") py--;
-      if (ch === "ArrowDown") py++;
+      if (ch === "a") px--;
+      if (ch === "d") px++;
+      if (ch === "w") py--;
+      if (ch === "s") py++;
+      if (ch === "q") {
+        px--;
+        py--;
+      }
+      if (ch === "e") {
+        px++;
+        py--;
+      }
+      if (ch === "z") {
+        px--;
+        py++;
+      }
+      if (ch === "c") {
+        px++;
+        py++;
+      }
       if (ch === "Escape") break;
       if (ch === "Enter") {
         if (inRange) {

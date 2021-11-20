@@ -30,10 +30,14 @@ export class PlayerAI extends AI {
   async pickDirection() {
     const ch = await game.getch();
 
-    if (ch === "ArrowLeft") return [-1, 0];
-    else if (ch === "ArrowRight") return [1, 0];
-    else if (ch === "ArrowUp") return [0, -1];
-    else if (ch === "ArrowDown") return [0, 1];
+    if (ch === "a") return [-1, 0];
+    else if (ch === "d") return [1, 0];
+    else if (ch === "w") return [0, -1];
+    else if (ch === "s") return [0, 1];
+    else if (ch === "q") return [-1, -1];
+    else if (ch === "e") return [1, -1];
+    else if (ch === "z") return [-1, 1];
+    else if (ch === "c") return [1, 1];
 
     return [0, 0];
   }
@@ -58,16 +62,32 @@ export class PlayerAI extends AI {
     let dy = 0;
     const ch = await game.getch();
     switch (ch) {
-      case "ArrowLeft":
+      case "a": //left
         dx--;
         break;
-      case "ArrowRight":
+      case "d": //right
         dx++;
         break;
-      case "ArrowUp":
+      case "w": //up
         dy--;
         break;
-      case "ArrowDown":
+      case "s": //down
+        dy++;
+        break;
+      case "q": //left-top
+        dx--;
+        dy--;
+        break;
+      case "e": //right-top
+        dx++;
+        dy--;
+        break;
+      case "z": //left-bottom
+        dx--;
+        dy++;
+        break;
+      case "c": //right-bottom
+        dx++;
         dy++;
         break;
       default:
@@ -93,11 +113,19 @@ export class PlayerAI extends AI {
       const door2 = game.map?.findDoor(owner.x + 1, owner.y);
       const door3 = game.map?.findDoor(owner.x, owner.y - 1);
       const door4 = game.map?.findDoor(owner.x, owner.y + 1);
+      const door5 = game.map?.findDoor(owner.x, owner.y + 1);
+      const door6 = game.map?.findDoor(owner.x, owner.y + 1);
+      const door7 = game.map?.findDoor(owner.x, owner.y + 1);
+      const door8 = game.map?.findDoor(owner.x, owner.y + 1);
 
       if (door1) doors.push(door1);
       if (door2) doors.push(door2);
       if (door3) doors.push(door3);
       if (door4) doors.push(door4);
+      if (door5) doors.push(door5);
+      if (door6) doors.push(door6);
+      if (door7) doors.push(door7);
+      if (door8) doors.push(door8);
 
       if (doors.length === 1 && withDirection === false) {
         doors[0].doorOpenOrClose();
@@ -239,21 +267,21 @@ export class PlayerAI extends AI {
       });
 
       game.drawText(
-        "Use arrow keys to move and attack",
+        "WASD+QEZC keys to move and attack",
         17,
         6,
         Colors.DEFAULT_TEXT,
       );
-      game.drawText("a: Aim", 17, 7, Colors.DEFAULT_TEXT);
-      game.drawText("s: Spell", 17, 8, Colors.DEFAULT_TEXT);
+      game.drawText("A: Aim", 17, 7, Colors.DEFAULT_TEXT);
+      game.drawText("r: Spell", 17, 8, Colors.DEFAULT_TEXT);
       game.drawText("g: Pick up an item.", 17, 9, Colors.DEFAULT_TEXT);
       game.drawText("i: Use item", 17, 10, Colors.DEFAULT_TEXT);
-      game.drawText("d: Drop item from inventory", 17, 11, Colors.DEFAULT_TEXT);
+      game.drawText("D: Drop item from inventory", 17, 11, Colors.DEFAULT_TEXT);
       game.drawText(">: Use stairs", 17, 12, Colors.DEFAULT_TEXT);
       game.drawText("o/O: Open or close door.", 17, 13, Colors.DEFAULT_TEXT);
       game.drawText("w: Wear/equip", 17, 14, Colors.DEFAULT_TEXT);
       game.drawText("P/p: Pull/push", 17, 15, Colors.DEFAULT_TEXT);
-      game.drawText(".: rest / skip turn", 17, 16, Colors.DEFAULT_TEXT);
+      game.drawText("./x: rest / skip turn", 17, 16, Colors.DEFAULT_TEXT);
 
       await game.getch();
     };
@@ -368,7 +396,7 @@ export class PlayerAI extends AI {
         await handleUseItem();
         break;
 
-      case "d": //drop item
+      case "D": //drop item
         await handleDropItem();
         break;
 
@@ -379,11 +407,11 @@ export class PlayerAI extends AI {
         await handleOpen(true);
         break;
 
-      case "w": //wield
+      case "W": //wield
         await handleWield();
         break;
 
-      case "a": //shoot
+      case "A": //shoot
         await handleShooting();
         break;
 
@@ -399,7 +427,7 @@ export class PlayerAI extends AI {
         await handlePull();
         break;
 
-      case "s": //spells
+      case "r": //spells
         await handleSpells();
         break;
 
@@ -410,6 +438,7 @@ export class PlayerAI extends AI {
         handleZoom(1);
         break;
       case ".":
+      case "x":
         handleRest();
         break;
 
