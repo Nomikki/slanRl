@@ -185,10 +185,10 @@ export class Game {
   }
 
   handleZoomKeys(ch: string) {
-    if (ch === "+") {
+    if (ch === "ZOOM_IN") {
       this.fontSize++;
       this.setScale(this.fontSize);
-    } else if (ch === "-") {
+    } else if (ch === "ZOOM_OUT") {
       this.fontSize--;
       this.setScale(this.fontSize);
     }
@@ -555,10 +555,10 @@ export class Game {
     while (true) {
       this.renderStartMenu();
 
-      const ch = await this.getch();
-      if (ch === "ArrowDown" || ch == "s") this.menu.cursor++;
-      if (ch === "ArrowUp" || ch == "w") this.menu.cursor--;
-      if (ch === "Enter") {
+      const ch = keyPress("menu", await this.getch());
+      if (ch === "MOVE_DOWN") this.menu.cursor++;
+      if (ch === "MOVE_UP") this.menu.cursor--;
+      if (ch === "SELECT") {
         selectedItem = this.menu.items[this.menu.cursor].code;
         break;
       }
@@ -731,8 +731,8 @@ export class Game {
       this.log.add("Press Esc to restart");
       this.render();
       while (true) {
-        const ch = await this.getch();
-        if (ch === "Escape") break;
+        const ch = keyPress("game", await this.getch());
+        if (ch === "ESCAPE") break;
       }
     }
   }
@@ -1104,7 +1104,7 @@ export class Game {
         inRange = false;
       }
 
-      const ch = keyPress(await this.getch());
+      const ch = keyPress("game", await this.getch());
       if (ch === "MOVE_LEFT") px--;
       if (ch === "MOVE_RIGHT") px++;
       if (ch === "MOVE_UP") py--;
@@ -1125,8 +1125,8 @@ export class Game {
         px++;
         py++;
       }
-      if (ch === "Escape") break;
-      if (ch === "Enter") {
+      if (ch === "ESCAPE") break;
+      if (ch === "SELECT") {
         if (inRange) {
           return [true, px, py];
         }

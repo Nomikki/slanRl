@@ -202,23 +202,6 @@ class GitHub {
     );
 
     window.location.reload();
-
-    // ensure(github.game).menu?.clear();
-    // const game = ensure(github.game);
-    // game.clear();
-    // while (true) {
-    //   await game.load();
-    //   await game.gameloop();
-    //   await game.save();
-    //   game.log.add("Press Esc to restart");
-    //   game.render();
-    //   while (true) {
-    //     const ch = await game.getch();
-    //     if (ch === "Escape") break;
-    //   }
-    // }
-
-    // ensure(github.game).renderStartMenu();
   }
 
   logoutFromGitHub() {

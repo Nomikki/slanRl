@@ -29,7 +29,7 @@ export class PlayerAI extends AI {
   }
 
   async pickDirection() {
-    const ch = keyPress(await game.getch());
+    const ch = keyPress("game", await game.getch());
 
     if (ch === "MOVE_LEFT") return [-1, 0];
     else if (ch === "MOVE_RIGHT") return [1, 0];
@@ -61,7 +61,7 @@ export class PlayerAI extends AI {
 
     let dx = 0;
     let dy = 0;
-    const ch = keyPress(await game.getch());
+    const ch = keyPress("game", await game.getch());
     switch (ch) {
       case "MOVE_LEFT": //left
         dx--;
@@ -376,7 +376,7 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
     };
 
-    switch (keyPress(ascii)) {
+    switch (keyPress("game", ascii)) {
       case "GO_DOWN": //go down
         handleNextLevel();
         break;
@@ -400,7 +400,7 @@ export class PlayerAI extends AI {
         await handleOpen(true);
         break;
 
-      case "W": //wield
+      case "WEAR_EQUIP": //wield
         await handleWield();
         break;
 
