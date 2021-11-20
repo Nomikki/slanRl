@@ -13,6 +13,8 @@ export const random = new Randomizer();
 class Tile {
   canWalk = false;
   explored = false;
+  color = "#000000";
+  character = ".";
 }
 
 export default class Map {
@@ -36,11 +38,13 @@ export default class Map {
 
   tiles: Tile[];
   templateDoors: Rectangle[];
+  monsterRooms: Rectangle[];
 
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
     this.templateDoors = [];
+    this.monsterRooms = [];
     this.tiles = new Array(this.width * this.height).fill(false);
     this.ambienceColor = "#AAAAAA";
   }
@@ -356,6 +360,66 @@ export default class Map {
     }
   }
 
+  makeHugeRooms(temproom: Rectangle, withActors: boolean, spawnRoom: boolean) {
+    const room = new Rectangle(
+      temproom.x + 1,
+      temproom.y + 1,
+      temproom.w,
+      temproom.h,
+    );
+
+    if (room.w <= 0) room.w = 1;
+    if (room.h <= 0) room.h = 1;
+    if (room.x <= 0) room.x = 1;
+    if (room.y <= 0) room.y = 1;
+
+    this.createRoom(
+      room.x,
+      room.y,
+      room.x + room.w - 2,
+      room.y + room.h - 2,
+      withActors,
+    );
+
+    if (!spawnRoom)
+      this.monsterRooms.push(
+        new Rectangle(room.x, room.y, room.w - 2, room.h - 2),
+      );
+  }
+
+  makeRoomsWithCorridors(
+    temproom: Rectangle,
+    withActors: boolean,
+    spawnRoom: boolean,
+  ) {
+    //console.log(temproom);
+    const room = new Rectangle(1, 1, 4, 4);
+    room.w = random.getInt(this.ROOM_MIN_SIZE, temproom.w - 2);
+    room.h = random.getInt(this.ROOM_MIN_SIZE, temproom.h - 2);
+    room.x =
+      random.getInt(temproom.x, temproom.x + temproom.w - temproom.w) + 1;
+    room.y =
+      random.getInt(temproom.y, temproom.y + temproom.h - temproom.h) + 1;
+
+    if (room.w <= 0) room.w = 1;
+    if (room.h <= 0) room.h = 1;
+    if (room.x <= 0) room.x = 1;
+    if (room.y <= 0) room.y = 1;
+
+    this.createRoom(
+      room.x,
+      room.y,
+      room.x + room.w - 2,
+      room.y + room.h - 2,
+      withActors,
+    );
+
+    if (!spawnRoom)
+      this.monsterRooms.push(
+        new Rectangle(room.x, room.y, room.w - 2, room.h - 2),
+      );
+  }
+
   createRoom(
     x1: number,
     y1: number,
@@ -404,22 +468,16 @@ export default class Map {
 
     this.tiles = new Array(this.width * this.height).fill(false);
 
-    const monsterRooms = [];
-    for (let i = 0; i < this.width * this.height; i++) {
+    for (let i = 0; i < this.width * this.height; i++)
       this.tiles[i] = new Tile();
-    }
 
     const root = new bspGenerator(0, 0, this.width, this.height, maxSplitLevel);
     const option = random.getInt(0, 100) > 70 ? 1 : 2;
+    console.log("option: " + option);
 
     //lets create every room one by one
     let lastx = 0;
     let lasty = 0;
-    let x = 0;
-    let y = 0;
-    let w = 0;
-    let h = 0;
-
     //take one room and make it spawn room
     const spawnRoomIndex = random.getInt(0, root.rooms.length - 1);
     let stairsRoomIndex = random.getInt(0, root.rooms.length - 1);
@@ -430,92 +488,72 @@ export default class Map {
     }
 
     for (let i = 0; i < root.rooms.length; i++) {
-      const room = root.rooms[i];
+      const temproom = root.rooms[i];
       const spawnRoom = i === spawnRoomIndex ? true : false;
 
       //option 1
       if (option === 1) {
-        w = room.w;
-        h = room.h;
-        x = room.x + 1;
-        y = room.y + 1;
-
-        if (w <= 0) w = 1;
-        if (h <= 0) h = 1;
-        if (x <= 0) x = 1;
-        if (y <= 0) y = 1;
-
-        this.createRoom(x, y, x + w - 2, y + h - 2, withActors);
-        if (!spawnRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
+        this.makeHugeRooms(temproom, withActors, spawnRoom);
       }
 
       //option 2
       if (option === 2) {
-        w = random.getInt(this.ROOM_MIN_SIZE, room.w - 2);
-        h = random.getInt(this.ROOM_MIN_SIZE, room.h - 2);
-        x = random.getInt(room.x, room.x + room.w - w - 0) + 1;
-        y = random.getInt(room.y, room.y + room.h - h - 0) + 1;
-
-        if (w <= 0) w = 1;
-        if (h <= 0) h = 1;
-        if (x <= 0) x = 1;
-        if (y <= 0) y = 1;
-
-        this.createRoom(x, y, x + w - 2, y + h - 2, withActors);
-        if (!spawnRoom) monsterRooms.push(new Rectangle(x, y, w - 2, h - 2));
+        this.makeRoomsWithCorridors(temproom, withActors, spawnRoom);
       }
 
       if (i === spawnRoomIndex) {
-        this.startX = x + float2int(w / 2);
-        this.startY = y + float2int(h / 2);
+        this.startX = temproom.x + float2int(temproom.w / 2);
+        this.startY = temproom.y + float2int(temproom.h / 2);
       }
       if (i === stairsRoomIndex) {
-        this.stairsX = float2int(x + w / 2);
-        this.stairsY = float2int(y + h / 2);
+        this.stairsX = float2int(temproom.x + temproom.w / 2);
+        this.stairsY = float2int(temproom.y + temproom.h / 2);
       }
 
       if (option === 1 || option === 2) {
         if (i > 0) {
-          this.dig(lastx, lasty, x + w / 2, lasty, withActors);
-          this.dig(x + w / 2, lasty, x + w / 2, y + h / 2, withActors);
+          this.dig(
+            lastx,
+            lasty,
+            temproom.x + temproom.w / 2,
+            lasty,
+            withActors,
+          );
+          this.dig(
+            temproom.x + temproom.w / 2,
+            lasty,
+            temproom.x + temproom.w / 2,
+            temproom.y + temproom.h / 2,
+            withActors,
+          );
         }
-        lastx = x + w / 2;
-        lasty = y + h / 2;
+        lastx = temproom.x + temproom.w / 2;
+        lasty = temproom.y + temproom.h / 2;
       }
     }
     if (withActors) {
-      for (const room of monsterRooms) {
-        this.addActors(room);
-      }
+      for (const room of this.monsterRooms) this.addActors(room);
+      for (const door of this.templateDoors) this.addDoor(door.x, door.y, true);
+      for (const room of this.monsterRooms) this.createTorches(room);
+    }
+  }
 
-      for (const door of this.templateDoors) {
-        this.addDoor(door.x, door.y, true);
-      }
-
-      for (const room of monsterRooms) {
-        if (room.w >= 3 || room.h >= 3) {
-          const torches = [];
-          if (this.howManyWalls(room.x, room.y) > 1)
-            torches.push(this.addItemWithName("torch", room.x, room.y));
-          if (this.howManyWalls(room.x + room.w, room.y) > 1)
-            torches.push(
-              this.addItemWithName("torch", room.x + room.w, room.y),
-            );
-          if (this.howManyWalls(room.x, room.y + room.h) > 1)
-            torches.push(
-              this.addItemWithName("torch", room.x, room.y + room.h),
-            );
-          if (this.howManyWalls(room.x + room.w, room.y + room.h) > 1)
-            torches.push(
-              this.addItemWithName("torch", room.x + room.w, room.y + room.h),
-            );
-          //if there's secret, one torch is reversed
-          if (torches.length > 0 && this.isThereSecretDoor(room)) {
-            ensure(torches[random.getInt(0, torches.length - 1)]).ch = "í";
-            console.log("prup!");
-          }
-        }
-      }
+  createTorches(room: Rectangle) {
+    if (room.w >= 3 || room.h >= 3) {
+      const torches = [];
+      if (this.howManyWalls(room.x, room.y) > 1)
+        torches.push(this.addItemWithName("torch", room.x, room.y));
+      if (this.howManyWalls(room.x + room.w, room.y) > 1)
+        torches.push(this.addItemWithName("torch", room.x + room.w, room.y));
+      if (this.howManyWalls(room.x, room.y + room.h) > 1)
+        torches.push(this.addItemWithName("torch", room.x, room.y + room.h));
+      if (this.howManyWalls(room.x + room.w, room.y + room.h) > 1)
+        torches.push(
+          this.addItemWithName("torch", room.x + room.w, room.y + room.h),
+        );
+      //if there's secret, one torch is reversed
+      if (torches.length > 0 && this.isThereSecretDoor(room))
+        ensure(torches[random.getInt(0, torches.length - 1)]).ch = "í";
     }
   }
 
