@@ -20,8 +20,6 @@ import { Menu, MenuItemCode } from "@/utils/menu";
 import GitHub from "./github";
 import { connectSocket } from "./socket";
 
-const socket = connectSocket();
-
 interface MenuBackgroundProps {
   title: string;
   x: number;
@@ -78,7 +76,7 @@ export class Game {
   camera: Camera;
 
   github: typeof GitHub;
-  socket: typeof socket = socket;
+  socket? = PRODUCTION ? connectSocket() : undefined;
 
   constructor() {
     this.canvas = ensure(document.querySelector("#screen"));
@@ -114,7 +112,7 @@ export class Game {
     tempImage.addEventListener("click", zoomTempImage);
     window.addEventListener("resize", this.fitCanvasToScreen);
 
-    this.addSocketEvents();
+    if (this.socket) this.addSocketEvents();
   }
 
   getStats() {
@@ -137,45 +135,46 @@ export class Game {
     }
 
     const stats = ensure(document.querySelector("#stats"));
+    if (this.socket) {
+      this.socket
+        .on("connect", () => {
+          this.github.toggleButtons();
+        })
+        .on("disconnect", () => {
+          this.github.toggleButtons();
+          stats.classList.add("hidden");
+        })
+        .on("error", () => {
+          this.github.toggleButtons();
+          stats.classList.add("hidden");
+        })
+        .on("status", () => {
+          this.socket?.emit("score", this.getStats());
+        })
+        .on("stats", data => {
+          const { currentPlayers, live, top } = data;
 
-    this.socket
-      .on("connect", () => {
-        this.github.toggleButtons();
-      })
-      .on("disconnect", () => {
-        this.github.toggleButtons();
-        stats.classList.add("hidden");
-      })
-      .on("error", () => {
-        this.github.toggleButtons();
-        stats.classList.add("hidden");
-      })
-      .on("status", () => {
-        this.socket.emit("score", this.getStats());
-      })
-      .on("stats", data => {
-        const { currentPlayers, live, top } = data;
+          stats.classList.remove("hidden");
+          stats.innerHTML = `Players online: ${currentPlayers}`;
 
-        stats.classList.remove("hidden");
-        stats.innerHTML = `Players online: ${currentPlayers}`;
+          if (Object.keys(top).length > 0) {
+            stats.innerHTML = `${stats.innerHTML}\n----\nTop Scores:\n`;
+            Object.keys(top).forEach(key => {
+              const { playername, depth, turns, seed }: Score = top[key];
+              stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}\n`;
+            });
+          }
 
-        if (Object.keys(top).length > 0) {
-          stats.innerHTML = `${stats.innerHTML}\n----\nTop Scores:\n`;
-          Object.keys(top).forEach(key => {
-            const { playername, depth, turns, seed }: Score = top[key];
-            stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}\n`;
-          });
-        }
-
-        if (Object.keys(live).length > 0) {
-          stats.innerHTML = `${stats.innerHTML}\n----\nLive Scores:\n`;
-          Object.keys(live).forEach(key => {
-            const { playername, depth, turns, gamestatus, seed }: Score =
-              live[key];
-            stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}, ${gameStatuses[gamestatus]}\n`;
-          });
-        }
-      });
+          if (Object.keys(live).length > 0) {
+            stats.innerHTML = `${stats.innerHTML}\n----\nLive Scores:\n`;
+            Object.keys(live).forEach(key => {
+              const { playername, depth, turns, gamestatus, seed }: Score =
+                live[key];
+              stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}, ${gameStatuses[gamestatus]}\n`;
+            });
+          }
+        });
+    }
   }
 
   setScale(scale: number) {
@@ -580,7 +579,7 @@ export class Game {
       window.localStorage.setItem("version", VERSION);
     }
 
-    if (this.socket.connected) {
+    if (this.socket && this.socket.connected) {
       this.github.toggleButtons();
     }
   }
@@ -937,7 +936,7 @@ export class Game {
           this.height / 2,
           Colors.DEFEAT,
         );
-        this.socket.emit("dead", this.getStats());
+        if (this.socket) this.socket.emit("dead", this.getStats());
         this.log.add("DEFEAT", Colors.DEFEAT);
         this.player?.fov?.showAll();
         this.saveImage();

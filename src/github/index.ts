@@ -234,7 +234,7 @@ class GitHub {
     const gistLoad = ensure(document.querySelector("#load"));
     const githubLogout = ensure(document.querySelector("#logout"));
 
-    if (this.game?.socket.connected) {
+    if (this.game?.socket && this.game?.socket.connected) {
       if (sessionStorage.getItem("access_token")) {
         githubLogin.classList.add("hidden");
         if (localStorage.getItem("version")) {
