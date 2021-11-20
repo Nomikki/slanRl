@@ -1,4 +1,5 @@
 import { game, GameStatus } from "@/index";
+import { keyPress } from "@/keymappings";
 import { createSpell, getSpell } from "@/rpg/spellGenerator";
 import Actor from "@/units/actor";
 import { ensure, float2int } from "@/utils";
@@ -28,16 +29,16 @@ export class PlayerAI extends AI {
   }
 
   async pickDirection() {
-    const ch = await game.getch();
+    const ch = keyPress(await game.getch());
 
-    if (ch === "a") return [-1, 0];
-    else if (ch === "d") return [1, 0];
-    else if (ch === "w") return [0, -1];
-    else if (ch === "s") return [0, 1];
-    else if (ch === "q") return [-1, -1];
-    else if (ch === "e") return [1, -1];
-    else if (ch === "z") return [-1, 1];
-    else if (ch === "c") return [1, 1];
+    if (ch === "MOVE_LEFT") return [-1, 0];
+    else if (ch === "MOVE_RIGHT") return [1, 0];
+    else if (ch === "MOVE_UP") return [0, -1];
+    else if (ch === "MOVE_DOWN") return [0, 1];
+    else if (ch === "MOVE_UP_LEFT") return [-1, -1];
+    else if (ch === "MOVE_UP_RIGHT") return [1, -1];
+    else if (ch === "MOVE_DOWN_LEFT") return [-1, 1];
+    else if (ch === "MOVE_DOWN_RIGHT") return [1, 1];
 
     return [0, 0];
   }
@@ -60,33 +61,33 @@ export class PlayerAI extends AI {
 
     let dx = 0;
     let dy = 0;
-    const ch = await game.getch();
+    const ch = keyPress(await game.getch());
     switch (ch) {
-      case "a": //left
+      case "MOVE_LEFT": //left
         dx--;
         break;
-      case "d": //right
+      case "MOVE_RIGHT": //right
         dx++;
         break;
-      case "w": //up
+      case "MOVE_UP": //up
         dy--;
         break;
-      case "s": //down
+      case "MOVE_DOWN": //down
         dy++;
         break;
-      case "q": //left-top
+      case "MOVE_UP_LEFT": //left-top
         dx--;
         dy--;
         break;
-      case "e": //right-top
+      case "MOVE_UP_RIGHT": //right-top
         dx++;
         dy--;
         break;
-      case "z": //left-bottom
+      case "MOVE_DOWN_LEFT": //left-bottom
         dx--;
         dy++;
         break;
-      case "c": //right-bottom
+      case "MOVE_DOWN_RIGHT": //right-bottom
         dx++;
         dy++;
         break;
@@ -144,10 +145,10 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
     };
 
-    const handleSave = async () => {
-      game.save();
-      game.log.add("Game saved.", Colors.GAME_SAVED);
-    };
+    // const handleSave = async () => {
+    //   game.save();
+    //   game.log.add("Game saved.", Colors.GAME_SAVED);
+    // };
 
     const handleNextLevel = () => {
       if (game.stairs?.x === owner.x && game.stairs?.y === owner.y) {
@@ -379,31 +380,27 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
     };
 
-    switch (ascii) {
-      case "S": //save
-        handleSave();
-        break;
-
-      case ">": //go down
+    switch (keyPress(ascii)) {
+      case "GO_DOWN": //go down
         handleNextLevel();
         break;
 
-      case "g": //pickup item
+      case "PICK": //pickup item
         handlePickup();
         break;
 
-      case "i": //use item
+      case "INVENTORY": //use item
         await handleUseItem();
         break;
 
-      case "D": //drop item
+      case "DROP": //drop item
         await handleDropItem();
         break;
 
-      case "o": //open
+      case "OPEN_DOORS": //open
         await handleOpen(false);
         break;
-      case "O": //open with diretion
+      case "OPEN_DOOR": //open with diretion
         await handleOpen(true);
         break;
 
@@ -411,7 +408,7 @@ export class PlayerAI extends AI {
         await handleWield();
         break;
 
-      case "A": //shoot
+      case "AIM": //shoot
         await handleShooting();
         break;
 
@@ -419,15 +416,15 @@ export class PlayerAI extends AI {
         await handleHelpInfo();
         break;
 
-      case "p": //push
+      case "PUSH": //push
         await handlePush();
         break;
 
-      case "P": //pull
+      case "PULL": //pull
         await handlePull();
         break;
 
-      case "r": //spells
+      case "SPELL": //spells
         await handleSpells();
         break;
 
@@ -437,8 +434,7 @@ export class PlayerAI extends AI {
       case "+":
         handleZoom(1);
         break;
-      case ".":
-      case "x":
+      case "REST":
         handleRest();
         break;
 

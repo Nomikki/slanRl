@@ -16,6 +16,7 @@ import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
 import GitHub from "./github";
+import { keyPress } from "./keymappings";
 import { getClassNameByIndex } from "./rpg/classes";
 import { getRaceNameByIndex } from "./rpg/races";
 import { connectSocket } from "./socket";
@@ -1103,24 +1104,24 @@ export class Game {
         inRange = false;
       }
 
-      const ch = await this.getch();
-      if (ch === "a") px--;
-      if (ch === "d") px++;
-      if (ch === "w") py--;
-      if (ch === "s") py++;
-      if (ch === "q") {
+      const ch = keyPress(await this.getch());
+      if (ch === "MOVE_LEFT") px--;
+      if (ch === "MOVE_RIGHT") px++;
+      if (ch === "MOVE_UP") py--;
+      if (ch === "MOVE_DOWN") py++;
+      if (ch === "MOVE_UP_LEFT") {
         px--;
         py--;
       }
-      if (ch === "e") {
+      if (ch === "MOVE_UP_RIGHT") {
         px++;
         py--;
       }
-      if (ch === "z") {
+      if (ch === "MOVE_DOWN_LEFT") {
         px--;
         py++;
       }
-      if (ch === "c") {
+      if (ch === "MOVE_DOWN_RIGHT") {
         px++;
         py++;
       }

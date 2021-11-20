@@ -1,4 +1,5 @@
 import { game } from "@/index";
+import { keyPress } from "@/keymappings";
 import { ABILITIES, Abilities } from "@/rpg/abilities";
 import { createListOfClasses, getClass } from "@/rpg/classes";
 import { AbilitiesIntercace, createListOfRaces, getRace } from "@/rpg/races";
@@ -267,7 +268,7 @@ export const prepareNewJourney = async () => {
     const ch = await game.getch();
     let readyToStart = false;
 
-    switch (ch) {
+    switch (keyPress(ch)) {
       case "q":
         break;
       case "Enter":
@@ -278,20 +279,16 @@ export const prepareNewJourney = async () => {
         phase--;
         if (phase < 0) phase = 0;
         break;
-      case "ArrowUp":
-      case "w":
+      case "MOVE_UP":
         selectDirection = -1;
         break;
-      case "ArrowDown":
-      case "s":
+      case "MOVE_DOWN":
         selectDirection = 1;
         break;
-      case "ArrowLeft":
-      case "a":
+      case "MOVE_LEFT":
         if (phase === phases.choose_abilities) usePoints(-1);
         break;
-      case "ArrowRight":
-      case "d":
+      case "MOVE_RIGHT":
         if (phase === phases.choose_abilities) usePoints(1);
         break;
       default:
