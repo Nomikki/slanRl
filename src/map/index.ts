@@ -242,15 +242,14 @@ export default class Map {
     { property, value }: FilterActorsProps,
   ) {
     const aroundPosition = this.actorsAroundPosition({ x, y });
-    const actors = Object.keys(aroundPosition).map(
-      (direction: string) =>
-        aroundPosition[direction as Direction]?.filter(
-          (actor: Actor) =>
-            property in actor && (actor as never)[property] === value,
-        ) || undefined,
+    const actors = Object.keys(aroundPosition).map((direction: string) =>
+      aroundPosition[direction as Direction]?.filter(
+        (actor: Actor) =>
+          property in actor && (actor as never)[property] === value,
+      ),
     );
 
-    return (actors || []).flat().filter(isDefined) || [];
+    return actors.flat().filter(isDefined);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -262,7 +261,7 @@ export default class Map {
       ),
     );
 
-    return (actors || []).flat().filter(isDefined) || [];
+    return actors.flat().filter(isDefined);
   }
 
   findDoor(x: number, y: number): Actor | undefined {
