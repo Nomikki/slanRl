@@ -71,7 +71,7 @@ export default class Attacker {
           attacker === game.player ? Colors.PLAYER_ATTACK : Colors.ENEMY_ATTACK,
         );
         let finalDamage = diceDmg + attackModifier;
-        if (finalDamage < 0) finalDamage = 0;
+        if (finalDamage < 1) finalDamage = 1;
 
         target.destructible.takeDamage(target, finalDamage);
 
