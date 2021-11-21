@@ -6,7 +6,7 @@ import { Abilities } from "@/rpg/abilities";
 import { createMonster } from "@/rpg/monsterGenerator";
 import Actor from "@/units/actor";
 import Destructible from "@/units/destructible";
-import { ensure, float2int } from "@/utils";
+import { ensure, float2int, isDefined } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Randomizer from "@/utils/random";
 import Rectangle from "@/utils/rectangle";
@@ -194,6 +194,43 @@ export default class Map {
     if (actorList.length > 0) return true;
 
     return true;
+  }
+
+  actorsAroundActor(
+    x: number,
+    y: number,
+  ): { [direction: string]: Actor[] | undefined } {
+    return {
+      UP: game.getAllActors(x, y + 1),
+      UP_RIGHT: game.getAllActors(x + 1, y + 1),
+      RIGHT: game.getAllActors(x + 1, y),
+      DOWN_RIGHT: game.getAllActors(x + 1, y - 1),
+      DOWN: game.getAllActors(x, y - 1),
+      DOWN_LEFT: game.getAllActors(x - 1, y - 1),
+      LEFT: game.getAllActors(x - 1, y),
+      UP_LEFT: game.getAllActors(x - 1, y + 1),
+    };
+  }
+
+  filterActorsAroundActor(owner: Actor, filterName: string) {
+    const aroundPlayer = this.actorsAroundActor(owner.x, owner.y);
+    const actors = Object.keys(aroundPlayer).map((direction: string) =>
+      aroundPlayer[direction]?.filter(actor => actor.name === filterName),
+    );
+
+    return (actors || []).flat().filter(isDefined);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  filterClassesAroundActor(owner: Actor, filterClass: any) {
+    const aroundPlayer = this.actorsAroundActor(owner.x, owner.y);
+    const actors = Object.keys(aroundPlayer).map((direction: string) =>
+      aroundPlayer[direction]?.filter(
+        (actor: Actor) => actor instanceof filterClass,
+      ),
+    );
+
+    return (actors || []).flat().filter(isDefined);
   }
 
   findDoor(x: number, y: number): Actor | undefined {

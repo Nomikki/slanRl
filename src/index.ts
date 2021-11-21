@@ -1021,22 +1021,11 @@ export class Game {
   }
 
   getAnyActor(x: number, y: number): Actor | null {
-    for (const actor of this.actors) {
-      if (actor.x === x && actor.y === y) {
-        return actor;
-      }
-    }
-    return null;
+    return this.actors.find(actor => actor.x === x && actor.y === y) || null;
   }
 
   getAllActors(x: number, y: number): Actor[] | undefined {
-    const actorList = [];
-
-    for (const actor of this.actors) {
-      if (actor.x === x && actor.y === y) actorList.push(actor);
-    }
-
-    return actorList;
+    return this.actors.filter(actor => actor.x === x && actor.y === y);
   }
 
   getActorsInSphere(
