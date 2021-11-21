@@ -6,6 +6,6 @@ const socketUrl = PRODUCTION
 
 export const connectSocket = () =>
   io(socketUrl, {
-    reconnectionAttempts: 2,
+    reconnectionAttempts: PRODUCTION ? 0 : 4,
     transports: ["websocket"],
   });
