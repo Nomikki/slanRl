@@ -751,7 +751,7 @@ export class Game {
         let preventKey = false;
         if (
           (window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) &&
-          ["s", "l", "o", "p"].includes(e.key)
+          ["s", "l", "o", "r", "p"].includes(e.key)
         ) {
           switch (e.key) {
             // Prevent META + S, O and P keys
@@ -766,7 +766,8 @@ export class Game {
                 await this.save();
               }
               break;
-            // Don't prevent META + L key, but don't try to look for containers either
+            // Don't prevent META + L, R key, but don't try to look for containers either
+            case "r":
             case "l":
               return;
             default:

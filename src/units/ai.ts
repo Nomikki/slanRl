@@ -115,7 +115,7 @@ export class PlayerAI extends AI {
         .filter(({ name }) => name === "door");
 
       if (doors.length === 1 && withDirection === false) {
-        doors[0]?.doorOpenOrClose();
+        doors[0].doorOpenOrClose();
       } else if (doors.length > 0) {
         //if there is more than one door
         game.log.add("Which direction?");
@@ -132,13 +132,12 @@ export class PlayerAI extends AI {
     const handleContainers = async (owner: Actor, withDirection: boolean) => {
       //look around and sum how many containers are there. If only one, open it.
       //not cleanest code /o\
-      const containers = ensure(game.map).filterClassesAroundActor(
-        owner,
-        Actor,
-      );
+      const containers = ensure(game.map)
+        .filterClassesAroundActor(owner, Actor)
+        .filter(({ container }) => !!container);
 
       if (containers && containers.length === 1 && withDirection === false) {
-        await containers[0]?.openAsContainer(owner);
+        await containers[0].openAsContainer(owner);
       } else if (containers && containers.length > 0) {
         //if there is more than one container
         game.log.add("Which direction?");
