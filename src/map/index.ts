@@ -2,6 +2,7 @@ import { game } from "@/index";
 import Container from "@/items/container";
 import { createItem } from "@/items/itemGenerator";
 import bspGenerator from "@/map/bsp_generator";
+import { Abilities } from "@/rpg/abilities";
 import { createMonster } from "@/rpg/monsterGenerator";
 import Actor from "@/units/actor";
 import Destructible from "@/units/destructible";
@@ -144,7 +145,9 @@ export default class Map {
       if (
         c.x === x &&
         c.y === y &&
-        (c.pickable || (c.destructible && c.destructible.isDead()))
+        (c.container ||
+          c.pickable ||
+          (c.destructible && c.destructible.isDead()))
       ) {
         actorList.push(c);
       }
@@ -174,7 +177,9 @@ export default class Map {
       if (
         c.x === x - dx &&
         c.y === y - dy &&
-        (c.pickable || (c.destructible && c.destructible.isDead()))
+        (c.container ||
+          c.pickable ||
+          (c.destructible && c.destructible.isDead()))
       ) {
         actorList.push(c);
       }
@@ -452,6 +457,7 @@ export default class Map {
               if (withActors) {
                 const barrel = new Actor(x, y, "O", "barrel", "#ffaa00");
                 barrel.container = new Container(10);
+                barrel.abilities = new Abilities(1, 1, 1, 1, 1);
                 if (random.getInt(0, 10) > 5)
                   barrel.container.add(
                     createItem({ name: "health potion", x, y }),
