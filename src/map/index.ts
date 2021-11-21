@@ -217,12 +217,17 @@ export default class Map {
     };
   }
 
-  filterActorsAroundPosition({ x, y }: Position, filterName: string) {
+  filterActorsAroundPosition(
+    { x, y }: Position,
+    { property, value }: { property: string; value: unknown },
+  ) {
     const aroundPosition = this.actorsAroundPosition(x, y);
     const actors = Object.keys(aroundPosition).map(
       (direction: string) =>
-        aroundPosition[direction]?.filter(actor => actor.name === filterName) ||
-        undefined,
+        aroundPosition[direction]?.filter(
+          (actor: Actor) =>
+            property in actor && (actor as never)[property] === value,
+        ) || undefined,
     );
 
     return (actors || []).flat().filter(isDefined) || [];

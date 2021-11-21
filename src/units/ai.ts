@@ -108,7 +108,10 @@ export class PlayerAI extends AI {
 
   async handleActionKey(owner: Actor, ascii: string) {
     const handleDoors = async (owner: Actor, withDirection: boolean) => {
-      const doors = ensure(game.map).filterActorsAroundPosition(owner, "door");
+      const doors = ensure(game.map).filterActorsAroundPosition(owner, {
+        property: "name",
+        value: "door",
+      });
 
       if (doors.length === 1 && withDirection === false) {
         doors[0].doorOpenOrClose();
