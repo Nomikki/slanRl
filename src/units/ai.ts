@@ -443,11 +443,9 @@ export class PlayerAI extends AI {
         handleRest();
         break;
 
-      /*
       case "f":
-        handleFov();
+        //handleFov();
         break;
-        */
 
       default:
         break;

@@ -1,8 +1,10 @@
 import { game } from "@/index";
+import Container from "@/items/container";
 import { createItem } from "@/items/itemGenerator";
 import bspGenerator from "@/map/bsp_generator";
 import { createMonster } from "@/rpg/monsterGenerator";
 import Actor from "@/units/actor";
+import Destructible from "@/units/destructible";
 import { ensure, float2int } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Randomizer from "@/utils/random";
@@ -341,7 +343,7 @@ export default class Map {
 
   addActors(room: Rectangle) {
     let numberOfMonsters = random.getInt(0, this.MAX_ROOM_MONSTERS);
-    let numberOfItems = random.getInt(0, this.MAX_ROOM_ITEMS);
+    //let numberOfItems = random.getInt(0, this.MAX_ROOM_ITEMS);
     //console.log(room);
     const x1 = room.x;
     const x2 = room.x + room.w;
@@ -357,6 +359,7 @@ export default class Map {
       numberOfMonsters--;
     }
 
+    /*
     while (numberOfItems > 0) {
       const x = random.getInt(x1, x2);
       const y = random.getInt(y1, y2);
@@ -365,6 +368,7 @@ export default class Map {
       }
       numberOfItems--;
     }
+    */
   }
 
   makeHugeRooms(temproom: Rectangle, withActors: boolean, spawnRoom: boolean) {
@@ -430,67 +434,137 @@ export default class Map {
   ) {
     this.dig(x1, y1, x2, y2, withActors);
 
-    //storage room
-    /*
-    for (let y = y1; y <= y2; y++) {
-      for (let x = x1; x <= x2; x++) {
-        const index = x + y * this.width;
-        if (y === y1 || y === y2 || x === x1 || x === x2) {
-          if (random.getInt(0, 100) > 95) {
-            this.tiles[index].character = "O"; //barrel
-            this.tiles[index].canWalk = true;
-            this.tiles[index].color = Colors.TORCH;
-          }
-        }
-      }
-    }
-    */
+    const roomType = random.getInt(0, 3);
 
-    /*
-    //graveyard/tomb
-    if (x2 - x1 > 8 && y2 - y1 > 8) {
+    //storage room
+    if (roomType === 0) {
+      console.log("storage room");
       for (let y = y1; y <= y2; y++) {
         for (let x = x1; x <= x2; x++) {
-          const index = x + y * this.width;
-          if (y >= y1 + 1 && y <= y2 - 1 && x >= x1 + 1 && x <= x2 - 1) {
-            if (random.getInt(0, 100) > 20 && x % 2 === 0 && y % 3 === 0) {
-              const r = random.getInt(0, 100);
-              if (r < 60) this.tiles[index].character = "t";
-              //tombstone
-              else if (r < 70) this.tiles[index].character = "T";
-              //tombstone
-              else this.tiles[index].character = "X"; //tombstone
-
+          //const index = x + y * this.width;
+          if (y === y1 || y === y2 || x === x1 || x === x2) {
+            if (random.getInt(0, 100) > 95) {
+              /*
+              this.tiles[index].character = "O"; //barrel
               this.tiles[index].canWalk = true;
-              this.tiles[index].color = Colors.STAIRS;
-              if (random.getInt(0, 100) > 50) {
-                this.tiles[index + this.width].color = Colors.SCROLL_OF_MAP;
-                this.tiles[index + this.width].character = "H"; //grave
+              this.tiles[index].color = Colors.TORCH;
+              */
+              if (withActors) {
+                const barrel = new Actor(x, y, "O", "barrel", "#ffaa00");
+                barrel.container = new Container(10);
+                if (random.getInt(0, 10) > 5)
+                  barrel.container.add(
+                    createItem({ name: "health potion", x, y }),
+                  );
+                if (random.getInt(0, 10) > 8)
+                  barrel.container.add(
+                    createItem({ name: "nutella bun", x, y }),
+                  );
+                if (random.getInt(0, 10) > 7)
+                  barrel.container.add(
+                    createItem({ name: "scroll of fireball", x, y }),
+                  );
+                if (random.getInt(0, 10) > 8)
+                  barrel.container.add(
+                    createItem({ name: "scroll of confusion", x, y }),
+                  );
+                if (random.getInt(0, 10) > 8)
+                  barrel.container.add(
+                    createItem({ name: "scroll of map", x, y }),
+                  );
+                if (random.getInt(0, 10) > 7)
+                  barrel.container.add(
+                    createItem({ name: "scroll of lighting bolt", x, y }),
+                  );
+
+                barrel.destructible = new Destructible(
+                  10,
+                  1,
+                  "broken barrel",
+                  "",
+                  0,
+                );
+
+                barrel.blocks = true;
+                game.sendToBack(barrel);
               }
             }
           }
         }
       }
     }
-    */
 
-    //altar
-    if (x2 - x1 > 5 && y2 - y1 > 5) {
-      for (let i = 0; i < 10; i += 2) {
-        //const i = 2;
-        for (let y = y1 + i; y <= y2 - i; y++) {
-          for (let x = x1 + i; x <= x2 - i; x++) {
+    if (roomType === 1) {
+      //graveyard/tomb
+
+      if (x2 - x1 > 6 && y2 - y1 > 6) {
+        console.log("graveyard/tomb");
+        for (let y = y1; y <= y2; y++) {
+          for (let x = x1; x <= x2; x++) {
             const index = x + y * this.width;
-            if (y === y1 + i || y === y2 - i || x === x1 + i || x === x2 - i) {
-              if (y === y1 + i || y === y2 - i) {
-                this.tiles[index].character = "-";
-              } else if (x === x1 + i || x === x2 - i) {
-                this.tiles[index].character = "|";
-              } else {
-                this.tiles[index].character = "+";
-              }
+            if (y >= y1 + 1 && y <= y2 - 1 && x >= x1 + 1 && x <= x2 - 1) {
+              if (random.getInt(0, 100) > 20 && x % 2 === 0 && y % 3 === 0) {
+                const r = random.getInt(0, 100);
+                let ch = "?";
+                if (r < 60) ch = "t";
+                //tombstone
+                else if (r < 70) ch = "T";
+                //tombstone
+                else ch = "X"; //tombstone
+                if (withActors) {
+                  const actor = new Actor(x, y, ch, "tombstone", "#BBBBBB");
+                  actor.blocks = true;
+                  game.sendToBack(actor);
+                }
 
-              this.tiles[index].color = Colors.WALL;
+                //this.tiles[index].canWalk = true;
+                //this.tiles[index].color = Colors.STAIRS;
+                if (random.getInt(0, 100) > 50) {
+                  this.tiles[index + this.width].color = Colors.SCROLL_OF_MAP;
+                  this.tiles[index + this.width].character = "H"; //grave
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (roomType === 2) {
+      //altar
+      if (x2 - x1 > 4 && y2 - y1 > 4) {
+        console.log("altar");
+        for (let i = 0; i < 10; i += 2) {
+          //const i = 2;
+          for (let y = y1 + i; y <= y2 - i; y++) {
+            for (let x = x1 + i; x <= x2 - i; x++) {
+              const index = x + y * this.width;
+              if (
+                y === y1 + i ||
+                y === y2 - i ||
+                x === x1 + i ||
+                x === x2 - i
+              ) {
+                if (y === y1 + i || y === y2 - i) {
+                  this.tiles[index].character = "-";
+                } else if (x === x1 + i || x === x2 - i) {
+                  this.tiles[index].character = "|";
+                } else {
+                  this.tiles[index].character = "+";
+                }
+
+                this.tiles[index].color = Colors.WALL;
+
+                if (
+                  (x === x1 + 2 && y == y1 + 2) ||
+                  (x === x2 - 2 && y == y1 + 2) ||
+                  (x === x1 + 2 && y == y2 - 2) ||
+                  (x === x2 - 2 && y == y2 - 2)
+                ) {
+                  this.tiles[index].character = "#";
+                  this.tiles[index].canWalk = false;
+                }
+              }
             }
           }
         }
