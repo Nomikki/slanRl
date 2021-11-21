@@ -10,7 +10,10 @@ import Attacker from "@/rpg/attacker";
 import { prepareNewJourney } from "@/rpg/characterCreation";
 import Actor from "@/units/actor";
 import { MonsterAI, PlayerAI } from "@/units/ai";
-import { MonsterDestructible, PlayerDestructible } from "@/units/destructible";
+import Destructible, {
+  MonsterDestructible,
+  PlayerDestructible,
+} from "@/units/destructible";
 import { capitalize, debugInit, ensure, float2int, rgbToHex } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
@@ -509,7 +512,13 @@ export class Game {
 
             this.actors[i].ai = new MonsterAI();
           } else {
-            this.actors[i].destructible = new MonsterDestructible(1, 1, "", 0);
+            this.actors[i].destructible = new Destructible(
+              1,
+              1,
+              "broken barrel",
+              "",
+              0,
+            );
 
             const destr = ensure(this.actors[i].destructible);
             destr.xp = actor.destructible.xp;

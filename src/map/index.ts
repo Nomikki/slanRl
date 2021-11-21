@@ -530,12 +530,8 @@ export default class Map {
           //const index = x + y * this.width;
           if (y === y1 || y === y2 || x === x1 || x === x2) {
             if (random.getInt(0, 100) > 95) {
-              /*
-              this.tiles[index].character = "O"; //barrel
-              this.tiles[index].canWalk = true;
-              this.tiles[index].color = Colors.TORCH;
-              */
-              if (withActors) {
+              //if (withActors)
+              {
                 const barrel = new Actor(x, y, "O", "barrel", "#ffaa00");
                 barrel.container = new Container(10);
                 barrel.abilities = new Abilities(1, 1, 1, 1, 1);
@@ -573,7 +569,7 @@ export default class Map {
                 );
 
                 barrel.blocks = true;
-                game.sendToBack(barrel);
+                if (withActors) game.sendToBack(barrel);
               }
             }
           }
