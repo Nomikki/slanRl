@@ -265,10 +265,12 @@ export const prepareNewJourney = async () => {
     renderPreparingInfo(resiliences, proficiencies, abies);
 
     selectDirection = 0;
-    const ch = keyPress("menu", await game.getch());
+    const ch = await game.getch();
     let readyToStart = false;
 
-    switch (ch) {
+    const ch2 = keyPress("menu", ch);
+
+    switch (ch2) {
       case "SELECT":
         phase++;
         if (phase >= phases.phases_max) readyToStart = true;
@@ -298,7 +300,7 @@ export const prepareNewJourney = async () => {
     if (readyToStart) break;
 
     if (phase === phases.choose_name) {
-      if (ch === "BACK" && heroName.length > 0) {
+      if (ch2 === "BACK" && heroName.length > 0) {
         heroName = heroName.substr(0, heroName.length - 1);
       } else {
         const regEx = /^[a-z0-9]+$/i;
