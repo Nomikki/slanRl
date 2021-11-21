@@ -75,6 +75,7 @@ export const keyBindings: KeyBindings = {
     showInHelp: true,
     phases: ["game"],
   },
+
   INVENTORY: {
     keys: ["i"],
     description: "Use item",
@@ -90,6 +91,18 @@ export const keyBindings: KeyBindings = {
   GO_DOWN: {
     keys: [">"],
     description: "Go Down",
+    showInHelp: true,
+    phases: ["game"],
+  },
+  LOOK_CONTAINER: {
+    keys: ["l"],
+    description: "Look to container",
+    showInHelp: true,
+    phases: ["game"],
+  },
+  LOOK_CONTAINERS: {
+    keys: ["L"],
+    description: "Look to container in one direction",
     showInHelp: true,
     phases: ["game"],
   },

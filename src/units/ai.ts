@@ -448,12 +448,18 @@ export class PlayerAI extends AI {
         await handleDropItem();
         break;
 
-
       case "OPEN_DOORS":
         await handleOpen(false);
         break;
       case "OPEN_DOOR":
         await handleOpen(true);
+        break;
+
+      case "LOOK_CONTAINER":
+        await handleLook(false);
+        break;
+      case "LOOK_CONTAINERS":
+        await handleLook(true);
         break;
 
       case "WEAR_EQUIP":
@@ -490,7 +496,6 @@ export class PlayerAI extends AI {
         handleRest();
         break;
 
-      
       case "FOV":
         handleFov();
         break;
