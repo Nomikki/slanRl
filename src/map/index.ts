@@ -14,7 +14,7 @@ class Tile {
   canWalk = false;
   explored = false;
   color = "#000000";
-  character = ".";
+  character = "?";
 }
 
 export default class Map {
@@ -326,8 +326,15 @@ export default class Map {
           }
         }
         lastWalkable = this.tiles[index].canWalk;
-
         this.tiles[index].canWalk = true;
+        if (!lastWalkable) {
+          const r = random.getInt(0, 200);
+          if (r < 10) this.tiles[index].character = "'";
+          else if (r < 15) this.tiles[index].character = "`";
+          else if (r < 20) this.tiles[index].character = "´";
+          else this.tiles[index].character = ".";
+          this.tiles[index].color = Colors.WALL;
+        }
       }
     }
   }
@@ -393,14 +400,8 @@ export default class Map {
     spawnRoom: boolean,
   ) {
     //console.log(temproom);
-    const room = new Rectangle(1, 1, 4, 4);
-    room.w = random.getInt(this.ROOM_MIN_SIZE, temproom.w - 2);
-    room.h = random.getInt(this.ROOM_MIN_SIZE, temproom.h - 2);
-    room.x =
-      random.getInt(temproom.x, temproom.x + temproom.w - temproom.w) + 1;
-    room.y =
-      random.getInt(temproom.y, temproom.y + temproom.h - temproom.h) + 1;
 
+    const room = temproom;
     if (room.w <= 0) room.w = 1;
     if (room.h <= 0) room.h = 1;
     if (room.x <= 0) room.x = 1;
@@ -429,13 +430,87 @@ export default class Map {
   ) {
     this.dig(x1, y1, x2, y2, withActors);
 
+    //storage room
     /*
-    this.stairsX = ((x1 + x2) / 2) | 0;
-    this.stairsY = ((y1 + y2) / 2) | 0;
-    
-    
-    this.startX = this.stairsX;
-    this.startY = this.stairsY;
+    for (let y = y1; y <= y2; y++) {
+      for (let x = x1; x <= x2; x++) {
+        const index = x + y * this.width;
+        if (y === y1 || y === y2 || x === x1 || x === x2) {
+          if (random.getInt(0, 100) > 95) {
+            this.tiles[index].character = "O"; //barrel
+            this.tiles[index].canWalk = true;
+            this.tiles[index].color = Colors.TORCH;
+          }
+        }
+      }
+    }
+    */
+
+    /*
+    //graveyard/tomb
+    if (x2 - x1 > 8 && y2 - y1 > 8) {
+      for (let y = y1; y <= y2; y++) {
+        for (let x = x1; x <= x2; x++) {
+          const index = x + y * this.width;
+          if (y >= y1 + 1 && y <= y2 - 1 && x >= x1 + 1 && x <= x2 - 1) {
+            if (random.getInt(0, 100) > 20 && x % 2 === 0 && y % 3 === 0) {
+              const r = random.getInt(0, 100);
+              if (r < 60) this.tiles[index].character = "t";
+              //tombstone
+              else if (r < 70) this.tiles[index].character = "T";
+              //tombstone
+              else this.tiles[index].character = "X"; //tombstone
+
+              this.tiles[index].canWalk = true;
+              this.tiles[index].color = Colors.STAIRS;
+              if (random.getInt(0, 100) > 50) {
+                this.tiles[index + this.width].color = Colors.SCROLL_OF_MAP;
+                this.tiles[index + this.width].character = "H"; //grave
+              }
+            }
+          }
+        }
+      }
+    }
+    */
+
+    //altar
+    if (x2 - x1 > 5 && y2 - y1 > 5) {
+      for (let i = 0; i < 10; i += 2) {
+        //const i = 2;
+        for (let y = y1 + i; y <= y2 - i; y++) {
+          for (let x = x1 + i; x <= x2 - i; x++) {
+            const index = x + y * this.width;
+            if (y === y1 + i || y === y2 - i || x === x1 + i || x === x2 - i) {
+              if (y === y1 + i || y === y2 - i) {
+                this.tiles[index].character = "-";
+              } else if (x === x1 + i || x === x2 - i) {
+                this.tiles[index].character = "|";
+              } else {
+                this.tiles[index].character = "+";
+              }
+
+              this.tiles[index].color = Colors.WALL;
+            }
+          }
+        }
+      }
+    }
+
+    /*
+    for (let y = y1 - 1; y < y2 + 1; y++) {
+      for (let x = x1 - 1; x < x2 + 1; x++) {
+        if (this.isWall(x, y)) {
+          const index = x + y * this.width;
+          if (x === x1 - 1 && y === y1 + 1) this.tiles[index].character = "+";
+          else if (x === x2 && y === y1 + 1) this.tiles[index].character = "+";
+          else if (x === x1 - 1 || x === x2 + 1)
+            this.tiles[index].character = "|";
+          else if (y === y1 - 1 || y == y2 + 1)
+            this.tiles[index].character = "-";
+        }
+      }
+    }
     */
   }
 
@@ -450,6 +525,44 @@ export default class Map {
     }
 
     return 0;
+  }
+
+  //fill with default walls
+  fillWithWalls() {
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        const index = x + y * this.width;
+        this.tiles[index].canWalk = false;
+        this.tiles[index].color = Colors.WALL;
+        this.tiles[index].character = "#";
+      }
+    }
+  }
+
+  makePrettyWalls() {
+    for (let y = 1; y < this.height - 1; y++) {
+      for (let x = 1; x < this.width - 1; x++) {
+        //
+        /*
+        const index = x + y * this.width;
+        if (this.isWall(x, y)) {
+          if (this.canWalk(x - 1, y)) this.tiles[index].character = "|";
+          else if (this.canWalk(x + 1, y)) this.tiles[index].character = "|";
+          else if (this.canWalk(x, y - 1)) this.tiles[index].character = "-";
+          else if (this.canWalk(x, y + 1)) this.tiles[index].character = "-";
+          else if (this.canWalk(x - 1, y - 1))
+            this.tiles[index].character = "+";
+          else if (this.canWalk(x + 1, y - 1))
+            this.tiles[index].character = "+";
+          else if (this.canWalk(x - 1, y + 1))
+            this.tiles[index].character = "+";
+          else if (this.canWalk(x + 1, y + 1))
+            this.tiles[index].character = "+";
+            
+        }
+        */
+      }
+    }
   }
 
   generate(withActors: boolean, seed: number, depth: number) {
@@ -487,6 +600,8 @@ export default class Map {
       else break;
     }
 
+    this.fillWithWalls();
+
     for (let i = 0; i < root.rooms.length; i++) {
       const temproom = root.rooms[i];
       const spawnRoom = i === spawnRoomIndex ? true : false;
@@ -498,6 +613,13 @@ export default class Map {
 
       //option 2
       if (option === 2) {
+        temproom.w = random.getInt(this.ROOM_MIN_SIZE, temproom.w - 2);
+        temproom.h = random.getInt(this.ROOM_MIN_SIZE, temproom.h - 2);
+        temproom.x =
+          random.getInt(temproom.x, temproom.x + temproom.w - temproom.w) + 1;
+        temproom.y =
+          random.getInt(temproom.y, temproom.y + temproom.h - temproom.h) + 1;
+
         this.makeRoomsWithCorridors(temproom, withActors, spawnRoom);
       }
 
@@ -531,6 +653,9 @@ export default class Map {
         lasty = temproom.y + temproom.h / 2;
       }
     }
+
+    this.makePrettyWalls();
+
     if (withActors) {
       for (const room of this.monsterRooms) this.addActors(room);
       for (const door of this.templateDoors) this.addDoor(door.x, door.y, true);
@@ -558,30 +683,21 @@ export default class Map {
   }
 
   render() {
-    const darkWall = "#";
-    const darkGround = ".";
-
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        const fovValue = game.player?.fov?.getMapped(x, y);
         const cx = x + game.camera.x;
         const cy = y + game.camera.y;
+        if (cx > 0 && cy > 0 && cx < game.width && cy < game.height) {
+          const ch = this.tiles[x + y * this.width].character;
+          const color = this.tiles[x + y * this.width].color;
+          const fovValue = game.player?.fov?.getMapped(x, y);
 
-        if (fovValue === 2 || fovValue === 1) {
-          if (fovValue === 2) {
-            game.drawChar(
-              this.isWall(x, y) ? darkWall : darkGround,
-              cx,
-              cy,
-              Colors.WALL,
-            );
-          } else {
-            game.drawChar(
-              this.isWall(x, y) ? darkWall : darkGround,
-              cx,
-              cy,
-              Colors.WALL_DARK,
-            );
+          if (fovValue === 2 || fovValue === 1) {
+            if (fovValue === 2) {
+              game.drawChar(ch, cx, cy, color);
+            } else {
+              game.drawChar(ch, cx, cy, Colors.WALL_DARK);
+            }
           }
         }
       }
