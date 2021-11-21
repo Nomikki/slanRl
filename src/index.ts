@@ -77,7 +77,7 @@ export class Game {
   camera: Camera;
 
   github: typeof GitHub;
-  socket? = PRODUCTION ? connectSocket() : undefined;
+  socket? = connectSocket();
 
   constructor() {
     this.canvas = ensure(document.querySelector("#screen"));
