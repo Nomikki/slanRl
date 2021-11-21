@@ -111,7 +111,7 @@ export class PlayerAI extends AI {
       //look around and sum how many doors are there. If only one, open it.
       //not cleanest code /o\
       const doors = ensure(game.map)
-        .filterClassesAroundActor(owner, Actor)
+        .filterClassesAroundOwner(owner, Actor)
         .filter(({ name }) => name === "door");
 
       if (doors.length === 1 && withDirection === false) {
@@ -133,7 +133,7 @@ export class PlayerAI extends AI {
       //look around and sum how many containers are there. If only one, open it.
       //not cleanest code /o\
       const containers = ensure(game.map)
-        .filterClassesAroundActor(owner, Actor)
+        .filterClassesAroundOwner(owner, Actor)
         .filter(({ container }) => !!container);
 
       if (containers && containers.length === 1 && withDirection === false) {

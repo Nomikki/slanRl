@@ -212,11 +212,11 @@ export default class Map {
     };
   }
 
-  filterActorsAroundActor(owner: Actor, filterName: string) {
-    const aroundPlayer = this.actorsAroundActor(owner.x, owner.y);
-    const actors = Object.keys(aroundPlayer).map(
+  filterActorsAroundOwner(owner: Actor, filterName: string) {
+    const aroundOwner = this.actorsAroundActor(owner.x, owner.y);
+    const actors = Object.keys(aroundOwner).map(
       (direction: string) =>
-        aroundPlayer[direction]?.filter(actor => actor.name === filterName) ||
+        aroundOwner[direction]?.filter(actor => actor.name === filterName) ||
         undefined,
     );
 
@@ -224,10 +224,10 @@ export default class Map {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  filterClassesAroundActor(owner: Actor, filterClass: any) {
-    const aroundPlayer = this.actorsAroundActor(owner.x, owner.y);
-    const actors = Object.keys(aroundPlayer).map((direction: string) =>
-      aroundPlayer[direction]?.filter(
+  filterClassesAroundOwner(owner: Actor, filterClass: any) {
+    const aroundOwner = this.actorsAroundActor(owner.x, owner.y);
+    const actors = Object.keys(aroundOwner).map((direction: string) =>
+      aroundOwner[direction]?.filter(
         (actor: Actor) => actor instanceof filterClass,
       ),
     );
