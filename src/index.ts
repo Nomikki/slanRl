@@ -39,16 +39,6 @@ export enum GameStatus {
   DEFEAT,
 }
 
-const gameStatuses = [
-  "MAINMENU",
-  "NEWGAME",
-  "STARTUP",
-  "IDLE",
-  "NEW TURN",
-  "VICTORY",
-  "DEFEAT",
-];
-
 export class Game {
   gameStatus: number = GameStatus.MAINMENU;
   player?: Actor;
@@ -77,7 +67,7 @@ export class Game {
   camera: Camera;
 
   github: typeof GitHub;
-  socket? = PRODUCTION ? connectSocket() : undefined;
+  socket? = connectSocket();
 
   constructor() {
     this.canvas = ensure(document.querySelector("#screen"));
@@ -118,8 +108,8 @@ export class Game {
 
   getStats() {
     return {
-      playername: sessionStorage.getItem("username") || "anonymous",
-      gamestatus: this.gameStatus,
+      playerName: sessionStorage.getItem("username") || "anonymous",
+      gameStatus: this.gameStatus,
       depth: this.depth,
       turns: this.turns,
       seed: this.masterSeed,
@@ -128,10 +118,10 @@ export class Game {
 
   addSocketEvents() {
     interface Score {
-      playername: string;
+      playerName: string;
       depth: number;
       turns: number;
-      gamestatus: number;
+      gameStatus: number;
       seed: number;
     }
 
@@ -161,17 +151,17 @@ export class Game {
           if (Object.keys(top).length > 0) {
             stats.innerHTML = `${stats.innerHTML}\n----\nTop Scores:\n`;
             Object.keys(top).forEach(key => {
-              const { playername, depth, turns, seed }: Score = top[key];
-              stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}\n`;
+              const { playerName, depth, turns, seed }: Score = top[key];
+              stats.innerHTML = `${stats.innerHTML} - ${playerName}, d: ${depth}, t: ${turns}, seed: ${seed}\n`;
             });
           }
 
           if (Object.keys(live).length > 0) {
             stats.innerHTML = `${stats.innerHTML}\n----\nLive Scores:\n`;
             Object.keys(live).forEach(key => {
-              const { playername, depth, turns, gamestatus, seed }: Score =
+              const { playerName, depth, turns, gameStatus, seed }: Score =
                 live[key];
-              stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}, ${gameStatuses[gamestatus]}\n`;
+              stats.innerHTML = `${stats.innerHTML} - ${playerName}, d: ${depth}, t: ${turns}, seed: ${seed}, ${GameStatus[gameStatus]}\n`;
             });
           }
         });
@@ -751,15 +741,31 @@ export class Game {
         let preventKey = false;
         if (
           (window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) &&
-          e.keyCode == 83
+          ["s", "l", "o", "r", "p"].includes(e.key)
         ) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.log.add("Game saved.", Colors.GAME_SAVED);
-          await this.save();
+          switch (e.key) {
+            // Prevent META + S, O and P keys
+            case "s":
+            case "o":
+            case "p":
+              e.preventDefault();
+              e.stopPropagation();
+              // If META + S, save the game
+              if (e.key === "s") {
+                this.log.add("Game saved.", Colors.GAME_SAVED);
+                await this.save();
+              }
+              break;
+            // Don't prevent META + L and R keys, but don't send these to game
+            case "r":
+            case "l":
+              return;
+            default:
+              break;
+          }
           preventKey = true;
         }
-        if (e.keyCode !== 0 && !preventKey) {
+        if (e.key && !preventKey) {
           game.lastKey = e.key;
         }
         document.removeEventListener("keydown", onKeyHandler);
@@ -972,13 +978,8 @@ export class Game {
     }
   }
 
-  removeActor(actor: Actor) {
-    for (let i = 0; i < this.actors.length; i++) {
-      if (this.actors[i] === actor) {
-        this.actors.splice(i, 1);
-        return;
-      }
-    }
+  removeActor(actorToBeRemoved: Actor) {
+    this.actors = this.actors.filter(actor => actor !== actorToBeRemoved);
   }
 
   sendToBack(actor: Actor) {
@@ -987,56 +988,44 @@ export class Game {
   }
 
   getClosestMonster(x: number, y: number, range: number) {
-    let closest = null;
     let bestDistance = 100000;
-
-    for (const actor of this.actors) {
-      if (
-        actor != this.player &&
-        actor.destructible &&
-        !actor.destructible.isDead()
-      ) {
-        const distance = actor.getDistance(x, y);
-        if (distance < bestDistance && (distance <= range || range == 0.0)) {
-          bestDistance = distance;
-          closest = actor;
+    return this.actors.reduce(
+      (closestActor: Actor | undefined, actor: Actor) => {
+        if (
+          actor != this.player &&
+          actor.destructible &&
+          !actor.destructible.isDead()
+        ) {
+          const distance = actor.getDistance(x, y);
+          if (distance < bestDistance && (distance <= range || range == 0.0)) {
+            bestDistance = distance;
+            return actor;
+          }
         }
-      }
-    }
-    return closest;
+        return closestActor;
+      },
+      undefined,
+    );
   }
 
   getActor(x: number, y: number): Actor | null {
-    for (const actor of this.actors) {
-      if (
-        actor.x === x &&
-        actor.y === y &&
-        actor.destructible &&
-        !actor.destructible.isDead()
-      ) {
-        return actor;
-      }
-    }
-    return null;
+    return (
+      this.actors.find(
+        actor =>
+          actor.x === x &&
+          actor.y === y &&
+          actor.destructible &&
+          !actor.destructible.isDead(),
+      ) || null
+    );
   }
 
   getAnyActor(x: number, y: number): Actor | null {
-    for (const actor of this.actors) {
-      if (actor.x === x && actor.y === y) {
-        return actor;
-      }
-    }
-    return null;
+    return this.actors.find(actor => actor.x === x && actor.y === y) || null;
   }
 
   getAllActors(x: number, y: number): Actor[] | undefined {
-    const actorList = [];
-
-    for (const actor of this.actors) {
-      if (actor.x === x && actor.y === y) actorList.push(actor);
-    }
-
-    return actorList;
+    return this.actors.filter(actor => actor.x === x && actor.y === y);
   }
 
   getActorsInSphere(
@@ -1045,19 +1034,13 @@ export class Game {
     size: number,
     ignoreActor: Actor,
   ): Actor[] | null {
-    const actorList = [];
-
-    for (const actor of this.actors) {
-      if (
+    return this.actors.filter(
+      actor =>
         actor !== ignoreActor &&
         actor.destructible &&
         !actor.destructible.isDead() &&
-        actor.getDistance(tileX, tileY) <= size
-      )
-        actorList.push(actor);
-    }
-
-    return actorList;
+        actor.getDistance(tileX, tileY) <= size,
+    );
   }
 
   getActorsInCube(
@@ -1066,22 +1049,16 @@ export class Game {
     size: number,
     ignoreActor: Actor,
   ): Actor[] | null {
-    const actorList = [];
-
-    for (const actor of this.actors) {
-      if (
+    return this.actors.filter(
+      actor =>
         actor !== ignoreActor &&
         actor.destructible &&
         !actor.destructible.isDead() &&
         actor.x >= tileX - size &&
         actor.x <= tileX + size &&
         actor.y >= tileY - size &&
-        actor.y <= tileY + size
-      )
-        actorList.push(actor);
-    }
-
-    return actorList;
+        actor.y <= tileY + size,
+    );
   }
 
   async pickATile(x: number, y: number, range = 0.0) {

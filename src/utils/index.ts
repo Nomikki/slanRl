@@ -159,3 +159,7 @@ export const sleep = (ms: number) => {
 export const capitalize = (text: string): string => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
+
+export const isPresent = <T>(t: T | undefined | null): t is T => !!t;
+export const isDefined = <T>(t: T | undefined): t is T => !!t;
+export const isFilled = <T>(t: T | null): t is T => !!t;

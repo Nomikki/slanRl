@@ -6,12 +6,40 @@ import { Abilities } from "@/rpg/abilities";
 import { createMonster } from "@/rpg/monsterGenerator";
 import Actor from "@/units/actor";
 import Destructible from "@/units/destructible";
-import { ensure, float2int } from "@/utils";
+import { ensure, float2int, isDefined } from "@/utils";
 import { Colors } from "@/utils/colors";
 import Randomizer from "@/utils/random";
 import Rectangle from "@/utils/rectangle";
 
 export const random = new Randomizer();
+
+export const Directions = [
+  "UP",
+  "UP_RIGHT",
+  "RIGHT",
+  "DOWN_RIGHT",
+  "DOWN",
+  "DOWN_LEFT",
+  "LEFT",
+  "UP_LEFT",
+] as const;
+export type Direction = typeof Directions[number];
+
+export interface Position {
+  x: number;
+  y: number;
+}
+
+export type ActorsInDirection = Actor[] | undefined;
+
+export type ActorsInDirections = {
+  [key in Direction]: ActorsInDirection;
+};
+
+export interface FilterActorsProps {
+  property: string;
+  value: unknown;
+}
 
 class Tile {
   canWalk = false;
@@ -196,33 +224,63 @@ export default class Map {
     return true;
   }
 
+  actorsAroundPosition({ x, y }: Position): ActorsInDirections {
+    return {
+      UP: game.getAllActors(x, y - 1),
+      UP_RIGHT: game.getAllActors(x + 1, y - 1),
+      RIGHT: game.getAllActors(x + 1, y),
+      DOWN_RIGHT: game.getAllActors(x + 1, y + 1),
+      DOWN: game.getAllActors(x, y + 1),
+      DOWN_LEFT: game.getAllActors(x - 1, y + 1),
+      LEFT: game.getAllActors(x - 1, y),
+      UP_LEFT: game.getAllActors(x - 1, y - 1),
+    };
+  }
+
+  filterActorsAroundPosition(
+    { x, y }: Position,
+    { property, value }: FilterActorsProps,
+  ) {
+    const aroundPosition = this.actorsAroundPosition({ x, y });
+    const actors = Object.keys(aroundPosition).map((direction: string) =>
+      aroundPosition[direction as Direction]?.filter(
+        (actor: Actor) =>
+          property in actor && (actor as never)[property] === value,
+      ),
+    );
+
+    return actors.flat().filter(isDefined);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  filterClassesAroundPosition({ x, y }: Position, filterClass: any) {
+    const aroundPosition = this.actorsAroundPosition({ x, y });
+    const actors = Object.keys(aroundPosition).map((direction: string) =>
+      aroundPosition[direction as Direction]?.filter(
+        (actor: Actor) => actor instanceof filterClass,
+      ),
+    );
+
+    return actors.flat().filter(isDefined);
+  }
+
   findDoor(x: number, y: number): Actor | undefined {
     const actors = game.getAllActors(x, y);
-    let door = undefined;
-    if (actors) {
-      for (const actor of actors) {
-        if (actor && actor.name === "door") {
-          door = actor; //door found
-        } else if (actor) {
-          game.log.add("There's something and it's blocking!");
-          return undefined;
-        }
-      }
+    const door = actors?.find(({ name }) => name === "door");
+    const somethingElse = actors?.filter(({ name }) => name !== "door") || [];
+
+    if (somethingElse.length > 0) {
+      game.log.add("There's something and it's blocking!");
+      return;
     }
+
     return door;
   }
 
   findContainer(x: number, y: number): Actor | undefined {
-    const containers = game.getAllActors(x, y);
-    let container = undefined;
-    if (containers) {
-      for (const actor of containers) {
-        if (actor && actor.container && !actor.attacker) {
-          container = actor; //container found
-        }
-      }
-    }
-    return container;
+    return game
+      .getAllActors(x, y)
+      ?.find(({ attacker, container }) => !!container && !attacker);
   }
 
   async openContainer(target: Actor, x: number, y: number) {
@@ -246,17 +304,15 @@ export default class Map {
   }
 
   isThereSecretDoor(area: Rectangle): boolean {
-    for (const c of game.actors) {
-      if (
+    return !!game.actors.find(
+      c =>
         c.x >= area.x &&
         c.x <= area.x + area.w + 2 &&
         c.y >= area.y &&
-        c.y <= area.y + area.h + 2
-      ) {
-        if (c.ch === "#" && c.name === "door") return true;
-      }
-    }
-    return false;
+        c.y <= area.y + area.h + 2 &&
+        c.ch === "#" &&
+        c.name === "door",
+    );
   }
 
   addDoor(x: number, y: number, closed: boolean) {

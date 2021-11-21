@@ -108,26 +108,10 @@ export class PlayerAI extends AI {
 
   async handleActionKey(owner: Actor, ascii: string) {
     const handleDoors = async (owner: Actor, withDirection: boolean) => {
-      //look around and sum how many doors are there. If only one, open it.
-      //not cleanest code /o\
-      const doors = [];
-      const door1 = game.map?.findDoor(owner.x - 1, owner.y);
-      const door2 = game.map?.findDoor(owner.x + 1, owner.y);
-      const door3 = game.map?.findDoor(owner.x, owner.y - 1);
-      const door4 = game.map?.findDoor(owner.x, owner.y + 1);
-      const door5 = game.map?.findDoor(owner.x - 1, owner.y - 1);
-      const door6 = game.map?.findDoor(owner.x + 1, owner.y - 1);
-      const door7 = game.map?.findDoor(owner.x - 1, owner.y + 1);
-      const door8 = game.map?.findDoor(owner.x + 1, owner.y + 1);
-
-      if (door1) doors.push(door1);
-      if (door2) doors.push(door2);
-      if (door3) doors.push(door3);
-      if (door4) doors.push(door4);
-      if (door5) doors.push(door5);
-      if (door6) doors.push(door6);
-      if (door7) doors.push(door7);
-      if (door8) doors.push(door8);
+      const doors = ensure(game.map).filterActorsAroundPosition(owner, {
+        property: "name",
+        value: "door",
+      });
 
       if (doors.length === 1 && withDirection === false) {
         doors[0].doorOpenOrClose();
@@ -144,32 +128,10 @@ export class PlayerAI extends AI {
       }
     };
 
-    const findAllContainers = (x: number, y: number): Actor[] | undefined => {
-      const containers = [];
-      const container1 = game.map?.findContainer(x - 1, y);
-      const container2 = game.map?.findContainer(x + 1, y);
-      const container3 = game.map?.findContainer(x, y - 1);
-      const container4 = game.map?.findContainer(x, y + 1);
-      const container5 = game.map?.findContainer(x - 1, y - 1);
-      const container6 = game.map?.findContainer(x + 1, y - 1);
-      const container7 = game.map?.findContainer(x - 1, y + 1);
-      const container8 = game.map?.findContainer(x + 1, y + 1);
-
-      if (container1) containers.push(container1);
-      if (container2) containers.push(container2);
-      if (container3) containers.push(container3);
-      if (container4) containers.push(container4);
-      if (container5) containers.push(container5);
-      if (container6) containers.push(container6);
-      if (container7) containers.push(container7);
-      if (container8) containers.push(container8);
-      return containers;
-    };
-
     const handleContainers = async (owner: Actor, withDirection: boolean) => {
-      //look around and sum how many containers are there. If only one, open it.
-      //not cleanest code /o\
-      const containers = findAllContainers(owner.x, owner.y);
+      const containers = ensure(game.map)
+        .filterClassesAroundPosition(owner, Actor)
+        .filter(({ container }) => !!container);
 
       if (containers && containers.length === 1 && withDirection === false) {
         await containers[0].openAsContainer(owner);
@@ -200,10 +162,10 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
     };
 
-    // const handleSave = async () => {
-    //   game.save();
-    //   game.log.add("Game saved.", Colors.GAME_SAVED);
-    // };
+    const handleSave = async () => {
+      game.save();
+      game.log.add("Game saved.", Colors.GAME_SAVED);
+    };
 
     const handleNextLevel = () => {
       if (game.stairs?.x === owner.x && game.stairs?.y === owner.y) {
@@ -431,7 +393,11 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
     };
 
-    switch (keyPress("game", ascii)) {
+    switch (ascii) {
+      case "SAVE":
+        handleSave();
+        break;
+
       case "GO_DOWN":
         handleNextLevel();
         break;

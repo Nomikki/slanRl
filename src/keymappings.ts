@@ -1,9 +1,12 @@
+export const KeyBindingPhases = ["menu", "game"] as const;
+export type KeyBindingPhase = typeof KeyBindingPhases[number];
+
 export interface KeyBindings {
   [name: string]: {
     keys: string[];
     description: string;
     showInHelp: boolean;
-    phases: "all" | string[];
+    phases: "all" | KeyBindingPhase[];
   };
 }
 
@@ -185,9 +188,15 @@ export const keyBindings: KeyBindings = {
     showInHelp: false,
     phases: [],
   },
+  SAVE: {
+    keys: ["S"],
+    description: "Save",
+    showInHelp: false,
+    phases: "all",
+  },
 };
 
-export const keyPress = (phase: string, pressedKey: string) => {
+export const keyPress = (phase: KeyBindingPhase, pressedKey: string) => {
   const binding = Object.values(keyBindings)
     .filter(({ phases }) => phases === "all" || phases.includes(phase))
     .find(({ keys }) => keys.includes(pressedKey));
@@ -195,13 +204,15 @@ export const keyPress = (phase: string, pressedKey: string) => {
     key => keyBindings[key] === binding,
   );
 
-  console.log(
-    `phase ${phase}, pressedKey ${pressedKey}, keyBinding ${keyBinding} = ${JSON.stringify(
-      binding,
-      null,
-      2,
-    )}`,
-  );
+  if (!keyBinding) {
+    console.log(
+      `phase ${phase}, pressedKey ${pressedKey}, keyBinding ${keyBinding} = ${JSON.stringify(
+        binding,
+        null,
+        2,
+      )}`,
+    );
+  }
 
   return keyBinding || pressedKey;
 };
