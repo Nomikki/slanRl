@@ -347,10 +347,12 @@ const applySpellTo = (
 
       if (effect === "heal") {
         game.log.add(
-          `${caster.name} cast a ${spell.name} and heals for ${value} hit points (${effectValueFinal}).`,
+          `${caster.name} cast a ${spell.name} and heals for ${
+            value < 1 ? 1 : value
+          } hit points (${effectValueFinal}).`,
         );
 
-        target.destructible?.heal(value);
+        target.destructible?.heal(value < 1 ? 1 : value);
       } else if (isDamageEffect(effect)) {
         //if there's any saving throws, check them first
         if (spell.target_saving_throw_type !== "") {
