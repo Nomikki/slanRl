@@ -1,4 +1,5 @@
 import { game, GameStatus } from "@/index";
+import { keyBindingsForHelp, keyPress } from "@/keymappings";
 import { createSpell, getSpell } from "@/rpg/spellGenerator";
 import Actor from "@/units/actor";
 import { ensure, float2int } from "@/utils";
@@ -28,16 +29,16 @@ export class PlayerAI extends AI {
   }
 
   async pickDirection() {
-    const ch = await game.getch();
+    const ch = keyPress("game", await game.getch());
 
-    if (ch === "a") return [-1, 0];
-    else if (ch === "d") return [1, 0];
-    else if (ch === "w") return [0, -1];
-    else if (ch === "s") return [0, 1];
-    else if (ch === "q") return [-1, -1];
-    else if (ch === "e") return [1, -1];
-    else if (ch === "z") return [-1, 1];
-    else if (ch === "c") return [1, 1];
+    if (ch === "MOVE_LEFT") return [-1, 0];
+    else if (ch === "MOVE_RIGHT") return [1, 0];
+    else if (ch === "MOVE_UP") return [0, -1];
+    else if (ch === "MOVE_DOWN") return [0, 1];
+    else if (ch === "MOVE_UP_LEFT") return [-1, -1];
+    else if (ch === "MOVE_UP_RIGHT") return [1, -1];
+    else if (ch === "MOVE_DOWN_LEFT") return [-1, 1];
+    else if (ch === "MOVE_DOWN_RIGHT") return [1, 1];
 
     return [0, 0];
   }
@@ -60,33 +61,33 @@ export class PlayerAI extends AI {
 
     let dx = 0;
     let dy = 0;
-    const ch = await game.getch();
+    const ch = keyPress("game", await game.getch());
     switch (ch) {
-      case "a": //left
+      case "MOVE_LEFT": //left
         dx--;
         break;
-      case "d": //right
+      case "MOVE_RIGHT": //right
         dx++;
         break;
-      case "w": //up
+      case "MOVE_UP": //up
         dy--;
         break;
-      case "s": //down
+      case "MOVE_DOWN": //down
         dy++;
         break;
-      case "q": //left-top
+      case "MOVE_UP_LEFT": //left-top
         dx--;
         dy--;
         break;
-      case "e": //right-top
+      case "MOVE_UP_RIGHT": //right-top
         dx++;
         dy--;
         break;
-      case "z": //left-bottom
+      case "MOVE_DOWN_LEFT": //left-bottom
         dx--;
         dy++;
         break;
-      case "c": //right-bottom
+      case "MOVE_DOWN_RIGHT": //right-bottom
         dx++;
         dy++;
         break;
@@ -199,10 +200,10 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
     };
 
-    const handleSave = async () => {
-      game.save();
-      game.log.add("Game saved.", Colors.GAME_SAVED);
-    };
+    // const handleSave = async () => {
+    //   game.save();
+    //   game.log.add("Game saved.", Colors.GAME_SAVED);
+    // };
 
     const handleNextLevel = () => {
       if (game.stairs?.x === owner.x && game.stairs?.y === owner.y) {
@@ -326,17 +327,13 @@ export class PlayerAI extends AI {
         6,
         Colors.DEFAULT_TEXT,
       );
-      game.drawText("A: Aim", 17, 7, Colors.DEFAULT_TEXT);
-      game.drawText("r: Spell", 17, 8, Colors.DEFAULT_TEXT);
-      game.drawText("g: Pick up an item.", 17, 9, Colors.DEFAULT_TEXT);
-      game.drawText("i: Use item", 17, 10, Colors.DEFAULT_TEXT);
-      game.drawText("D: Drop item from inventory", 17, 11, Colors.DEFAULT_TEXT);
-      game.drawText(">: Use stairs", 17, 12, Colors.DEFAULT_TEXT);
-      game.drawText("o/O: Open or close door.", 17, 13, Colors.DEFAULT_TEXT);
-      game.drawText("l/L: look to container.", 17, 14, Colors.DEFAULT_TEXT);
-      game.drawText("W: Wear/equip", 17, 15, Colors.DEFAULT_TEXT);
-      game.drawText("P/p: Pull/push", 17, 16, Colors.DEFAULT_TEXT);
-      game.drawText("./x: rest / skip turn", 17, 17, Colors.DEFAULT_TEXT);
+
+      const bindings = keyBindingsForHelp();
+      for (let i = 0; i < bindings.length; i++) {
+        const { keys, description } = bindings[i];
+        game.drawText(keys.join(" / "), 17, 7 + i, Colors.DEFAULT_TEXT);
+        game.drawText(`: ${description}`, 19, 7 + i, Colors.DEFAULT_TEXT);
+      }
 
       await game.getch();
     };
@@ -434,77 +431,67 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
     };
 
-    switch (ascii) {
-      case "S": //save
-        handleSave();
-        break;
-
-      case ">": //go down
+    switch (keyPress("game", ascii)) {
+      case "GO_DOWN":
         handleNextLevel();
         break;
 
-      case "g": //pickup item
+      case "PICK":
         handlePickup();
         break;
 
-      case "i": //use item
+      case "INVENTORY":
         await handleUseItem();
         break;
 
-      case "D": //drop item
+      case "DROP":
         await handleDropItem();
         break;
 
-      case "o": //open door
+
+      case "OPEN_DOORS":
         await handleOpen(false);
         break;
-      case "O": //open door with direction
+      case "OPEN_DOOR":
         await handleOpen(true);
         break;
 
-      case "l": //look to container
-        await handleLook(false);
-        break;
-      case "L": //look to container
-        await handleLook(true);
-        break;
-
-      case "W": //wield
+      case "WEAR_EQUIP":
         await handleWield();
         break;
 
-      case "A": //shoot
+      case "AIM":
         await handleShooting();
         break;
 
-      case "?": //wield
+      case "HELP":
         await handleHelpInfo();
         break;
 
-      case "p": //push
+      case "PUSH":
         await handlePush();
         break;
 
-      case "P": //pull
+      case "PULL":
         await handlePull();
         break;
 
-      case "r": //spells
+      case "SPELL":
         await handleSpells();
         break;
 
-      case "-":
+      case "ZOOM_OUT":
         handleZoom(-1);
         break;
-      case "+":
+      case "ZOOM_IN":
         handleZoom(1);
         break;
-      case ".":
-      case "x":
+      case "REST":
         handleRest();
         break;
 
-      case "f":
+      
+      case "FOV":
         handleFov();
         break;
 

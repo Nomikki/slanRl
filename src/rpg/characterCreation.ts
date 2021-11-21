@@ -1,4 +1,5 @@
 import { game } from "@/index";
+import { keyPress } from "@/keymappings";
 import { ABILITIES, Abilities } from "@/rpg/abilities";
 import { createListOfClasses, getClass } from "@/rpg/classes";
 import { AbilitiesIntercace, createListOfRaces, getRace } from "@/rpg/races";
@@ -264,34 +265,28 @@ export const prepareNewJourney = async () => {
     renderPreparingInfo(resiliences, proficiencies, abies);
 
     selectDirection = 0;
-    const ch = await game.getch();
+    const ch = keyPress("menu", await game.getch());
     let readyToStart = false;
 
     switch (ch) {
-      case "q":
-        break;
-      case "Enter":
+      case "SELECT":
         phase++;
         if (phase >= phases.phases_max) readyToStart = true;
         break;
-      case "Backspace":
+      case "BACK":
         phase--;
         if (phase < 0) phase = 0;
         break;
-      case "ArrowUp":
-      case "w":
+      case "MOVE_UP":
         selectDirection = -1;
         break;
-      case "ArrowDown":
-      case "s":
+      case "MOVE_DOWN":
         selectDirection = 1;
         break;
-      case "ArrowLeft":
-      case "a":
+      case "MOVE_LEFT":
         if (phase === phases.choose_abilities) usePoints(-1);
         break;
-      case "ArrowRight":
-      case "d":
+      case "MOVE_RIGHT":
         if (phase === phases.choose_abilities) usePoints(1);
         break;
       default:
@@ -303,7 +298,7 @@ export const prepareNewJourney = async () => {
     if (readyToStart) break;
 
     if (phase === phases.choose_name) {
-      if (ch === "Backspace" && heroName.length > 0) {
+      if (ch === "BACK" && heroName.length > 0) {
         heroName = heroName.substr(0, heroName.length - 1);
       } else {
         const regEx = /^[a-z0-9]+$/i;

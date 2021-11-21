@@ -16,6 +16,7 @@ import { Colors } from "@/utils/colors";
 import Log from "@/utils/log";
 import { Menu, MenuItemCode } from "@/utils/menu";
 import GitHub from "./github";
+import { keyPress } from "./keymappings";
 import { getClassNameByIndex } from "./rpg/classes";
 import { getRaceNameByIndex } from "./rpg/races";
 import { connectSocket } from "./socket";
@@ -184,10 +185,10 @@ export class Game {
   }
 
   handleZoomKeys(ch: string) {
-    if (ch === "+") {
+    if (ch === "ZOOM_IN") {
       this.fontSize++;
       this.setScale(this.fontSize);
-    } else if (ch === "-") {
+    } else if (ch === "ZOOM_OUT") {
       this.fontSize--;
       this.setScale(this.fontSize);
     }
@@ -562,10 +563,10 @@ export class Game {
     while (true) {
       this.renderStartMenu();
 
-      const ch = await this.getch();
-      if (ch === "ArrowDown" || ch == "s") this.menu.cursor++;
-      if (ch === "ArrowUp" || ch == "w") this.menu.cursor--;
-      if (ch === "Enter") {
+      const ch = keyPress("menu", await this.getch());
+      if (ch === "MOVE_DOWN") this.menu.cursor++;
+      if (ch === "MOVE_UP") this.menu.cursor--;
+      if (ch === "SELECT") {
         selectedItem = this.menu.items[this.menu.cursor].code;
         break;
       }
@@ -738,8 +739,8 @@ export class Game {
       this.log.add("Press Esc to restart");
       this.render();
       while (true) {
-        const ch = await this.getch();
-        if (ch === "Escape") break;
+        const ch = keyPress("game", await this.getch());
+        if (ch === "ESCAPE") break;
       }
     }
   }
@@ -1111,29 +1112,29 @@ export class Game {
         inRange = false;
       }
 
-      const ch = await this.getch();
-      if (ch === "a") px--;
-      if (ch === "d") px++;
-      if (ch === "w") py--;
-      if (ch === "s") py++;
-      if (ch === "q") {
+      const ch = keyPress("game", await this.getch());
+      if (ch === "MOVE_LEFT") px--;
+      if (ch === "MOVE_RIGHT") px++;
+      if (ch === "MOVE_UP") py--;
+      if (ch === "MOVE_DOWN") py++;
+      if (ch === "MOVE_UP_LEFT") {
         px--;
         py--;
       }
-      if (ch === "e") {
+      if (ch === "MOVE_UP_RIGHT") {
         px++;
         py--;
       }
-      if (ch === "z") {
+      if (ch === "MOVE_DOWN_LEFT") {
         px--;
         py++;
       }
-      if (ch === "c") {
+      if (ch === "MOVE_DOWN_RIGHT") {
         px++;
         py++;
       }
-      if (ch === "Escape") break;
-      if (ch === "Enter") {
+      if (ch === "ESCAPE") break;
+      if (ch === "SELECT") {
         if (inRange) {
           return [true, px, py];
         }
