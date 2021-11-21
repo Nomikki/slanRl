@@ -110,7 +110,9 @@ export class PlayerAI extends AI {
     const handleDoors = async (owner: Actor, withDirection: boolean) => {
       //look around and sum how many doors are there. If only one, open it.
       //not cleanest code /o\
-      const doors = ensure(game.map).filterClassesAroundActor(owner, Actor);
+      const doors = ensure(game.map)
+        .filterClassesAroundActor(owner, Actor)
+        .filter(({ name }) => name === "door");
 
       if (doors.length === 1 && withDirection === false) {
         doors[0]?.doorOpenOrClose();
