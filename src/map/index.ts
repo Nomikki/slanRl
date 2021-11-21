@@ -738,7 +738,8 @@ export default class Map {
       }
     }
 
-    if (random.getInt(0, 100) > 30) this.makeCaverns();
+    if (maxSplitLevel > 5 || option !== 1)
+      if (random.getInt(0, 100) > 30) this.makeCaverns();
 
     for (let l = 0; l < corridors.length; l++) {
       this.dig(
