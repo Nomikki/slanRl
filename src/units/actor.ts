@@ -194,4 +194,24 @@ export default class Actor {
       }
     }
   }
+
+  async openAsContainer(target: Actor) {
+    if (this.container) {
+      this.container.render(this.name.toUpperCase());
+      const ch = await game.getch();
+
+      const actorIndex = ch.charCodeAt(0) - 97; //97 = a
+      if (
+        actorIndex >= 0 &&
+        actorIndex < ensure(this.container).inventory.length
+      ) {
+        const pickedItem = ensure(this.container).inventory[actorIndex];
+
+        if (target.container?.add(pickedItem)) {
+          game.log.add(`You pick up the ${pickedItem.name}`);
+          this.container.remove(pickedItem);
+        }
+      }
+    }
+  }
 }

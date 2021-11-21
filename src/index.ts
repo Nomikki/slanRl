@@ -500,8 +500,7 @@ export class Game {
             destr.maxHP = actor.destructible.maxHP;
             destr.defense = actor.destructible.defense;
             destr.corpseName = actor.destructible.corpseName;
-          }
-          if (actor.destructible.type === "monster") {
+          } else if (actor.destructible.type === "monster") {
             this.actors[i].destructible = new MonsterDestructible(
               1,
               1,
@@ -519,6 +518,15 @@ export class Game {
             if (actor.destructible.hp <= 0) this.actors[i].blocks = false;
 
             this.actors[i].ai = new MonsterAI();
+          } else {
+            this.actors[i].destructible = new MonsterDestructible(1, 1, "", 0);
+
+            const destr = ensure(this.actors[i].destructible);
+            destr.xp = actor.destructible.xp;
+            destr.hp = actor.destructible.hp;
+            destr.maxHP = actor.destructible.maxHP;
+            destr.defense = actor.destructible.defense;
+            destr.corpseName = actor.destructible.corpseName;
           }
         }
       }

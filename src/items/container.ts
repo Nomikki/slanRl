@@ -33,9 +33,9 @@ export default class Container {
     }
   }
 
-  render() {
+  render(title: string) {
     game.renderMenuBackground({
-      title: "INVENTORY",
+      title: title,
       x: 15,
       y: 4,
       w: 45,

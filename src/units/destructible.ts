@@ -57,6 +57,16 @@ export default class Destructible {
     owner.color = Colors.DEAD_BODY;
     owner.name = this.corpseName;
     owner.blocks = false;
+    if (owner.container) {
+      while (owner.container.inventory.length > 0) {
+        const dropItem = owner.container.inventory[0];
+        dropItem.x = owner.x;
+        dropItem.y = owner.y;
+        owner.container.remove(dropItem);
+        game.actors.push(dropItem);
+        game.sendToBack(dropItem);
+      }
+    }
     game.sendToBack(owner);
   }
 }
