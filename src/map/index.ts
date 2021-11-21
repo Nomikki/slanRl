@@ -267,8 +267,9 @@ export default class Map {
   findDoor(x: number, y: number): Actor | undefined {
     const actors = game.getAllActors(x, y);
     const door = actors?.find(({ name }) => name === "door");
+    const somethingElse = actors?.filter(({ name }) => name !== "door") || [];
 
-    if (actors?.filter(({ name }) => name !== "door")) {
+    if (somethingElse.length > 0) {
       game.log.add("There's something and it's blocking!");
       return;
     }
@@ -303,17 +304,15 @@ export default class Map {
   }
 
   isThereSecretDoor(area: Rectangle): boolean {
-    for (const c of game.actors) {
-      if (
+    return !!game.actors.find(
+      c =>
         c.x >= area.x &&
         c.x <= area.x + area.w + 2 &&
         c.y >= area.y &&
-        c.y <= area.y + area.h + 2
-      ) {
-        if (c.ch === "#" && c.name === "door") return true;
-      }
-    }
-    return false;
+        c.y <= area.y + area.h + 2 &&
+        c.ch === "#" &&
+        c.name === "door",
+    );
   }
 
   addDoor(x: number, y: number, closed: boolean) {
