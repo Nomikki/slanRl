@@ -439,7 +439,7 @@ export default class Map {
   ) {
     this.dig(x1, y1, x2, y2, withActors);
 
-    const roomType = random.getInt(0, 3);
+    const roomType = random.getInt(0, 4);
 
     //storage room
     if (roomType === 0) {
@@ -510,16 +510,9 @@ export default class Map {
             const index = x + y * this.width;
             if (y >= y1 + 1 && y <= y2 - 1 && x >= x1 + 1 && x <= x2 - 1) {
               if (random.getInt(0, 100) > 20 && x % 2 === 0 && y % 3 === 0) {
-                const r = random.getInt(0, 100);
-                let ch = "?";
-                if (r < 60) ch = "t";
-                //tombstone
-                else if (r < 70) ch = "T";
-                //tombstone
-                else ch = "X"; //tombstone
                 if (withActors) {
-                  const actor = new Actor(x, y, ch, "tombstone", "#BBBBBB");
-                  actor.blocks = true;
+                  const actor = new Actor(x, y, "t", "tombstone", "#BBBBBB");
+                  actor.blocks = false;
                   game.sendToBack(actor);
                 }
 
@@ -527,7 +520,7 @@ export default class Map {
                 //this.tiles[index].color = Colors.STAIRS;
                 if (random.getInt(0, 100) > 50) {
                   this.tiles[index + this.width].color = Colors.SCROLL_OF_MAP;
-                  this.tiles[index + this.width].character = "H"; //grave
+                  this.tiles[index + this.width].character = "U"; //grave
                 }
               }
             }
