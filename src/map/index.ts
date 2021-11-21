@@ -13,9 +13,32 @@ import Rectangle from "@/utils/rectangle";
 
 export const random = new Randomizer();
 
+export const Directions = [
+  "UP",
+  "UP_RIGHT",
+  "RIGHT",
+  "DOWN_RIGHT",
+  "DOWN",
+  "DOWN_LEFT",
+  "LEFT",
+  "UP_LEFT",
+] as const;
+export type Direction = typeof Directions[number];
+
 export interface Position {
   x: number;
   y: number;
+}
+
+export type ActorsInDirection = Actor[] | undefined;
+
+export type ActorsInDirections = {
+  [key in Direction]: ActorsInDirection;
+};
+
+export interface FilterActorsProps {
+  property: string;
+  value: unknown;
 }
 
 class Tile {
@@ -201,10 +224,7 @@ export default class Map {
     return true;
   }
 
-  actorsAroundPosition(
-    x: number,
-    y: number,
-  ): { [direction: string]: Actor[] | undefined } {
+  actorsAroundPosition({ x, y }: Position): ActorsInDirections {
     return {
       UP: game.getAllActors(x, y - 1),
       UP_RIGHT: game.getAllActors(x + 1, y - 1),
@@ -219,12 +239,12 @@ export default class Map {
 
   filterActorsAroundPosition(
     { x, y }: Position,
-    { property, value }: { property: string; value: unknown },
+    { property, value }: FilterActorsProps,
   ) {
-    const aroundPosition = this.actorsAroundPosition(x, y);
+    const aroundPosition = this.actorsAroundPosition({ x, y });
     const actors = Object.keys(aroundPosition).map(
       (direction: string) =>
-        aroundPosition[direction]?.filter(
+        aroundPosition[direction as Direction]?.filter(
           (actor: Actor) =>
             property in actor && (actor as never)[property] === value,
         ) || undefined,
@@ -233,14 +253,11 @@ export default class Map {
     return (actors || []).flat().filter(isDefined) || [];
   }
 
-  filterClassesAroundPosition(
-    { x, y }: Position,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    filterClass: any,
-  ) {
-    const aroundPosition = this.actorsAroundPosition(x, y);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  filterClassesAroundPosition({ x, y }: Position, filterClass: any) {
+    const aroundPosition = this.actorsAroundPosition({ x, y });
     const actors = Object.keys(aroundPosition).map((direction: string) =>
-      aroundPosition[direction]?.filter(
+      aroundPosition[direction as Direction]?.filter(
         (actor: Actor) => actor instanceof filterClass,
       ),
     );
