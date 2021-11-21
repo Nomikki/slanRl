@@ -39,16 +39,6 @@ export enum GameStatus {
   DEFEAT,
 }
 
-const gameStatuses = [
-  "MAINMENU",
-  "NEWGAME",
-  "STARTUP",
-  "IDLE",
-  "NEW TURN",
-  "VICTORY",
-  "DEFEAT",
-];
-
 export class Game {
   gameStatus: number = GameStatus.MAINMENU;
   player?: Actor;
@@ -118,8 +108,8 @@ export class Game {
 
   getStats() {
     return {
-      playername: sessionStorage.getItem("username") || "anonymous",
-      gamestatus: this.gameStatus,
+      playerName: sessionStorage.getItem("username") || "anonymous",
+      gameStatus: this.gameStatus,
       depth: this.depth,
       turns: this.turns,
       seed: this.masterSeed,
@@ -128,10 +118,10 @@ export class Game {
 
   addSocketEvents() {
     interface Score {
-      playername: string;
+      playerName: string;
       depth: number;
       turns: number;
-      gamestatus: number;
+      gameStatus: number;
       seed: number;
     }
 
@@ -161,17 +151,17 @@ export class Game {
           if (Object.keys(top).length > 0) {
             stats.innerHTML = `${stats.innerHTML}\n----\nTop Scores:\n`;
             Object.keys(top).forEach(key => {
-              const { playername, depth, turns, seed }: Score = top[key];
-              stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}\n`;
+              const { playerName, depth, turns, seed }: Score = top[key];
+              stats.innerHTML = `${stats.innerHTML} - ${playerName}, d: ${depth}, t: ${turns}, seed: ${seed}\n`;
             });
           }
 
           if (Object.keys(live).length > 0) {
             stats.innerHTML = `${stats.innerHTML}\n----\nLive Scores:\n`;
             Object.keys(live).forEach(key => {
-              const { playername, depth, turns, gamestatus, seed }: Score =
+              const { playerName, depth, turns, gameStatus, seed }: Score =
                 live[key];
-              stats.innerHTML = `${stats.innerHTML} - ${playername}, d: ${depth}, t: ${turns}, seed: ${seed}, ${gameStatuses[gamestatus]}\n`;
+              stats.innerHTML = `${stats.innerHTML} - ${playerName}, d: ${depth}, t: ${turns}, seed: ${seed}, ${GameStatus[gameStatus]}\n`;
             });
           }
         });
