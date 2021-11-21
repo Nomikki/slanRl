@@ -1,5 +1,4 @@
 import { game, GameStatus } from "@/index";
-import Container from "@/items/container";
 import { keyBindingsForHelp, keyPress } from "@/keymappings";
 import { createSpell, getSpell } from "@/rpg/spellGenerator";
 import Actor from "@/units/actor";
@@ -111,7 +110,7 @@ export class PlayerAI extends AI {
     const handleDoors = async (owner: Actor, withDirection: boolean) => {
       //look around and sum how many doors are there. If only one, open it.
       //not cleanest code /o\
-      const doors = game.map?.filterActorsAroundActor(owner, "door") || [];
+      const doors = ensure(game.map).filterClassesAroundActor(owner, Actor);
 
       if (doors.length === 1 && withDirection === false) {
         doors[0]?.doorOpenOrClose();
@@ -131,11 +130,13 @@ export class PlayerAI extends AI {
     const handleContainers = async (owner: Actor, withDirection: boolean) => {
       //look around and sum how many containers are there. If only one, open it.
       //not cleanest code /o\
-      const containers =
-        game.map?.filterClassesAroundActor(owner, Container) || [];
+      const containers = ensure(game.map).filterClassesAroundActor(
+        owner,
+        Actor,
+      );
 
       if (containers && containers.length === 1 && withDirection === false) {
-        await containers[0].openAsContainer(owner);
+        await containers[0]?.openAsContainer(owner);
       } else if (containers && containers.length > 0) {
         //if there is more than one container
         game.log.add("Which direction?");

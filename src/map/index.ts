@@ -214,11 +214,13 @@ export default class Map {
 
   filterActorsAroundActor(owner: Actor, filterName: string) {
     const aroundPlayer = this.actorsAroundActor(owner.x, owner.y);
-    const actors = Object.keys(aroundPlayer).map((direction: string) =>
-      aroundPlayer[direction]?.filter(actor => actor.name === filterName),
+    const actors = Object.keys(aroundPlayer).map(
+      (direction: string) =>
+        aroundPlayer[direction]?.filter(actor => actor.name === filterName) ||
+        undefined,
     );
 
-    return (actors || []).flat().filter(isDefined);
+    return (actors || []).flat().filter(isDefined) || [];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -230,7 +232,7 @@ export default class Map {
       ),
     );
 
-    return (actors || []).flat().filter(isDefined);
+    return (actors || []).flat().filter(isDefined) || [];
   }
 
   findDoor(x: number, y: number): Actor | undefined {

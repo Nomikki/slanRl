@@ -160,6 +160,6 @@ export const capitalize = (text: string): string => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
 
-export declare function isPresent<T>(t: T | undefined | null): t is T;
-export declare function isDefined<T>(t: T | undefined): t is T;
-export declare function isFilled<T>(t: T | null): t is T;
+export const isPresent = <T>(t: T | undefined | null): t is T => !!t;
+export const isDefined = <T>(t: T | undefined): t is T => !!t;
+export const isFilled = <T>(t: T | null): t is T => !!t;
