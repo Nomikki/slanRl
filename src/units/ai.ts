@@ -106,7 +106,7 @@ export class PlayerAI extends AI {
   }
 
   async handleActionKey(owner: Actor, ascii: string) {
-    const handleOpen = async (withDirection: boolean) => {
+    const handleDoors = async (owner: Actor, withDirection: boolean) => {
       //look around and sum how many doors are there. If only one, open it.
       //not cleanest code /o\
       const doors = [];
@@ -141,6 +141,60 @@ export class PlayerAI extends AI {
           game.log.add("There is no any door.");
         }
       }
+    };
+
+    const findAllContainers = (x: number, y: number): Actor[] | undefined => {
+      const containers = [];
+      const container1 = game.map?.findContainer(x - 1, y);
+      const container2 = game.map?.findContainer(x + 1, y);
+      const container3 = game.map?.findContainer(x, y - 1);
+      const container4 = game.map?.findContainer(x, y + 1);
+      const container5 = game.map?.findContainer(x - 1, y - 1);
+      const container6 = game.map?.findContainer(x + 1, y - 1);
+      const container7 = game.map?.findContainer(x - 1, y + 1);
+      const container8 = game.map?.findContainer(x + 1, y + 1);
+
+      if (container1) containers.push(container1);
+      if (container2) containers.push(container2);
+      if (container3) containers.push(container3);
+      if (container4) containers.push(container4);
+      if (container5) containers.push(container5);
+      if (container6) containers.push(container6);
+      if (container7) containers.push(container7);
+      if (container8) containers.push(container8);
+      return containers;
+    };
+
+    const handleContainers = async (owner: Actor, withDirection: boolean) => {
+      //look around and sum how many containers are there. If only one, open it.
+      //not cleanest code /o\
+      const containers = findAllContainers(owner.x, owner.y);
+
+      if (containers && containers.length === 1 && withDirection === false) {
+        await containers[0].openAsContainer(owner);
+      } else if (containers && containers.length > 0) {
+        //if there is more than one container
+        game.log.add("Which direction?");
+        game.render();
+
+        const [dx, dy] = await this.pickDirection();
+
+        if (
+          !(await game?.map?.openContainer(owner, owner.x + dx, owner.y + dy))
+        ) {
+          game.log.add("There is no any container.");
+        }
+      }
+    };
+
+    const handleOpen = async (withDirection: boolean) => {
+      await handleDoors(owner, withDirection);
+      game.player?.computeFov();
+      game.gameStatus = GameStatus.NEW_TURN;
+    };
+
+    const handleLook = async (withDirection: boolean) => {
+      await handleContainers(owner, withDirection);
       game.player?.computeFov();
       game.gameStatus = GameStatus.NEW_TURN;
     };
@@ -280,6 +334,7 @@ export class PlayerAI extends AI {
       game.drawText("D: Drop item from inventory", 17, 11, Colors.DEFAULT_TEXT);
       game.drawText(">: Use stairs", 17, 12, Colors.DEFAULT_TEXT);
       game.drawText("o/O: Open or close door.", 17, 13, Colors.DEFAULT_TEXT);
+      game.drawText("l/L: look to container.", 17, 13, Colors.DEFAULT_TEXT);
       game.drawText("W: Wear/equip", 17, 14, Colors.DEFAULT_TEXT);
       game.drawText("P/p: Pull/push", 17, 15, Colors.DEFAULT_TEXT);
       game.drawText("./x: rest / skip turn", 17, 16, Colors.DEFAULT_TEXT);
@@ -401,11 +456,18 @@ export class PlayerAI extends AI {
         await handleDropItem();
         break;
 
-      case "o": //open
+      case "o": //open door
         await handleOpen(false);
         break;
-      case "O": //open with diretion
+      case "O": //open door with direction
         await handleOpen(true);
+        break;
+
+      case "l": //look to container
+        await handleLook(false);
+        break;
+      case "L": //look to container
+        await handleLook(true);
         break;
 
       case "W": //wield
@@ -501,7 +563,7 @@ export class PlayerAI extends AI {
     game.clear();
     game.render();
     if (owner.container && owner.equipments) {
-      owner.container.render();
+      owner.container.render("INVENTORY");
       owner.equipments?.render();
     }
 

@@ -210,6 +210,29 @@ export default class Map {
     return door;
   }
 
+  findContainer(x: number, y: number): Actor | undefined {
+    const containers = game.getAllActors(x, y);
+    let container = undefined;
+    if (containers) {
+      for (const actor of containers) {
+        if (actor && actor.container && !actor.attacker) {
+          container = actor; //container found
+        }
+      }
+    }
+    return container;
+  }
+
+  async openContainer(target: Actor, x: number, y: number) {
+    const container = this.findContainer(x, y);
+    if (container) {
+      await container.openAsContainer(target);
+      return true;
+    }
+
+    return false;
+  }
+
   openCloseDoor(x: number, y: number): boolean {
     const door = this.findDoor(x, y);
     if (door) {
