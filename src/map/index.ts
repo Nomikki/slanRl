@@ -42,12 +42,14 @@ export default class Map {
   tiles: Tile[];
   templateDoors: Rectangle[];
   monsterRooms: Rectangle[];
+  noisemap: number[];
 
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
     this.templateDoors = [];
     this.monsterRooms = [];
+    this.noisemap = new Array(this.width * this.height).fill(0);
     this.tiles = new Array(this.width * this.height).fill(false);
     this.ambienceColor = "#AAAAAA";
   }
@@ -623,6 +625,19 @@ export default class Map {
     return 0;
   }
 
+  howManyWalls2(x: number, y: number): number {
+    if (x > 0 && y > 0 && x < this.width - 1 && y < this.height - 1) {
+      let count = 0;
+      for (let lx = x - 1; lx <= x + 1; lx++)
+        for (let ly = y - 1; ly <= y + 1; ly++)
+          if (this.noisemap[lx + ly * this.width] === 1) count++;
+
+      return count;
+    }
+
+    return 0;
+  }
+
   //fill with default walls
   fillWithWalls() {
     for (let y = 0; y < this.height; y++) {
@@ -631,32 +646,6 @@ export default class Map {
         this.tiles[index].canWalk = false;
         this.tiles[index].color = Colors.WALL;
         this.tiles[index].character = "#";
-      }
-    }
-  }
-
-  makePrettyWalls() {
-    for (let y = 1; y < this.height - 1; y++) {
-      for (let x = 1; x < this.width - 1; x++) {
-        //
-        /*
-        const index = x + y * this.width;
-        if (this.isWall(x, y)) {
-          if (this.canWalk(x - 1, y)) this.tiles[index].character = "|";
-          else if (this.canWalk(x + 1, y)) this.tiles[index].character = "|";
-          else if (this.canWalk(x, y - 1)) this.tiles[index].character = "-";
-          else if (this.canWalk(x, y + 1)) this.tiles[index].character = "-";
-          else if (this.canWalk(x - 1, y - 1))
-            this.tiles[index].character = "+";
-          else if (this.canWalk(x + 1, y - 1))
-            this.tiles[index].character = "+";
-          else if (this.canWalk(x - 1, y + 1))
-            this.tiles[index].character = "+";
-          else if (this.canWalk(x + 1, y + 1))
-            this.tiles[index].character = "+";
-            
-        }
-        */
       }
     }
   }
@@ -671,6 +660,8 @@ export default class Map {
     console.log("seed: " + this.levelSeed);
     console.log("depth: " + this.depth);
     console.log("split level:" + maxSplitLevel);
+
+    const corridors = [];
 
     this.ambienceColor =
       Colors.AMBIENCE_COLOR[random.getInt(0, Colors.AMBIENCE_COLOR.length)];
@@ -730,19 +721,16 @@ export default class Map {
 
       if (option === 1 || option === 2) {
         if (i > 0) {
-          this.dig(
-            lastx,
-            lasty,
-            temproom.x + temproom.w / 2,
-            lasty,
-            withActors,
+          corridors.push(
+            new Rectangle(lastx, lasty, temproom.x + temproom.w / 2, lasty),
           );
-          this.dig(
-            temproom.x + temproom.w / 2,
-            lasty,
-            temproom.x + temproom.w / 2,
-            temproom.y + temproom.h / 2,
-            withActors,
+          corridors.push(
+            new Rectangle(
+              temproom.x + temproom.w / 2,
+              lasty,
+              temproom.x + temproom.w / 2,
+              temproom.y + temproom.h / 2,
+            ),
           );
         }
         lastx = temproom.x + temproom.w / 2;
@@ -750,13 +738,90 @@ export default class Map {
       }
     }
 
-    this.makePrettyWalls();
+    if (random.getInt(0, 100) > 30) this.makeCaverns();
+
+    for (let l = 0; l < corridors.length; l++) {
+      this.dig(
+        corridors[l].x,
+        corridors[l].y,
+        corridors[l].w,
+        corridors[l].h,
+        withActors,
+      );
+    }
 
     if (withActors) {
       for (const room of this.monsterRooms) this.addActors(room);
       for (const door of this.templateDoors) this.addDoor(door.x, door.y, true);
       for (const room of this.monsterRooms) this.createTorches(room);
     }
+  }
+
+  placeWallLogic(x: number, y: number): number {
+    const numWalls = this.howManyWalls2(x, y);
+    if (this.isWall(x, y)) {
+      if (numWalls >= 4) return 1;
+      if (numWalls < 2) return 0;
+    } else {
+      if (numWalls >= 5) return 1;
+    }
+    return 0;
+  }
+
+  makeCaverns() {
+    //create noise
+
+    const itermap = new Array(this.width * this.height).fill(0);
+
+    if (random.getInt(0, 100) > 50) {
+      console.log("1");
+      for (let y = 0; y < this.height; y++) {
+        for (let x = 0; x < this.width; x++) {
+          this.noisemap[x + y * this.width] =
+            random.getInt(0, 100) < 40 ? 1 : 0;
+        }
+      }
+    } else {
+      for (let y = 0; y < this.height; y++) {
+        for (let x = 0; x < this.width; x++) {
+          this.noisemap[x + y * this.width] = this.isWall(x, y) ? 1 : 0;
+        }
+      }
+    }
+
+    //iterate it (blur it)
+    const iterAmount = random.getInt(1, 6);
+    console.log("cavern iters: ", iterAmount);
+    for (let l = 0; l < iterAmount; l++) {
+      for (let y = 1; y < this.height - 1; y++) {
+        for (let x = 1; x < this.width - 1; x++) {
+          itermap[x + y * this.width] = this.placeWallLogic(x, y);
+        }
+      }
+      for (let i = 0; i < this.width * this.height; i++) {
+        this.noisemap[i] = itermap[i];
+      }
+    }
+
+    //add to map
+    const onlyWalls = random.getInt(0, 100) > 50 ? true : false;
+    for (let y = 1; y < this.height - 1; y++) {
+      for (let x = 1; x < this.width - 1; x++) {
+        if (this.isWall(x, y) || onlyWalls) {
+          const index = x + y * this.width;
+          if (this.noisemap[index] === 0) {
+            this.tiles[index].canWalk = true;
+            this.tiles[index].character = ".";
+          } else {
+            this.tiles[index].canWalk = false;
+            this.tiles[index].character = "#";
+          }
+          //noisemap[x + y * this.width] = random.getInt(0, 2);
+        }
+      }
+    }
+
+    //console.log(noisemap);
   }
 
   createTorches(room: Rectangle) {

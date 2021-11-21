@@ -305,12 +305,11 @@ export class PlayerAI extends AI {
     };
 
     //this feature is disabled for now
-    /*
+
     const handleFov = () => {
-      game.player?.fov?.showAll();
-      game.saveImage();
+      //game.player?.fov?.showAll();
+      //game.saveImage();
     };
-    */
 
     const handleHelpInfo = async () => {
       game.renderMenuBackground({
@@ -506,7 +505,7 @@ export class PlayerAI extends AI {
         break;
 
       case "f":
-        //handleFov();
+        handleFov();
         break;
 
       default:
