@@ -766,7 +766,7 @@ export class Game {
                 await this.save();
               }
               break;
-            // Don't prevent META + L, R key, but don't try to look for containers either
+            // Don't prevent META + L and R keys, but don't send these to game
             case "r":
             case "l":
               return;
@@ -988,13 +988,8 @@ export class Game {
     }
   }
 
-  removeActor(actor: Actor) {
-    for (let i = 0; i < this.actors.length; i++) {
-      if (this.actors[i] === actor) {
-        this.actors.splice(i, 1);
-        return;
-      }
-    }
+  removeActor(actorToBeRemoved: Actor) {
+    this.actors = this.actors.filter(actor => actor !== actorToBeRemoved);
   }
 
   sendToBack(actor: Actor) {
@@ -1003,37 +998,36 @@ export class Game {
   }
 
   getClosestMonster(x: number, y: number, range: number) {
-    let closest = null;
     let bestDistance = 100000;
-
-    for (const actor of this.actors) {
-      if (
-        actor != this.player &&
-        actor.destructible &&
-        !actor.destructible.isDead()
-      ) {
-        const distance = actor.getDistance(x, y);
-        if (distance < bestDistance && (distance <= range || range == 0.0)) {
-          bestDistance = distance;
-          closest = actor;
+    return this.actors.reduce(
+      (closestActor: Actor | undefined, actor: Actor) => {
+        if (
+          actor != this.player &&
+          actor.destructible &&
+          !actor.destructible.isDead()
+        ) {
+          const distance = actor.getDistance(x, y);
+          if (distance < bestDistance && (distance <= range || range == 0.0)) {
+            bestDistance = distance;
+            return actor;
+          }
         }
-      }
-    }
-    return closest;
+        return closestActor;
+      },
+      undefined,
+    );
   }
 
   getActor(x: number, y: number): Actor | null {
-    for (const actor of this.actors) {
-      if (
-        actor.x === x &&
-        actor.y === y &&
-        actor.destructible &&
-        !actor.destructible.isDead()
-      ) {
-        return actor;
-      }
-    }
-    return null;
+    return (
+      this.actors.find(
+        actor =>
+          actor.x === x &&
+          actor.y === y &&
+          actor.destructible &&
+          !actor.destructible.isDead(),
+      ) || null
+    );
   }
 
   getAnyActor(x: number, y: number): Actor | null {
@@ -1050,19 +1044,13 @@ export class Game {
     size: number,
     ignoreActor: Actor,
   ): Actor[] | null {
-    const actorList = [];
-
-    for (const actor of this.actors) {
-      if (
+    return this.actors.filter(
+      actor =>
         actor !== ignoreActor &&
         actor.destructible &&
         !actor.destructible.isDead() &&
-        actor.getDistance(tileX, tileY) <= size
-      )
-        actorList.push(actor);
-    }
-
-    return actorList;
+        actor.getDistance(tileX, tileY) <= size,
+    );
   }
 
   getActorsInCube(
@@ -1071,22 +1059,16 @@ export class Game {
     size: number,
     ignoreActor: Actor,
   ): Actor[] | null {
-    const actorList = [];
-
-    for (const actor of this.actors) {
-      if (
+    return this.actors.filter(
+      actor =>
         actor !== ignoreActor &&
         actor.destructible &&
         !actor.destructible.isDead() &&
         actor.x >= tileX - size &&
         actor.x <= tileX + size &&
         actor.y >= tileY - size &&
-        actor.y <= tileY + size
-      )
-        actorList.push(actor);
-    }
-
-    return actorList;
+        actor.y <= tileY + size,
+    );
   }
 
   async pickATile(x: number, y: number, range = 0.0) {

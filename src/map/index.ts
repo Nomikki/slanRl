@@ -13,6 +13,11 @@ import Rectangle from "@/utils/rectangle";
 
 export const random = new Randomizer();
 
+export interface Position {
+  x: number;
+  y: number;
+}
+
 class Tile {
   canWalk = false;
   explored = false;
@@ -196,38 +201,41 @@ export default class Map {
     return true;
   }
 
-  actorsAroundActor(
+  actorsAroundPosition(
     x: number,
     y: number,
   ): { [direction: string]: Actor[] | undefined } {
     return {
-      UP: game.getAllActors(x, y + 1),
-      UP_RIGHT: game.getAllActors(x + 1, y + 1),
+      UP: game.getAllActors(x, y - 1),
+      UP_RIGHT: game.getAllActors(x + 1, y - 1),
       RIGHT: game.getAllActors(x + 1, y),
-      DOWN_RIGHT: game.getAllActors(x + 1, y - 1),
-      DOWN: game.getAllActors(x, y - 1),
-      DOWN_LEFT: game.getAllActors(x - 1, y - 1),
+      DOWN_RIGHT: game.getAllActors(x + 1, y + 1),
+      DOWN: game.getAllActors(x, y + 1),
+      DOWN_LEFT: game.getAllActors(x - 1, y + 1),
       LEFT: game.getAllActors(x - 1, y),
-      UP_LEFT: game.getAllActors(x - 1, y + 1),
+      UP_LEFT: game.getAllActors(x - 1, y - 1),
     };
   }
 
-  filterActorsAroundOwner(owner: Actor, filterName: string) {
-    const aroundOwner = this.actorsAroundActor(owner.x, owner.y);
-    const actors = Object.keys(aroundOwner).map(
+  filterActorsAroundPosition({ x, y }: Position, filterName: string) {
+    const aroundPosition = this.actorsAroundPosition(x, y);
+    const actors = Object.keys(aroundPosition).map(
       (direction: string) =>
-        aroundOwner[direction]?.filter(actor => actor.name === filterName) ||
+        aroundPosition[direction]?.filter(actor => actor.name === filterName) ||
         undefined,
     );
 
     return (actors || []).flat().filter(isDefined) || [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  filterClassesAroundOwner(owner: Actor, filterClass: any) {
-    const aroundOwner = this.actorsAroundActor(owner.x, owner.y);
-    const actors = Object.keys(aroundOwner).map((direction: string) =>
-      aroundOwner[direction]?.filter(
+  filterClassesAroundPosition(
+    { x, y }: Position,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    filterClass: any,
+  ) {
+    const aroundPosition = this.actorsAroundPosition(x, y);
+    const actors = Object.keys(aroundPosition).map((direction: string) =>
+      aroundPosition[direction]?.filter(
         (actor: Actor) => actor instanceof filterClass,
       ),
     );
@@ -237,31 +245,20 @@ export default class Map {
 
   findDoor(x: number, y: number): Actor | undefined {
     const actors = game.getAllActors(x, y);
-    let door = undefined;
-    if (actors) {
-      for (const actor of actors) {
-        if (actor && actor.name === "door") {
-          door = actor; //door found
-        } else if (actor) {
-          game.log.add("There's something and it's blocking!");
-          return undefined;
-        }
-      }
+    const door = actors?.find(({ name }) => name === "door");
+
+    if (actors?.filter(({ name }) => name !== "door")) {
+      game.log.add("There's something and it's blocking!");
+      return;
     }
+
     return door;
   }
 
   findContainer(x: number, y: number): Actor | undefined {
-    const containers = game.getAllActors(x, y);
-    let container = undefined;
-    if (containers) {
-      for (const actor of containers) {
-        if (actor && actor.container && !actor.attacker) {
-          container = actor; //container found
-        }
-      }
-    }
-    return container;
+    return game
+      .getAllActors(x, y)
+      ?.find(({ attacker, container }) => !!container && !attacker);
   }
 
   async openContainer(target: Actor, x: number, y: number) {

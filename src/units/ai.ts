@@ -108,10 +108,8 @@ export class PlayerAI extends AI {
 
   async handleActionKey(owner: Actor, ascii: string) {
     const handleDoors = async (owner: Actor, withDirection: boolean) => {
-      //look around and sum how many doors are there. If only one, open it.
-      //not cleanest code /o\
       const doors = ensure(game.map)
-        .filterClassesAroundOwner(owner, Actor)
+        .filterClassesAroundPosition(owner, Actor)
         .filter(({ name }) => name === "door");
 
       if (doors.length === 1 && withDirection === false) {
@@ -130,10 +128,8 @@ export class PlayerAI extends AI {
     };
 
     const handleContainers = async (owner: Actor, withDirection: boolean) => {
-      //look around and sum how many containers are there. If only one, open it.
-      //not cleanest code /o\
       const containers = ensure(game.map)
-        .filterClassesAroundOwner(owner, Actor)
+        .filterClassesAroundPosition(owner, Actor)
         .filter(({ container }) => !!container);
 
       if (containers && containers.length === 1 && withDirection === false) {
@@ -396,7 +392,7 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
     };
 
-    switch (keyPress("game", ascii)) {
+    switch (ascii) {
       case "SAVE":
         handleSave();
         break;

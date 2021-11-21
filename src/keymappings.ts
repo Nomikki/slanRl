@@ -201,13 +201,15 @@ export const keyPress = (phase: string, pressedKey: string) => {
     key => keyBindings[key] === binding,
   );
 
-  console.log(
-    `phase ${phase}, pressedKey ${pressedKey}, keyBinding ${keyBinding} = ${JSON.stringify(
-      binding,
-      null,
-      2,
-    )}`,
-  );
+  if (!keyBinding) {
+    console.log(
+      `phase ${phase}, pressedKey ${pressedKey}, keyBinding ${keyBinding} = ${JSON.stringify(
+        binding,
+        null,
+        2,
+      )}`,
+    );
+  }
 
   return keyBinding || pressedKey;
 };
