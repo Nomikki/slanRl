@@ -185,6 +185,12 @@ export const keyBindings: KeyBindings = {
     showInHelp: false,
     phases: [],
   },
+  SAVE: {
+    keys: ["S"],
+    description: "Save",
+    showInHelp: false,
+    phases: "all",
+  },
 };
 
 export const keyPress = (phase: string, pressedKey: string) => {

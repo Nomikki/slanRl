@@ -163,10 +163,10 @@ export class PlayerAI extends AI {
       game.gameStatus = GameStatus.NEW_TURN;
     };
 
-    // const handleSave = async () => {
-    //   game.save();
-    //   game.log.add("Game saved.", Colors.GAME_SAVED);
-    // };
+    const handleSave = async () => {
+      game.save();
+      game.log.add("Game saved.", Colors.GAME_SAVED);
+    };
 
     const handleNextLevel = () => {
       if (game.stairs?.x === owner.x && game.stairs?.y === owner.y) {
@@ -395,6 +395,10 @@ export class PlayerAI extends AI {
     };
 
     switch (keyPress("game", ascii)) {
+      case "SAVE":
+        handleSave();
+        break;
+
       case "GO_DOWN":
         handleNextLevel();
         break;

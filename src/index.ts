@@ -751,15 +751,30 @@ export class Game {
         let preventKey = false;
         if (
           (window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) &&
-          e.keyCode == 83
+          ["s", "l", "o", "p"].includes(e.key)
         ) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.log.add("Game saved.", Colors.GAME_SAVED);
-          await this.save();
+          switch (e.key) {
+            // Prevent META + S, O and P keys
+            case "s":
+            case "o":
+            case "p":
+              e.preventDefault();
+              e.stopPropagation();
+              // If META + S, save the game
+              if (e.key === "s") {
+                this.log.add("Game saved.", Colors.GAME_SAVED);
+                await this.save();
+              }
+              break;
+            // Don't prevent META + L key, but don't try to look for containers either
+            case "l":
+              return;
+            default:
+              break;
+          }
           preventKey = true;
         }
-        if (e.keyCode !== 0 && !preventKey) {
+        if (e.key && !preventKey) {
           game.lastKey = e.key;
         }
         document.removeEventListener("keydown", onKeyHandler);
