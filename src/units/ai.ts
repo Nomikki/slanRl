@@ -333,10 +333,10 @@ export class PlayerAI extends AI {
       game.drawText("D: Drop item from inventory", 17, 11, Colors.DEFAULT_TEXT);
       game.drawText(">: Use stairs", 17, 12, Colors.DEFAULT_TEXT);
       game.drawText("o/O: Open or close door.", 17, 13, Colors.DEFAULT_TEXT);
-      game.drawText("l/L: look to container.", 17, 13, Colors.DEFAULT_TEXT);
-      game.drawText("W: Wear/equip", 17, 14, Colors.DEFAULT_TEXT);
-      game.drawText("P/p: Pull/push", 17, 15, Colors.DEFAULT_TEXT);
-      game.drawText("./x: rest / skip turn", 17, 16, Colors.DEFAULT_TEXT);
+      game.drawText("l/L: look to container.", 17, 14, Colors.DEFAULT_TEXT);
+      game.drawText("W: Wear/equip", 17, 15, Colors.DEFAULT_TEXT);
+      game.drawText("P/p: Pull/push", 17, 16, Colors.DEFAULT_TEXT);
+      game.drawText("./x: rest / skip turn", 17, 17, Colors.DEFAULT_TEXT);
 
       await game.getch();
     };
