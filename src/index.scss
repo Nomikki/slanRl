@@ -21,28 +21,45 @@ body {
 
 #screen {
   image-rendering: pixelated;
-  //height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  object-fit: contain;
 }
 
 #temp-image {
   position: absolute;
   bottom: 110px;
   right: 10px;
-  max-width: 10vmax;
-  max-height: 10vmax;
   z-index: 100;
   cursor: pointer;
   transition: all 0.5s ease-in-out;
   border: 1px solid ui("tempImage");
-
-  &.zoomed {
-    max-width: 100vmax;
-    max-height: 100vmax;
-  }
+  background: rgba(0, 0, 0, 0);
 
   &-canvas {
-    max-width: 100%;
-    max-height: 100%;
+    transition: all 0.5s ease-in-out;
+    max-width: 10vmax;
+    max-height: 10vmax;
+    width: 10vmax;
+    height: 10vmax;
+    object-fit: contain;
+    position: relative;
+  }
+
+  &.zoomed {
+    max-width: 100vw;
+    max-height: 100vh;
+    bottom: 0;
+    right: 0;
+    border: 1px solid transparent;
+    background: rgba(0, 0, 0, 0.75);
+
+    #temp-image-canvas {
+      max-width: 100vmax;
+      max-height: 100vmax;
+      width: 100vw;
+      height: 100vh;
+    }
   }
 }
 
